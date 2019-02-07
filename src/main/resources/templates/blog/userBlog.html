@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+</head>
+<body>
+<!-- 展现mavonEditor需要 -->
+<link href="/mavonEditor/markdown/github-markdown.min.css" rel="stylesheet">
+<!-- 展现数学公式需要 -->
+<link href="/mavonEditor/katex/katex.css" rel="stylesheet">
+
+<div th:if="not  ${userBlog.success}" class="alert alert-danger" role="alert">
+    <strong>Oh snap!</strong>
+    <span th:text="${userBlog.errorMsg}">Oh snap!</span>
+</div>
+<div th:if="${userBlog.success}" class="container-fluid">
+    <div class="row clearfix">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-block" th:object="${userBlog}">
+                    <a th:href="'/blog/userBlogList?userId='+*{blogDto.userId}">
+                        <img th:src="*{avatar}" class="img-thumbnail img-rounded float-left" width="50px" height="50px"
+                             style="cursor: pointer;">
+                    </a>
+                    <div id="blog" data-th-attr="userId=*{blogDto.userId},blogId=*{blogDto.id}"></div>
+                    <a th:href="'/blog/userBlogList?userId='+*{blogDto.userId}" class="float-left mr-2 my-3">
+                        <strong class="card-title ml-md-3" th:text="*{nickname}"></strong>
+                    </a>
+                    <div th:if="not *{selfBlog}" id="selfBlog" data-th-attr="concern=*{concern}">
+                        <button class="btn btn-danger float-right mr-2" style="display: none" id="concern">关注</button>
+                        <button class="btn btn-success float-right mr-2" style="display: none" id="concerned">已关注
+                        </button>
+                    </div>
+                </div>
+                <div class="card-block">
+                    <div class="card-text">
+                        <button class="btn btn-info active mx-1">
+                            <span>原创</span>
+                            <span th:text="${userBlog.articleNum}"></span>
+                        </button>
+                        <button class="btn btn-info active mx-1">
+                            <span>粉丝</span>
+                            <span th:text="${userBlog.fansNum}"></span>
+                        </button>
+                        <button class="btn btn-info active mx-1">
+                            <span>喜欢</span>
+                            <span th:text="${userBlog.voteNum}"></span>
+                        </button>
+                        <button class="btn btn-info active mx-1">
+                            <span>评论</span>
+                            <span th:text="${userBlog.commentNum}"></span>
+                        </button>
+                    </div>
+                    <!--<div class="card-text my-1">-->
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8" th:object="${userBlog.blogDto}">
+            <div class="card">
+                <div class="ml-4">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h3 class="card-block" th:text="*{title}"></h3>
+                        </div>
+                        <div class="col-md-3 mt-md-4">
+                            <img src="/images/loveWhite.png" class="img-thumbnail border-0" width="40"
+                                 style="display: none;cursor: pointer;" id="vote" data-th-attr="vote=${userBlog.vote}" title="点赞">
+                            <img src="/images/love.png" class="img-thumbnail border-0" width="40" style="display: none;cursor: pointer;"
+                                 id="voteed" title="取消点赞">
+                            <a th:if="${userBlog.selfBlog}" th:href="'/user/blogEdit/' + *{id}" class="ml-md-4">
+                                <button class="btn btn-outline-danger btn-sm">编辑</button>
+                            </a>
+                        </div>
+                    </div>
+                    <p class="card-text ml-md-3 text-muted"
+                       th:text="*{#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}+' '+${userBlog.nickname}+' 阅读数：'+*{traffic}"></p>
+                    <div class="card-block markdown-body">
+                        <div id="blogContent" data-th-attr="data=*{contentHtml}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade hintModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <strong class="modal-title text-danger">Warning!</strong>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>请先登录</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="/js/blog/userBlog.js"></script>
+
+</body>
+</html>

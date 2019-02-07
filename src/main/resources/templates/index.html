@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+</head>
+<body>
+<!-- Page Content -->
+<div class="container blog-content-container">
+    <!-- 通过 row 在水平方向创建一组 column -->
+    <div class="row">
+        <!-- 第一列占8格 -->
+        <div class="col-md-8">
+            <div class="card mb-2">
+                <div class="card-block">
+                    <h2 class="card-title">
+                        <a href="#" title="dong">
+                            <img src="images/avatarDefault.png" class="img-thumbnail img-rounded" width="40px" height="40px">
+                        </a>
+                        <a href="/userspace/blogEdit" class="card-link">OAuth 2.0 认证的原理与实践</a>
+                    </h2>
+                    <p class="card-text">
+                        使用 OAuth 2.0 认证的的好处是显然易见的。你只需要用同一个账号密码，就能在各个网站进行访问，而免去了在每个网站都进行注册的繁琐过程。 本文将介绍
+                        OAuth 2.0 的原理，并基于 Spring Security 和 GitHub 账号，来演示 OAuth 2.0 的认证的过程。
+                    </p>
+                    <a href="#" class="card-link">帅东</a> 发表于 2018-12-30
+                    <img src="images/eye.png" class="img-thumbnail border-0" width="30" height="30">
+                    <span>210</span>
+                    <img src="images/love.png" class="img-thumbnail border-0" width="30" height="30">
+                    <span>10</span>
+                    <img src="images/message.png" class="img-thumbnail border-0" width="30" height="30">
+                    <span>20</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-block">
+                    <h2 class="card-title">
+                        <span>
+                          <a href="/" title="waylau">
+                              <img src="/images/author.jpg" class="img-thumbnail img-rounded" width="40px" height="40px">
+                          </a>
+                        </span>
+                        <a href="/" class="card-link">
+                            Spring Data + Thymeleaf 3 + Bootstrap 4 实现分页器
+                        </a></h2>
+                    <p class="card-text">实际上分页器或者分页组件在现实中都有广泛着的应用，照理来说老卫没有必要单独撰文来提这茬。事实是，我近期刚好在写一门关于Spring
+                        Data、Thymeleaf 3、Bootstrap 4 的应用课程，所以用了Bootstrap 4的样式，结果之前很多例如 Bootstrap 3
+                        的表格、分页器啊之类的插件都不能很好的兼容，百度谷歌无果，而且 Bootstrap 4 还没有出稳定版本，官网的示例也是少的可怜，最终下决心要自己写个分页器了，所用到的技术就是 Spring
+                        Data、Thymeleaf 3、Bootstrap 4 。</p>
+                    <div class="card-text">
+                        <a href="/" class="card-link">帅东</a> 发表于 2018-12-30
+                        <span class="glyphicon glyphicon-eye-open" aria-hidden="true">110</span>
+                        <span class="glyphicon glyphicon-heart-empty" aria-hidden="true">10</span>
+                        <span class="glyphicon glyphicon-comment" aria-hidden="true">70</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav>
+                <ul class="pagination justify-content-center mb-4">
+                    <li class="page-item">
+                        <a href="#" class="page-link" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item active"><a href="#" class="page-link">1</a></li>
+                    <li class="page-item"><a href="#" class="page-link">2</a></li>
+                    <li class="page-item"><a href="#" class="page-link">3</a></li>
+                    <li class="page-item"><a href="#" class="page-link">4</a></li>
+                    <li class="page-item"><a href="#" class="page-link">5</a></li>
+                    <li class="page-item"><a href="#" class="page-link">6</a></li>
+                    <li class="page-item"><a href="#" class="page-link">7</a></li>
+                    <li class="page-item">
+                        <a href="#" class="page-link" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 右侧栏目 -->
+        <div class="col-md-4">
+            <div>
+                <!-- 热门标签 -->
+                <div class="card ">
+                    <h5 class="card-header"><i class="fa fa-tags" aria-hidden="true"></i> 热门标签</h5>
+                    <div class="card-block">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Web Design</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Jersey</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">JavaScript</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">CSS</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Java</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Freebies</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Web Design</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Jersey</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">JavaScript</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">CSS</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Java</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Freebies</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Web Design</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Jersey</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">JavaScript</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">CSS</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Java</span></a>
+                                <a href="/blogs?tag=1"> <span class="badge badge-default">Freebies</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 热门用户 -->
+                <div class="card my-4">
+                    <h5 class="card-header">
+                        <i class="fa fa-users" aria-hidden="true"></i>
+                        热门用户
+                    </h5>
+                    <div class="card-block">
+                        <img href="#" src="https://waylau.com/images/waylau_181_181.jpg" class="blog-avatar-50"
+                             alt="waylau">
+                        <img src="https://waylau.com/images/waylau_181_181.jpg" class="blog-avatar-50"
+                             alt="waylau">
+                        <img src="https://waylau.com/images/waylau_181_181.jpg" class="blog-avatar-50"
+                             alt="waylau">
+                        <img src="https://waylau.com/images/waylau_181_181.jpg" class="blog-avatar-50"
+                             alt="waylau">
+                        <img src="https://waylau.com/images/waylau_181_181.jpg" class="blog-avatar-50"
+                             alt="waylau">
+                    </div>
+                </div>
+
+                <!-- 热门文章 -->
+                <div class="card my-4">
+                    <h5 class="card-header"><i class="fa fa-fire" aria-hidden="true"></i> 热门文章</h5>
+
+                    <ul class="list-group">
+                        <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                            Spring Data + Thymeleaf 3 + Bootstrap 4 实现分页器<span class="badge badge-danger badge-pill">11115</span>
+                        </a>
+                        <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                            用大白话聊聊分布式系统
+                            <span class="badge badge-warning badge-pill">338</span>
+                        </a>
+                        <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                            用大白话聊聊分布式系统
+                            <span class="badge badge-info badge-pill">289</span>
+                        </a>
+                        <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                            使用 Eclipse Checkstyle Plugin
+                            <span class="badge badge-default badge-pill">189</span>
+                        </a>
+
+                        <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                            使用 Eclipse Checkstyle Plugin
+                            <span class="badge badge-default badge-pill">189</span>
+                        </a>
+                    </ul>
+
+                </div>
+
+                <!-- 最新发布 -->
+                <div class="card my-4">
+                    <h5 class="card-header"><i class="fa fa-line-chart" aria-hidden="true"></i> 最新发布</h5>
+                    <div class="list-group">
+                        <ul class="list-group">
+                            <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                                Spring Data + Thymeleaf 3 + Bootstrap 4 实现分页器
+                            </a>
+                            <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                                用大白话聊聊分布式系统
+                            </a>
+                            <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                                用大白话聊聊分布式系统>
+                            </a>
+                            <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                                使用 Eclipse Checkstyle Plugin
+                            </a>
+
+                            <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                                使用 Eclipse Checkstyle Plugin
+                            </a>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

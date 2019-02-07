@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/search :: search}">
+</head>
+<body>
+<div class="container blog-content-container">
+    <!-- 通过 row 在水平方向创建一组 column -->
+    <div class="row">
+        <!-- 第一列占8格 -->
+        <div class="col-md-8" id="blogList">
+            <div th:if="${pageInfo.total eq 0}" class="alert alert-warning my-2" role="alert">
+                <strong>抱歉!</strong> 没有找到符合的结果
+            </div>
+            <div class="card my-md-1" th:each="searchBlogDto : ${pageInfo.list}">
+                <div class="card-block" th:object="${searchBlogDto.blogDto}">
+                    <a th:href="'/blog/userBlogList?userId='+*{userId}">
+                        <img th:src="${searchBlogDto.userAvatar}" class="img-thumbnail border-0 float-left" width="30px" height="30px">
+                    </a>
+                    <a th:href="'/blog/'+*{id}">
+                        <span th:text="*{title}" style="font-size:20px;"></span>
+                    </a>
+                    <a th:href="'/blog/'+*{id}">
+                        <h6 class="text-muted" th:text="*{summary}"></h6>
+                    </a>
+                    <a th:text="${searchBlogDto.userNickname}" th:href="'/blog/userBlogList?userId='+*{userId}" class="card-link"></a>
+                    <span>发表于 </span>
+                    <span th:text="*{#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                    <img src="/images/eye.png" class="img-thumbnail border-0" width="30" height="30">
+                    <span th:text="*{traffic}">0</span>
+                    <img src="/images/love.png" class="img-thumbnail border-0" width="30" height="30">
+                    <span th:text="*{voteNum}">0</span>
+                    <img src="/images/message.png" class="img-thumbnail border-0" width="30" height="30">
+                    <span th:text="*{commentNum}">0</span>
+                </div>
+            </div>
+            <div th:replace="~{fragments/page :: page}"></div>
+        </div>
+
+        <!-- 右侧栏目 -->
+        <div class="col-md-4">
+            <!-- 热门文章 -->
+            <div class="card my-4">
+                <h5 class="card-header"><i class="fa fa-fire" aria-hidden="true"></i> 热门文章</h5>
+
+                <ul class="list-group">
+                    <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                        Spring Data + Thymeleaf 3 + Bootstrap 4 实现分页器<span class="badge badge-danger badge-pill">11115</span>
+                    </a>
+                    <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                        用大白话聊聊分布式系统
+                        <span class="badge badge-warning badge-pill">338</span>
+                    </a>
+                    <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                        用大白话聊聊分布式系统
+                        <span class="badge badge-info badge-pill">289</span>
+                    </a>
+                    <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                        使用 Eclipse Checkstyle Plugin
+                        <span class="badge badge-default badge-pill">189</span>
+                    </a>
+
+                    <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                        使用 Eclipse Checkstyle Plugin
+                        <span class="badge badge-default badge-pill">189</span>
+                    </a>
+                </ul>
+            </div>
+            <!-- 最新发布 -->
+            <div class="card my-4">
+                <h5 class="card-header"><i class="fa fa-line-chart" aria-hidden="true"></i> 最新发布</h5>
+                <div class="list-group">
+                    <ul class="list-group">
+                        <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                            Spring Data + Thymeleaf 3 + Bootstrap 4 实现分页器
+                        </a>
+                        <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                            用大白话聊聊分布式系统
+                        </a>
+                        <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                            用大白话聊聊分布式系统>
+                        </a>
+                        <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                            使用 Eclipse Checkstyle Plugin
+                        </a>
+
+                        <a href="/u/waylau/blogs/1" class="list-group-item" title="waylau">
+                            使用 Eclipse Checkstyle Plugin
+                        </a>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<style>
+    a {
+        color: #1f7199;
+        transition: 0.5s;
+        text-decoration: none;
+    }
+    a:hover {
+        color:red;
+        text-decoration: none;
+    }
+</style>
+
+<script th:src="@{/js/paginator.js}"></script>
+<script th:src="@{/js/search/blog.js}"></script>
+
+</body>
+</html>

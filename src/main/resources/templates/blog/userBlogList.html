@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+</head>
+<body>
+<div data-th-if="${not userBlogs.success}" class="alert alert-danger text-center">
+    <strong>抱歉 ! </strong> <span data-th-text="${userBlogs.errorMsg}"></span>
+</div>
+<div class="container-fluid" data-th-if="${userBlogs.success}">
+    <div class="row clearfix" th:object="${userBlogs}">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-block">
+                    <div id="blog" data-th-attr="userId=*{userId}"></div>
+                    <img th:src="*{avatar}" class="img-thumbnail img-rounded float-left" width="50px" height="50px">
+                    <strong class="float-left mr-2 my-3 ml-md-3 text-primary" th:text="*{nickname}"></strong>
+                </div>
+                <div class="card-block">
+                    <div class="card-text">
+                        <button class="btn btn-info active mx-1">
+                            <span>原创</span>
+                            <span th:text="*{articleNum}"></span>
+                        </button>
+                        <button class="btn btn-info active mx-1">
+                            <span>粉丝</span>
+                            <span th:text="*{fansNum}"></span>
+                        </button>
+                        <button class="btn btn-info active mx-1">
+                            <span>喜欢</span>
+                            <span th:text="*{voteNum}"></span>
+                        </button>
+                        <button class="btn btn-info active mx-1">
+                            <span>评论</span>
+                            <span th:text="*{commentNum}"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8" id="blogList">
+            <div data-th-if="${pageInfo.size eq 0}" class="alert alert-info">
+                <strong>您还没有博客哦 ! </strong> 赶快去写一点吧
+            </div>
+            <div class="card my-md-2" th:each="blogDto : *{pageInfo.list}">
+                <div class="card-block" th:object="${blogDto}">
+                    <img th:if="${userBlogs.selfBlog}" src="/images/delete.png" class="float-right delBlog" width="20" title="删除博客" style="cursor: pointer;" data-th-attr="blogId=*{id}">
+                    <a th:href="'/blog/'+*{id}">
+                        <span th:text="*{title}" style="font-size:25px;"></span>
+                    </a>
+                    <a th:href="'/blog/'+*{id}">
+                        <h6 class="text-muted" th:text="*{summary}"></h6>
+                    </a>
+                    <span class="text-muted" th:text="*{#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                    <span class="text-muted" th:text="阅读数："></span>
+                    <span class="text-primary" th:text="*{traffic}"></span>
+                    <span class="text-muted" th:text=" 评论数："></span>
+                    <span class="text-primary" th:text="*{commentNum}"></span>
+                </div>
+            </div>
+            <div th:replace="~{fragments/page :: page}"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade hintModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <strong class="modal-title text-danger">Warning!</strong>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>请先登录</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade confirmModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <strong class="modal-title text-danger">Warning!</strong>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>确定删除当前博客</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary modelSubmit" id="confirmModalSubmit" type="button" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/paginator.js}"></script>
+<script th:src="@{/js/blog/userBlogList.js}"></script>
+
+</body>
+</html>

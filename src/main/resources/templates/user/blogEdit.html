@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dong blog</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/mavonEditor/css/index.css" rel="stylesheet">
+
+    <script src="/mavonEditor/mavon-editor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+<div class="container-fluid mt-1">
+    <div class="row" th:object="${blog}">
+        <div class="col-md-10">
+            <input type="hidden" name="id" id="blogId" th:value="*{blogId}">
+            <input type="text" class="form-control float-left" placeholder="请输入文字标题" id="title" name="title"
+                   th:value="*{title}" maxlength="50">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-link btn-sm float-right" style="position:relative;top:-5px;">
+                <img th:src="*{avatar}" class="rounded img-thumbnail" width="38">
+            </button>
+            <button class="btn btn-danger float-right" id="blogSave">
+                发布文章
+            </button>
+        </div>
+    </div>
+    <div id="content" class="row" data-th-attr="content=${blog.content}">
+    </div>
+</div>
+<div class="modal fade hintModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <strong class="modal-title text-danger">Well done!</strong>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>保存成功</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade saveModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <strong class="modal-title text-danger">Well done!</strong>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>保存成功</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="submit">提交</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+<script src="/js/user/blogEdit.js"></script>
+
+</body>
+</html>

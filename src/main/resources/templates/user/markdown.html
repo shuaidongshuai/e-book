@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>DongBlog</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/markdown/css/htmleaf-demo.css">
+    <link rel="stylesheet" href="/markdown/lib/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="/markdown/lib/highlightjs/styles/github.css">
+    <link rel="stylesheet" href="/markdown/explain.css">
+    <link rel="stylesheet" href="/markdown/dist/tui-editor.css">
+    <link rel="stylesheet" href="/markdown/dist/tui-editor-contents.css">
+    <link rel="stylesheet" href="/markdown/lib/tui-color-picker/dist/tui-color-picker.css">
+    <link rel="stylesheet" href="/markdown/lib/tui-chart/dist/tui-chart.css">
+    <script>window.jQuery || document.write('<script src="/markdown/js/jquery-1.11.0.min.js"><\/script>')</script>
+    <script src="/markdown/lib/markdown-it/dist/markdown-it.js"></script>
+    <script src="/markdown/lib/toMark/dist/toMark.js"></script>
+    <script src="/markdown/lib/tui-code-snippet/dist/tui-code-snippet.js"></script>
+    <script src="/markdown/lib/tui-color-picker/dist/tui-color-picker.js"></script>
+    <script src="/markdown/lib/codemirror/lib/codemirror.js"></script>
+    <script src="/markdown/lib/highlightjs/highlight.pack.js"></script>
+    <script src="/markdown/lib/squire-rte/build/squire-raw.js"></script>
+    <script src="/markdown/lib/plantuml-encoder/dist/plantuml-encoder.js"></script>
+    <script src="/markdown/lib/raphael/raphael.js"></script>
+    <script src="/markdown/lib/tui-chart/dist/tui-chart.js"></script>
+    <script src="/markdown/dist/tui-editor-Editor-all.js"></script>
+</head>
+<body>
+<div class="htmleaf-container">
+    <header class="htmleaf-header">
+        <h1>请享受markdown带给你的快乐吧</h1>
+    </header>
+    <div>
+        <div class="code-html">
+            <div id="editSection"></div>
+        </div>
+    </div>
+</div>
+<script class="code-js">
+    var content = [
+        '![image](https://cloud.githubusercontent.com/assets/389021/16107646/9729e556-33d8-11e6-933f-5b09fa3a53bb.png)',
+        '# Heading 1',
+        '## Heading 2',
+        '### Heading 3',
+        '#### Heading 4',
+        '##### Heading 5',
+        '###### Heading 6',
+        '    code block',
+        '```js',
+        'console.log("fenced code block");',
+        '```',
+        '<pre>**HTML block**</pre>',
+        '* list',
+        '    * list indented',
+        '1. ordered',
+        '2. list',
+        '    1. ordered list',
+        '    2. indented',
+        '',
+        '- [ ] task',
+        '- [x] list completed',
+        '',
+        '[link](https://nhnent.github.io/tui.editor/)',
+        '> block quote',
+        '---',
+        'horizontal line',
+        '***',
+        '`code`, *italic*, **bold**, ~~strikethrough~~, <span style="color:#e11d21">Red color</span>',
+        '|table|head|',
+        '|---|---|',
+        '|table|body|'
+    ].join('\n');
+
+    $('#editSection').tuiEditor({
+        previewStyle: 'vertical',
+        height: '590px',
+        initialEditType: 'markdown',
+        useCommandShortcut: true,
+        initialValue: content,
+        exts: ['scrollSync', 'colorSyntax', 'uml', 'chart', 'mark', 'table', 'taskCounter']
+    });
+</script>
+</body>
+</html>

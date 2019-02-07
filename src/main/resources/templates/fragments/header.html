@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      data-th-fragment="header">
+<head>
+    <meta charset="UTF-8">
+    <title>e-book</title>
+    <!-- Bootstrap CSS -->
+    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">-->
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">-->
+    <!--<link rel="shortcut icon" th:href="@{/images/author.jpg}"/>-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/cropper.min.css" rel="stylesheet">
+    <link href="/css/imgCropping.css" rel="stylesheet">
+    <link href="/css/dongblog.css" type="text/css" rel="stylesheet">
+    <style>
+        a {
+            color: #1f7199;
+            transition: 0.5s;
+            text-decoration: none;
+        }
+        a:hover {
+            color:red;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-inverse bg-inverse navbar-toggleable-md" id="headerNav">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">E-Book</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="active nav-item"><a href="/" class="nav-link">热度</a></li>
+                <li class="nav-item"><a href="/" class="nav-link">最新</a></li>
+                <form th:action="@{/}" method="post" class="form-inline navbar-left mx-4">
+                    <!--<input type="text" class="form-control" placeholder="搜索" style="background-color:transparent">-->
+                    <input type="text" class="form-control border-0" placeholder="搜索">
+                    <button type="submit" class="btn btn-link btn-sm">
+                        <img src="/images/search.png" class="thumbnail" width="22">
+                    </button>
+                </form>
+            </ul>
+
+            <!-- 游客 -->
+            <!--<form th:action="@{/login}"  method="post" class="form-inline my-2 my-lg-0 navbar-right" sec:authorize="isAnonymous()">-->
+                <!--<div class="form-group">-->
+                    <!--<input type="text" class="form-control" placeholder="账号" name="username" maxlength="40">-->
+                    <!--<input type="password" class="form-control" placeholder="密码" name="password" maxlength="30">-->
+                <!--</div>-->
+                <!--<button class="btn btn-outline-success my-2 my-sm-0 ml-1" type="submit">登录</button>-->
+            <!--</form>-->
+            <a href="/login" sec:authorize="isAnonymous()"><button class="btn btn-outline-success my-2 my-sm-0 ml-1" type="submit">登录დ注册</button></a>
+            <!--<a th:href="@{/register}" sec:authorize="isAnonymous()">-->
+                <!--<button type="button" class="btn btn-outline-info my-2 my-sm-0 ml-1">注册</button>-->
+            <!--</a>-->
+
+            <!-- 已登录的用户 -->
+            <div class="dropdown" sec:authorize="isAuthenticated()">
+                <button class="btn btn-outline-success dropdown-toggle" data-toggle="dropdown">
+                    <span sec:authentication="name"></span>
+                </button>
+                <div class="dropdown-menu">
+                    <!--<a class=" dropdown-item" href="/" th:href="@{'/' + ${#authentication.name}}">个人主页</a>-->
+                    <a th:href="@{/blog/userBlogList}" class="dropdown-item">博客主页</a>
+                    <a th:href="@{/user/profile}" class="dropdown-item">个人设置</a>
+                    <div class="dropdown-divider"></div>
+                    <a th:href="@{/logout}" class="dropdown-item text-danger">退出</a>
+                </div>
+            </div>
+
+            <a th:href="@{/user/blogCreate}" sec:authorize="isAuthenticated()">
+                <button class="btn btn-outline-info my-2 my-sm-0 ml-1">写博客</button>
+            </a>
+            <!-- 管理员 -->
+            <a th:href="@{/admin/manager}" sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')">
+                <button type="button" class="btn btn-outline-warning my-2 my-sm-0 ml-1">系统管理</button>
+            </a>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+<div class="container">
+    <!-- 通过 row 在水平方向创建一组 column -->
+    <div class="row mt-1">
+        <!-- 第一列占8格 -->
+        <div class="col-md-7">
+        </div>
+        <div th:if="${param.error}">
+            <button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom">
+                Invalid username and password.
+            </button>
+            <!-- Generated markup by the plugin -->
+            <div class="tooltip tooltip-top" role="tooltip">
+                <div class="tooltip-arrow"></div>
+                <div class="tooltip-inner">
+                    Some tooltip text!
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

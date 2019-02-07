@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+</head>
+<body>
+<div class="container blog-content-container">
+    <div class="row clearfix">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10 column">
+            <div class="card">
+                <h3 class="text-center card-header bg-inverse text-white mb-1">
+                    个人设置
+                </h3>
+                <div class="row clearfix">
+                    <div class="col-md-4">
+                        <a class="avatar-edit img-rounded" data-toggle="modal" data-target="#flipFlop" role="button">
+                            <img th:src="${user.avatar} == null ? '/images/avatarDefault.png' : ${user.avatar}" class="userAvatarImg rounded mx-auto d-block" width="220px" height="220px">
+                        </a>
+                    </div>
+                    <div class="col-md-8 column">
+                        <form th:action="@{/user/profileSave}" method="post" th:object="${user}" id="userForm">
+                            <input type="hidden" name="id" th:value="*{id}">
+                            <div class="form-group col-md-10">
+                                <label class="col-form-label">账号</label>
+                                <input type="text" class="form-control" name="username" th:value="*{username}" readonly="readonly">
+                            </div>
+                            <div class="form-group col-md-10">
+                                <label class="col-form-label">昵称</label>
+                                <input type="text" class="form-control" name="nickname" th:value="*{nickname}" maxlength="10">
+                            </div>
+                            <div class="form-group col-md-10">
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input type="radio" class="form-check-input" name="sex" value="boy" th:checked="*{sex} == 'boy' ? true : false">
+                                        男
+                                    </label>
+                                    <label class="form-check-label">
+                                        <input type="radio" class="form-check-input" name="sex" value="girl" th:checked="*{sex} == 'girl' ? true : false">
+                                        女
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-10">
+                                <label class="col-form-label">邮箱</label>
+                                <input type="email" class="form-control" name="email" th:value="*{email}" maxlength="30">
+                            </div>
+                            <div class="form-group col-md-10">
+                                <label class="col-form-label">电话</label>
+                                <input type="text" class="form-control" name="phoneNumber" th:value="*{phoneNumber}" maxlength="15">
+                            </div>
+                            <div class="form-group col-md-10">
+                                <label class="col-form-label">生日</label>
+                                <input type="date" class="form-control" name="birthday" th:value="*{#dates.format(birthday, 'yyyy-MM-dd')}">
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">保存</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container -->
+
+<!-- 保存成功modal -->
+<div class="modal fade saveSuccess" data-th-attr="afterSave=${afterSave}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <strong class="modal-title text-success">Well done!</strong>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="text-success">保存成功</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="display: none" class="tailoring-container">
+    <div class="black-cloth">
+    </div>
+    <div class="tailoring-content">
+        <div class="tailoring-content-one">
+            <label for="chooseImg" class="l-btn choose-btn">
+                <input type="file" accept="image/jpg,image/jpeg,image/png" name="file" id="chooseImg" class="hidden selectImg">
+                选择图片
+            </label>
+            <div class="close-tailoring">×</div>
+        </div>
+        <div class="tailoring-content-two">
+            <div class="tailoring-box-parcel">
+                <img id="tailoringImg">
+            </div>
+            <div class="preview-box-parcel">
+                <p>图片预览：</p>
+                <div class="square previewImg"></div>
+                <div class="circular previewImg"></div>
+            </div>
+        </div>
+        <div class="tailoring-content-three">
+            <button class="l-btn cropper-reset-btn">复位</button>
+            <button class="l-btn cropper-rotate-btn">旋转</button>
+            <button class="l-btn cropper-scaleX-btn">换向</button>
+            <button class="l-btn sureCut" id="sureCut">确定</button>
+        </div>
+    </div>
+</div>
+<!--图片裁剪框 end-->
+
+<div th:replace="~{fragments/footer :: footer}">...</div>
+
+<script src="/js/lib/base64.js"></script>
+<script src="/js/lib/crypto1/crypto/crypto.js"></script>
+<script src="/js/lib/crypto1/hmac/hmac.js"></script>
+<script src="/js/lib/crypto1/sha1/sha1.js"></script>
+
+
+<script src="/js/cropper.min.js"></script>
+<script src="/js/user/profile.js"></script>
+<script src="/js/user/avatarEdit.js"></script>
+
+</body>
+</html>
