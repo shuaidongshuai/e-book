@@ -14,14 +14,14 @@ public interface BlogService {
      * 删除blog
      * @return
      */
-    ResponseCommonDto deleteBlog(Long blogId);
+    ResponseCommonDto deleteBlog(long blogId);
 
     /**
      * 获取blog页面信息
      * @param blogId
      * @return
      */
-    ResponseBlogPageDto getUserBlogById(Long blogId);
+    ResponseBlogPageDto getUserBlogById(long blogId);
 
     /**
      * 获取某个用户的blog列表
@@ -38,7 +38,7 @@ public interface BlogService {
      * @param pageSize
      * @return
      */
-    ResponseBlogListDto getBlogList(Integer pageNum, Integer pageSize);
+    ResponseBlogListDto getBlogList(int pageNum, int pageSize);
 
     /**
      * 获取管理页面的blog列表
@@ -46,7 +46,7 @@ public interface BlogService {
      * @param pageSize
      * @return
      */
-    ResponseManagerBlogListDto getManagerBlogList(Integer pageNum, Integer pageSize);
+    ResponseManagerBlogListDto getManagerBlogList(int pageNum, int pageSize, boolean desc);
 
     /**
      * 模糊查询blog列表
@@ -55,26 +55,26 @@ public interface BlogService {
      * @param query
      * @return
      */
-    ResponseManagerBlogListDto getManagerBlogList(Integer pageNum, Integer pageSize, String query);
+    ResponseManagerBlogListDto getManagerBlogList(int pageNum, int pageSize, boolean desc, String query);
 
     /**
      * 编辑博客
      * @param blogId
      * @return
      */
-    ResponseBlogEditDto editBlog(Long blogId);
+    ResponseBlogEditDto editBlog(long blogId);
 
     /**
      * 点赞
      * @param blogId
      * @return
      */
-    ResponseCommonDto voteBlog(Long blogId);
+    ResponseCommonDto voteBlog(long blogId);
 
     /**
      * 取消点赞
      * @param blogId
      * @return
      */
-    ResponseCommonDto cancelVoteBlog(Long blogId);
+    ResponseCommonDto cancelVoteBlog(long blogId);
 }

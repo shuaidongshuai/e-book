@@ -94,6 +94,7 @@ public class AuthUserService implements UserDetailsService {
         String nickname = user.getNickname();
         Boolean islock = user.getIslock();
         String avatar = user.getAvatar();
+        String introduction = user.getIntroduction();
         User curUser = getCurUser();
         if(password != null){
             curUser.setPassword(password);
@@ -121,6 +122,9 @@ public class AuthUserService implements UserDetailsService {
         }
         if(avatar != null){
             curUser.setAvatar(avatar);
+        }
+        if(introduction != null){
+            curUser.setIntroduction(introduction);
         }
     }
 }

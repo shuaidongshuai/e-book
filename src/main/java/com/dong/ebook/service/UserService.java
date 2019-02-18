@@ -7,23 +7,21 @@ import com.github.pagehelper.PageInfo;
 import java.util.List;
 
 public interface UserService {
-    ResponseUserDto add(RequestUserDto RequestUserDto);
+    ResponseUserDto addUser(RequestUserDto RequestUserDto);
 
-    ResponseCommonDto delete(Long id);
+    ResponseCommonDto updateUserById(RequestUserDto RequestUserDto);
 
-    ResponseCommonDto updateById(RequestUserDto RequestUserDto);
+    ResponseUserDto findUserDtoById(Long id);
 
-    ResponseUserDto findById(Long id);
+    User findUserById(Long id);
 
     ResponseUserDto findByNickname(String nickname);
 
-    ResponseUserDto findByUsername(String nickname);
+    User findUserByUsername(String nickname);
 
     ResponseUserListDto managerFindList(int pageNum, int pageSize);
 
     ResponseUserListDto managerFindList(int pageNum, int pageSize, String username);
-
-    ResponseUserDto user2ResponseUser(User user);
 
     ResponseUserListDto assembleResponseUserListDto(PageInfo pageInfo);
 
@@ -34,6 +32,8 @@ public interface UserService {
     ResponseCommonDto saveAvatar(Long userId, String avatarUrl);
 
     UserDto user2dto(User user);
+
+    ResponseUserDto user2ResponseUser(User user);
 
     List<UserDto> users2dto(List<User> users);
 }

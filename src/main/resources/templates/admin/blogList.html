@@ -1,50 +1,75 @@
-<div class="card-block">
-    <div class="input-group col-md-5 col-xl-4">
-        <input type="text" class="form-control search" placeholder="输入ID或标题进行搜索">
-        <button type="button" class="btn btn-link btn-sm searchBtn">
-            <img src="/images/search.png" class="thumbnail" width="22">
-        </button>
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">博客管理</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item active">blogList</li>
+        </ol>
+    </div>
+    <div class="col-md-6 col-4 align-self-center">
+        <a href="/" class="btn pull-right hidden-sm-down btn-success"> Upgrade to Pro</a>
     </div>
 </div>
-<div class="container" id="blogList">
-    <div class="row" id="blogListReplace">
-        <table class="table">
-            <thead class="thead-inverse">
-            <tr>
-                <th>ID</th>
-                <th>用户</th>
-                <th>博客标题</th>
-                <th>操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="managerBlogList : ${pageInfo.list}" th:object="${managerBlogList}">
-                <td th:text="*{blogId}"></td>
-                <td th:text="*{userNickname}"></td>
-                <td>
-                    <a th:href="'/blog/'+*{blogId}" th:text="*{blogTitle}"></a>
-                </td>
-                <td>
-                    <button class="delBlog btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#delModel" data-th-attr="blogId=*{blogId}">删除</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <div th:replace="~{fragments/page :: page}"></div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- Start Page Content -->
+<!-- ============================================================== -->
+<div class="row">
+    <!-- column -->
+    <div class="col-sm-12">
+        <div class="card" id="blogList">
+            <div class="card-block" id="blogListReplace">
+                <select class="custom-select pull-right" id="desc">
+                    <option value="1" data-th-selected="${desc eq true}">时间降序</option>
+                    <option value="2" data-th-selected="${desc eq false}">时间升序</option>
+                </select>
+                <h4 class="card-title">所有博客</h4>
+                <div class="table-responsive m-t-40">
+                    <table class="table stylish-table">
+                        <thead>
+                        <tr>
+                            <th>☪</th>
+                            <th>用户</th>
+                            <th>博客标题</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="managerBlogList : ${pageInfo.list}" th:object="${managerBlogList}">
+                            <td><img th:src="*{userAvatar}" width="30" height="30"/></td>
+                            <td th:text="*{userNickname}"></td>
+                            <td>
+                                <a th:href="'/blog/'+*{blogId}" th:text="*{blogTitle}" class="changeRed"></a>
+                            </td>
+                            <td>
+                                <button class="delBlog btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#delModel" data-th-attr="blogId=*{blogId}">删除</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div th:replace="~{fragments/page :: page}"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!-- The modal -->
-<div class="modal fade" id="delModel" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="delModel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">提示</h4>
+                <h4 class="modal-title text-danger">提示</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p class="text-danger">确定删除此博客</p>
+                <p>确定是否删除</p>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
@@ -53,5 +78,9 @@
         </div>
     </div>
 </div>
+<!-- ============================================================== -->
+<!-- End PAge Content -->
+<!-- ============================================================== -->
 
-<script th:src="@{/js/admin/blogList.js}"></script>
+<!-- blogList -->
+<script src="/js/admin/blogList.js"></script>

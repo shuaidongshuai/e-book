@@ -46,6 +46,9 @@
         <table tableName="blog" mapperName="BlogDao">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
+        <table tableName="blog_type" mapperName="BlogTypeDao">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
         <table tableName="concern" mapperName="ConcernDao">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
@@ -59,6 +62,27 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
         <table tableName="book_type" mapperName="BookTypeDao">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="video" mapperName="VideoDao">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="video_type" mapperName="VideoTypeDao">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="music" mapperName="MusicDao">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="music_type" mapperName="MusicTypeDao">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="picture" mapperName="PictureDao">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="picture_type" mapperName="PictureTypeDao">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="preference" mapperName="PreferenceDao">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>

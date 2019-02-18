@@ -1,0 +1,75 @@
+<link rel="stylesheet" href="/css/upload/ssi-uploader/ssi-uploader.css"/>
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">上传图片</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item active">uploadPicture</li>
+        </ol>
+    </div>
+    <div class="col-md-6 col-4 align-self-center">
+        <a href="/" class="btn pull-right hidden-sm-down btn-success"> Upgrade to Pro</a>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- Start Page Content -->
+<!-- ============================================================== -->
+<div class="card">
+    <div class="card-block">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <input type="file" multiple id="ssi-upload"/>
+                </div>
+                <form id="pictureForm" class="col-md-7">
+                    <div class="form-group mt-3" id="pictureTitle">
+                        <label class="col-md-12">标题</label>
+                        <div class="col-md-12">
+                            <textarea rows="3" placeholder="如：&#10;火影忍者" class="form-control form-control-line" name="title" required="true"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-12">分类</label>
+                        <div class="col-md-12">
+                            <select class="form-control form-control-line" name="pictureTypeId">
+                                <option th:each="pictureType : ${pictureTypes}" th:value="${pictureType.id}">[[${pictureType.className}]]</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-info w-100" id="pictureSubmit">提交</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="saveModel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title text-danger">恭喜</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>上传成功</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary modelSubmit" type="button" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/admin/uploadPicture.js"></script>

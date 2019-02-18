@@ -5,7 +5,26 @@ $(function() {
     var musicServerUrl = '/admin/uploadMusic'
     var pictureServerUrl = '/admin/uploadPicture'
     var uploadAdaptUrl = '/admin/uploadAdapt'
-    var fileSaveUrl = '/admin/fileSave'
+    var saveBookUrl = '/admin/saveBook'
+    var saveVideoUrl = '/admin/saveVideo'
+    var saveMusicUrl = '/admin/saveMusic'
+    var savePictureUrl = '/admin/savePicture'
+
+    var getHostUrl = null
+    var saveFileUrl = null
+
+    var bookUrl = null
+    var videoUrl = null
+    var musicUrl = null
+    var pictureUrls = new Array()
+    var bookCoverUrl = null
+    var videoCoverUrl = null
+    var musicCoverUrl = null
+
+    var curUploadFile = null
+    var curUploadFilename = null
+
+    var curFileType = null
     var _el = null
 
     /**
@@ -78,7 +97,6 @@ $(function() {
             data: {},
             beforeSend: function(){},
             success: function(data, el){
-                uploadFile(bookServerUrl, el)
             },
             error: function(el){
                 uploadFail(el)
@@ -88,8 +106,7 @@ $(function() {
             onComplete: null
         },
         onRemove: function(itemEl, file, id, listEl, boxEl, newInputEl, inputEl){
-            var file = file.name;
-            // $.post('./php/remove_file.php', {file: file});
+            // var file = file.name;
         },
     };
 
@@ -100,47 +117,88 @@ $(function() {
             data: {},
             beforeSend: function(){},
             success: function(data, el){
-                uploadFile(bookServerUrl, el)
+                _el = el
+                getHostUrl = bookServerUrl
+                saveFileUrl = saveBookUrl
+                curFileType = "book"
+                //拖拽的图片特殊
+                if($("#bookFile")[0].files.length == 0){
+                    curUploadFile = $("#bookFile")[0].jFiler.files[0]
+                    curUploadFilename = $("#bookFile")[0].jFiler.files[0].name
+                } else {
+                    curUploadFile = $("#bookFile")[0].files[0]
+                    curUploadFilename = $("#bookFile")[0].files[0].name
+                }
+                uploadFile()
             },
             error: function(el){
                 uploadFail(el)
-            },
-            statusCode: null,
-            onProgress: null,
-            onComplete: null
+            }
         },
-        uploadBook: {
-            url: uploadAdaptUrl,
-            type: 'put',
-            data: {},
-            beforeSend: function(){},
-            success: function(data, el){
-                uploadFile(videoServerUrl, el)
-            },
-            error: function(el){
-                uploadFail(el)
-            },
-        },
-        uploadBook: {
-            url: uploadAdaptUrl,
-            type: 'put',
-            data: {},
-            beforeSend: function(){},
-            success: function(data, el){
-                uploadFile(musicServerUrl, el)
-            },
-            error: function(el){
-                uploadFail(el)
-            },
-        },
-        uploadBook: {
+        uploadVideo: {
             url: uploadAdaptUrl,
             type: 'put',
             data: {},
             beforeSend: function(){},
             success: function(data, el){
                 _el = el
-                uploadFile(pictureServerUrl)
+                getHostUrl = videoServerUrl
+                saveFileUrl = saveVideoUrl
+                curFileType = "video"
+                if($("#videoFile")[0].files.length == 0){
+                    curUploadFile = $("#videoFile")[0].jFiler.files[0]
+                    curUploadFilename = $("#videoFile")[0].jFiler.files[0].name
+                } else {
+                    curUploadFile = $("#videoFile")[0].files[0]
+                    curUploadFilename = $("#videoFile")[0].files[0].name
+                }
+                uploadFile()
+            },
+            error: function(el){
+                uploadFail(el)
+            },
+        },
+        uploadMusic: {
+            url: uploadAdaptUrl,
+            type: 'put',
+            data: {},
+            beforeSend: function(){},
+            success: function(data, el){
+                _el = el
+                getHostUrl = musicServerUrl
+                saveFileUrl = saveMusicUrl
+                curFileType = "music"
+                if($("#musicFile")[0].files.length == 0){
+                    curUploadFile = $("#musicFile")[0].jFiler.files[0]
+                    curUploadFilename = $("#musicFile")[0].jFiler.files[0].name
+                } else {
+                    curUploadFile = $("#musicFile")[0].files[0]
+                    curUploadFilename = $("#musicFile")[0].files[0].name
+                }
+                uploadFile()
+            },
+            error: function(el){
+                uploadFail(el)
+            },
+        },
+        uploadPicture: {
+            url: uploadAdaptUrl,
+            type: 'put',
+            data: {},
+            beforeSend: function(){},
+            success: function(data, el){
+                _el = el
+                getHostUrl = pictureServerUrl
+                saveFileUrl = savePictureUrl
+                curFileType = "picture"
+                if($("#pictureFile")[0].files.length == 0){
+                    curUploadFile = $("#pictureFile")[0].jFiler.files[0]
+                    curUploadFilename = $("#pictureFile")[0].jFiler.files[0].name
+                } else {
+                    curUploadFile = $("#pictureFile")[0].files[0]
+                    curUploadFilename = $("#pictureFile")[0].files[0].name
+                }
+                uploadFile()
             },
             error: function(el){
                 uploadFail(el)
@@ -148,8 +206,21 @@ $(function() {
         }
     }
 
-    $('.bookUploadInput').filer({
+    $('#bookFile').filer({
         changeInput: filer_default_opts.changeInput2,
+        limit: 1,
+        showThumbs: true,
+        theme: "dragdropbox",
+        templates: filer_default_opts.templates,
+        dragDrop: filer_default_opts.dragDrop,
+        uploadFile: uploadType.uploadBook,
+        onRemove: filer_default_opts.onRemove,
+        clipBoardPaste: true
+    });
+
+    $('#uploadBookCover').filer({
+        changeInput: filer_default_opts.changeInput2,
+        limit: 1,
         showThumbs: true,
         theme: "dragdropbox",
         templates: filer_default_opts.templates,
@@ -158,17 +229,13 @@ $(function() {
         onRemove: filer_default_opts.onRemove
     });
 
-    // $('.bookUploadInput').change(function () {
-    //     getFileServerMsg(bookServerUrl)
-    // })
-
     //获取服务器参数
-    function uploadFile(url, uploadTyle) {
+    function uploadFile() {
         $.ajax({
-            url: url,
+            url: getHostUrl,
             type: 'get',
             data: {
-                filename: $("#file")[0].files[0].name
+                filename: curUploadFilename
             },
             // async: false, //不让异步执行
             success: function (responseUploadDto) {
@@ -181,7 +248,7 @@ $(function() {
                     formData.append('signature', responseUploadDto.signature);
                     formData.append('key', responseUploadDto.filename);
                     formData.append('success_action_status', '200');
-                    formData.append('file', $("#file")[0].files[0]);
+                    formData.append('file', curUploadFile);
                     //上传到文件服务器
                     $.ajax({
                         url: fileServerHost,
@@ -190,22 +257,22 @@ $(function() {
                         type: 'POST',
                         data: formData,
                         success: function () {
-                            //再保存到应用服务器上
-                            $.ajax({
-                                url: fileSave,
-                                contentType: false,// 不设置内容类型
-                                processData: false,//用于对data参数进行序列化处理 这里必须false
-                                type: 'POST',
-                                data: formData,
-                                success: function () {
-                                    //再保存到应用服务器上
-
-                                },
-                                error: function () {
-                                    alert("上传到文件服务器失败")
-                                    uploadFail(_el)
-                                }
-                            });
+                            //修改fileUrl
+                            if(curFileType == "book"){
+                                bookUrl = fileUrl
+                            } else if(curFileType == "video"){
+                                videoUrl = fileUrl
+                            } else if(curFileType == "music"){
+                                musicUrl = fileUrl
+                            } else if(curFileType == "picture"){
+                                pictureUrls.add(fileUrl)
+                            } else if(curFileType == "bookCover"){
+                                bookCoverUrl = fileUrl
+                            } else if(curFileType == "videoCover"){
+                                videoCoverUrl = fileUrl
+                            } else if(curFileType == "musicCover"){
+                                musicCoverUrl = fileUrl
+                            }
                             uploadSuccess(_el)
                         },
                         error: function () {
@@ -223,6 +290,28 @@ $(function() {
                 uploadFail(_el)
             }
         })
+    }
+
+    function saveBook() {
+        $.ajax({
+            url: saveFileUrl,
+            type: 'POST',
+            data: {
+
+            },
+            success: function (responseCommonDto) {
+                if(responseCommonDto.success){
+
+                }else{
+                    alert(responseCommonDto.errorMsg)
+                    uploadFail(_el)
+                }
+            },
+            error: function () {
+                alert("上传到应用服务器失败")
+                uploadFail(_el)
+            }
+        });
     }
 
     function uploadSuccess(el) {

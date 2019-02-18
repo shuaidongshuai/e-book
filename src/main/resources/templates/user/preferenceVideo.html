@@ -1,0 +1,47 @@
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">个人偏好</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item">Preference</li>
+            <li class="breadcrumb-item active">Video</li>
+        </ol>
+    </div>
+    <div class="col-md-6 col-4 align-self-center">
+        <a href="#" class="btn pull-right hidden-sm-down btn-success"> Upgrade to Pro</a>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- Start Page Content -->
+<!-- ============================================================== -->
+<!-- Row -->
+<div class="row" style="background: #42494f">
+    <div class="col-6">
+        <div id='tag-cloud'></div>
+    </div>
+    <div class="col-6">
+        <article class="theme-dark preload">
+            <div class="center">
+                <div class="row">
+                    <p>视频分类</p>
+                </div>
+                <div class="row">
+                    <div class="input input--checkbox" data-th-each="preference,stat : ${preferenceDtos}" data-th-object="${preference}">
+                        <label>
+                            <input type="checkbox" th:checked="*{checked}" class="checkbox" data-th-attr="idx=${stat.index},typeId=*{typeId},className=*{className}">
+                            <span class="input__box"></span>
+                            <span data-th-text="*{className}" class="className"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</div>
+
+<script src="/js/user/preferenceVideo.js"></script>

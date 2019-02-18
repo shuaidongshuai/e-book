@@ -1,14 +1,13 @@
 package com.dong.ebook.service;
 
 import com.dong.ebook.dto.ResponseUploadDto;
-import com.dong.ebook.model.User;
 
 import java.io.UnsupportedEncodingException;
 
 public interface OssService {
-    ResponseUploadDto uploadAvatar(User user) throws UnsupportedEncodingException;
+    ResponseUploadDto uploadAvatar() throws UnsupportedEncodingException;
 
-    ResponseUploadDto uploadBlogImage(User user) throws UnsupportedEncodingException;
+    ResponseUploadDto uploadBlogImage() throws UnsupportedEncodingException;
 
     ResponseUploadDto uploadBook(String filename) throws UnsupportedEncodingException;
 
@@ -18,5 +17,10 @@ public interface OssService {
 
     ResponseUploadDto uploadPicture(String filename) throws UnsupportedEncodingException;
 
-    ResponseUploadDto uploadFile(String type, String filename) throws UnsupportedEncodingException;
+    ResponseUploadDto uploadBookCover(String filename) throws UnsupportedEncodingException;
+
+    ResponseUploadDto uploadVideoCover(String filename) throws UnsupportedEncodingException;
+
+    ResponseUploadDto uploadMusicCover(String filename) throws UnsupportedEncodingException;
+
 }

@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -47,9 +48,12 @@ public class ConcernServiceImpl implements ConcernService {
             return responseCommonDto;
         }
 
+        Date date = new Date();
         concern = new Concern();
         concern.setFromUserId(curUser.getId());
         concern.setToUserId(userId);
+        concern.setCreateTime(date);
+        concern.setModifyTime(date);
         concernDao.insert(concern);
 
         //修改缓存

@@ -34,7 +34,7 @@ public class HomePageController {
 
     @PostMapping("/register")
     public String registerUser(RequestUserDto RequestUserDto) {
-        userService.add(RequestUserDto);
+        userService.addUser(RequestUserDto);
         return "redirect:/";
     }
 

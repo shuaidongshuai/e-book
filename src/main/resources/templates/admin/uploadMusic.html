@@ -1,0 +1,117 @@
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">上传音乐</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item active">uploadMusic</li>
+        </ol>
+    </div>
+    <div class="col-md-6 col-4 align-self-center">
+        <a href="/" class="btn pull-right hidden-sm-down btn-success"> Upgrade to Pro</a>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- Start Page Content -->
+<!-- ============================================================== -->
+<div class="row">
+    <!-- column -->
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-block">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-7">
+                            <form id="musicForm">
+                                <div class="form-group" id="musicName">
+                                    <label class="col-md-12">音乐名</label>
+                                    <div class="col-md-12">
+                                        <input type="text" placeholder="如：红色高跟鞋" name="name" class="form-control form-control-line" maxlength="32" required="true">
+                                    </div>
+                                </div>
+                                <div class="form-group" id="musicAuthor">
+                                    <label class="col-md-12">作词人</label>
+                                    <div class="col-md-12">
+                                        <input type="text" placeholder="如：蔡健雅" name="author" class="form-control form-control-line" maxlength="32" required="true">
+                                    </div>
+                                </div>
+                                <div class="form-group" id="musicComposer">
+                                    <label class="col-md-12">作曲人</label>
+                                    <div class="col-md-12">
+                                        <input type="text" placeholder="如：蔡健雅" name="composer" class="form-control form-control-line" maxlength="32" required="true">
+                                    </div>
+                                </div>
+                                <div class="form-group" id="musicSinger">
+                                    <label class="col-md-12">歌手</label>
+                                    <div class="col-md-12">
+                                        <input type="text" placeholder="如：蔡健雅" name="singer" class="form-control form-control-line" maxlength="32" required="true">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-12">分类</label>
+                                    <div class="col-md-12">
+                                        <select class="form-control form-control-line" name="musicTypeId">
+                                            <option th:each="musicType : ${musicTypes}" th:value="${musicType.id}">[[${musicType.className}]]</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <button type="button" class="btn btn-info w-100" id="musicSubmit">提交</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group" id="musicFile">
+                                <label class="col-md-12">音乐↓</label>
+                                <div class="col-md-12">
+                                    <input type="file" id="music" data-height="200" data-max-file-size="200M"/>
+                                    <div class="progress my-2">
+                                        <div id="musicProgress" class="progress-bar progress-bar-striped" style="width: 0%">0%</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" id="musicCoverFile">
+                                <label class="col-md-12">封面↓(可选)</label>
+                                <div class="col-md-12">
+                                    <input type="file" id="musicCover" data-height="200" data-max-file-size="1M"/>
+                                    <div class="progress my-2">
+                                        <div id="musicCoverProgress" class="progress-bar progress-bar-striped" style="width: 0%">0%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="saveModel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title text-danger">恭喜</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>上传成功</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary modelSubmit" type="button" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- uploadBook -->
+<script src="/js/admin/uploadMusic.js"></script>

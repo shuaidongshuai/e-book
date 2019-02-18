@@ -7,7 +7,7 @@ $(function () {
         $(".tailoring-container").toggle();
     }
 
-    $(".blog-content-container").off("click", ".avatar-edit").on("click", ".avatar-edit", function () {
+    $("#rightContainer").off("click", ".avatar-edit").on("click", ".avatar-edit", function () {
         switchTailor();
     });
 

@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -38,7 +39,8 @@ public class UserServiceImpl implements UserService {
      * @param requestUserDto
      * @return
      */
-    public ResponseUserDto add(RequestUserDto requestUserDto) {
+    @Override
+    public ResponseUserDto addUser(RequestUserDto requestUserDto) {
         ResponseUserDto responseUser = new ResponseUserDto();
         responseUser.setSuccess(false);
         if (requestUserDto == null) {
@@ -47,8 +49,8 @@ public class UserServiceImpl implements UserService {
         }
         User user = dozerBeanMapper.map(requestUserDto, User.class);
         //username不能一样
-        ResponseUserDto responseUserDto = findByUsername(requestUserDto.getUsername());
-        if (responseUserDto.getUser() != null) {
+        User findUser = findUserByUsername(requestUserDto.getUsername());
+        if (findUser != null) {
             responseUser.setErrorMsg("用户名已存在");
             return responseUser;
         }
@@ -62,6 +64,10 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encodePassword);
         //设置默认头像
         user.setAvatar("/images/avatarDefault.png");
+        //时间
+        Date date = new Date();
+        user.setCreateTime(date);
+        user.setModifyTime(date);
 
         userDao.insertSelective(user);
 
@@ -70,36 +76,43 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 删除用户（只有管理员有权限）
-     * super_admin -> admin -> user
-     *
-     * @param id
-     */
-    public ResponseCommonDto delete(Long id) {
-        userDao.deleteByPrimaryKey(id);
-        ResponseCommonDto responseCommonDto = new ResponseCommonDto();
-        responseCommonDto.setSuccess(true);
-        return responseCommonDto;
-    }
-
-    /**
      * 更新用户
      *
      * @param requestUserDto
      */
-    public ResponseCommonDto updateById(RequestUserDto requestUserDto) {
-        //检查用户权限
-        User curUser = authUserService.checkUser(requestUserDto.getId(), null);
-
-        User user = dozerBeanMapper.map(requestUserDto, User.class);
-        userDao.updateByPrimaryKeySelective(user);
-
-        //修改自己信息立马更新缓存，修改别的用户不更新缓存
-        if(curUser.getId().equals(user.getId())){
-            authUserService.updateUser(user);
+    @Override
+    public ResponseCommonDto updateUserById(RequestUserDto requestUserDto) {
+        ResponseCommonDto responseCommonDto = new ResponseCommonDto();
+        responseCommonDto.setSuccess(false);
+        User curUser = authUserService.getCurUser();
+        if(!curUser.getId().equals(requestUserDto.getId())){
+            responseCommonDto.setErrorMsg("不能串改他人信息");
+            return responseCommonDto;
         }
 
-        ResponseCommonDto responseCommonDto = new ResponseCommonDto();
+        changeRequestUserNullParameter(requestUserDto);
+
+        //检查是否修改了密码
+        String password = requestUserDto.getPassword();
+        String newPassword = requestUserDto.getNewPassword();
+        if(password != null && newPassword != null){
+            //密码使用Bcrypt加密
+            BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+            boolean matches = bCryptPasswordEncoder.matches(password, curUser.getPassword());
+            if(matches){
+                String encodePassword = bCryptPasswordEncoder.encode(newPassword);
+                requestUserDto.setPassword(encodePassword);
+            } else{
+                responseCommonDto.setErrorMsg("密码输入错误");
+                return responseCommonDto;
+            }
+        }else{
+            requestUserDto.setPassword(null);
+        }
+
+        User user = dozerBeanMapper.map(requestUserDto, User.class);
+        updateUserById(user);
+
         responseCommonDto.setSuccess(true);
         return responseCommonDto;
     }
@@ -110,10 +123,16 @@ public class UserServiceImpl implements UserService {
      * @param id
      * @return
      */
-    public ResponseUserDto findById(Long id) {
-        User user = userDao.selectByPrimaryKey(id);
+    @Override
+    public ResponseUserDto findUserDtoById(Long id) {
+        User user = findUserById(id);
         ResponseUserDto responseUser = user2ResponseUser(user);
         return responseUser;
+    }
+
+    @Override
+    public User findUserById(Long id) {
+        return userDao.selectByPrimaryKey(id);
     }
 
     @Override
@@ -133,24 +152,17 @@ public class UserServiceImpl implements UserService {
         return responseUser;
     }
 
-    @Override
-    public ResponseUserDto findByUsername(String username) {
-        ResponseUserDto responseUser = new ResponseUserDto();
-        responseUser.setSuccess(false);
+    public User findUserByUsername(String username) {
         UserExample userExample = new UserExample();
         UserExample.Criteria criteria = userExample.createCriteria();
         criteria.andUsernameEqualTo(username);
         List<User> users = userDao.selectByExample(userExample);
-        if (users.size() > 1) {
-            logger.error("findByUsername user.size=" + users.size());
-            responseUser.setErrorMsg("user number=" + users.size());
-            return responseUser;
-        }else if(users.size() == 0){
-            responseUser.setUser(null);
-        } else {
-            responseUser = user2ResponseUser(users.get(0));
+        if (users.size() == 0) {
+            return null;
+        } else if(users.size() > 1){
+            throw new RuntimeException("findByUsername user.size=" + users.size());
         }
-        return responseUser;
+        return users.get(0);
     }
 
     /**
@@ -196,19 +208,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseUserDto user2ResponseUser(User user) {
-        ResponseUserDto responseUserDto = new ResponseUserDto();
-        responseUserDto.setSuccess(false);
-        if(user == null){
-            return responseUserDto;
-        }
-        UserDto userDto = user2dto(user);
-        responseUserDto.setUser(userDto);
-        responseUserDto.setSuccess(true);
-        return responseUserDto;
-    }
-
-    @Override
     public ResponseUserListDto assembleResponseUserListDto(PageInfo pageInfo) {
         List<UserDto> userDtos = users2dto(pageInfo.getList());
 
@@ -231,14 +230,14 @@ public class UserServiceImpl implements UserService {
             return responseCommonDto;
         }
 
-        RequestUserDto requestUserDto = new RequestUserDto();
-        requestUserDto.setId(userId);
+        User user = new User();
+        user.setId(userId);
         if(userStatus.equals("正常")){
-            requestUserDto.setIslock(true);
+            user.setIslock(true);
         } else if(userStatus.equals("加锁")){
-            requestUserDto.setIslock(false);
+            user.setIslock(false);
         }
-        updateById(requestUserDto);
+        updateUserById(user);
         responseCommonDto.setSuccess(true);
         return responseCommonDto;
     }
@@ -254,14 +253,14 @@ public class UserServiceImpl implements UserService {
             return responseCommonDto;
         }
 
-        RequestUserDto requestUserDto = new RequestUserDto();
-        requestUserDto.setId(userId);
+        User user = new User();
+        user.setId(userId);
         if(userRole.equals(UserRole.ADMINSHOW)){
-            requestUserDto.setRole(UserRole.USER);
+            user.setRole(UserRole.USER);
         } else if(userRole.equals(UserRole.USERSHOW)){
-            requestUserDto.setRole(UserRole.ADMIN);
+            user.setRole(UserRole.ADMIN);
         }
-        updateById(requestUserDto);
+        updateUserById(user);
         responseCommonDto.setSuccess(true);
         return responseCommonDto;
     }
@@ -271,7 +270,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setId(userId);
         user.setAvatar(avatarUrl);
-        userDao.updateByPrimaryKeySelective(user);
+        updateUserById(user);
 
         ResponseCommonDto responseCommonDto = new ResponseCommonDto();
         responseCommonDto.setSuccess(true);
@@ -304,6 +303,32 @@ public class UserServiceImpl implements UserService {
         return userDtos;
     }
 
+    public void updateUserById(User user) {
+        //检查用户权限
+        User curUser = authUserService.checkUser(user.getId(), null);
+
+        user.setModifyTime(new Date());
+
+        userDao.updateByPrimaryKeySelective(user);
+
+        //修改自己信息立马更新缓存，修改别的用户不更新缓存
+        if(curUser.getId().equals(user.getId())){
+            authUserService.updateUser(user);
+        }
+    }
+
+    public ResponseUserDto user2ResponseUser(User user) {
+        ResponseUserDto responseUserDto = new ResponseUserDto();
+        responseUserDto.setSuccess(false);
+        if(user == null){
+            return responseUserDto;
+        }
+        UserDto userDto = user2dto(user);
+        responseUserDto.setUser(userDto);
+        responseUserDto.setSuccess(true);
+        return responseUserDto;
+    }
+
     public ResponseCommonDto changeCheck(Long userId){
         ResponseCommonDto responseCommonDto = new ResponseCommonDto();
         responseCommonDto.setSuccess(false);
@@ -318,12 +343,34 @@ public class UserServiceImpl implements UserService {
             responseCommonDto.setErrorMsg("不允许修改自己状态");
             return responseCommonDto;
         }
-        ResponseUserDto responseUserDto = findById(userId);
-        if(responseUserDto.getUser().getRole().equals(UserRole.ADMINSHOW) && curUser.getRole().equals(UserRole.ADMINSHOW)){
+        User user = findUserById(userId);
+        if(user.getRole().equals(UserRole.ADMINSHOW) && curUser.getRole().equals(UserRole.ADMINSHOW)){
             responseCommonDto.setErrorMsg("管理员不允许修改管理员");
             return responseCommonDto;
         }
         responseCommonDto.setSuccess(true);
         return responseCommonDto;
+    }
+
+    /**
+     * 由于profile页面form表单是直接提交的，所以会上传一些空字符串
+     * @param requestUserDto
+     */
+    public void changeRequestUserNullParameter(RequestUserDto requestUserDto){
+        if(requestUserDto.getNickname().isEmpty()){
+            requestUserDto.setNickname(null);
+        }
+        if(requestUserDto.getEmail().isEmpty()){
+            requestUserDto.setEmail(null);
+        }
+        if(requestUserDto.getPhoneNumber().isEmpty()){
+            requestUserDto.setPhoneNumber(null);
+        }
+        if(requestUserDto.getPassword().isEmpty()){
+            requestUserDto.setPassword(null);
+        }
+        if(requestUserDto.getNewPassword().isEmpty()){
+            requestUserDto.setNewPassword(null);
+        }
     }
 }

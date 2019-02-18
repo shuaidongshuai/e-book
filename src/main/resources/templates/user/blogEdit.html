@@ -13,7 +13,7 @@
 <div class="container-fluid mt-1">
     <div class="row" th:object="${blog}">
         <div class="col-md-10">
-            <input type="hidden" name="id" id="blogId" th:value="*{blogId}">
+            <input type="hidden" id="blogId" th:value="*{blogId}">
             <input type="text" class="form-control float-left" placeholder="请输入文字标题" id="title" name="title"
                    th:value="*{title}" maxlength="50">
         </div>
@@ -39,7 +39,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>保存成功</p>
+                <p></p>
             </div>
         </div>
     </div>
@@ -54,7 +54,12 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>保存成功</p>
+                <label class="col-md-12">分类</label>
+                <div class="col-md-12">
+                    <select class="form-control form-control-line" id="blogTypeId">
+                        <option th:each="blogType : ${blogTypes}" th:value="${blogType.id}">[[${blogType.className}]]</option>
+                    </select>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="submit">提交</button>

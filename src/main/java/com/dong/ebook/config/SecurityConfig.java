@@ -60,6 +60,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         //解决静态资源被拦截的问题
-        web.ignoring().antMatchers("/css/**", "/fonts/**", "/images/**", "/js/**", "/favicon.ico", "/mavonEditor/**");
+        web.ignoring().antMatchers("/css/**", "/fonts/**", "/images/**", "/js/**", "/favicon.ico", "/mavonEditor/**", "/upload1/**", "/personal/**");
     }
 }

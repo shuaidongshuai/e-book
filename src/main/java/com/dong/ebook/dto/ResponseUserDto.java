@@ -1,13 +1,10 @@
 package com.dong.ebook.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ResponseUserDto extends ResponseCommonDto {
     private UserDto user;
-
-    public UserDto getUser() {
-        return user;
-    }
-
-    public void setUser(UserDto user) {
-        this.user = user;
-    }
 }

@@ -1,70 +1,116 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}">
-</head>
-<body>
-<div class="container blog-content-container">
-    <div class="row clearfix">
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-10 column">
-            <div class="card">
-                <h3 class="text-center card-header bg-inverse text-white mb-1">
-                    个人设置
-                </h3>
-                <div class="row clearfix">
-                    <div class="col-md-4">
-                        <a class="avatar-edit img-rounded" data-toggle="modal" data-target="#flipFlop" role="button">
-                            <img th:src="${user.avatar} == null ? '/images/avatarDefault.png' : ${user.avatar}" class="userAvatarImg rounded mx-auto d-block" width="220px" height="220px">
-                        </a>
+<link href="/css/cropper.min.css" rel="stylesheet">
+<link href="/css/imgCropping.css" rel="stylesheet">
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">个人信息</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item active">Profile</li>
+        </ol>
+    </div>
+    <div class="col-md-6 col-4 align-self-center">
+        <a href="#" class="btn pull-right hidden-sm-down btn-success"> Upgrade to Pro</a>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- Start Page Content -->
+<!-- ============================================================== -->
+<!-- Row -->
+<div class="row">
+    <!-- Column -->
+    <div class="col-lg-4 col-xlg-3 col-md-5">
+        <div class="card">
+            <div class="card-block">
+                <center class="m-t-30">
+                    <a class="avatar-edit img-rounded" data-toggle="modal" data-target="#flipFlop" role="button">
+                        <img th:src="${user.avatar} + '?' + ${new java.util.Date().getTime()}" class="img-circle userAvatarImg" width="180" title="点击修改头像"/>
+                    </a>
+                    <h4 class="card-title m-t-10" th:text="${user.username}"></h4>
+                    <h6 class="card-subtitle">Accoubts Manager Amix corp</h6>
+                    <div class="row text-center justify-content-md-center">
+                        <div class="col-4"><a href="javascript:void(0)" class="link"><i class="icon-people"></i> <font class="font-medium">254</font></a></div>
+                        <div class="col-4"><a href="javascript:void(0)" class="link"><i class="icon-picture"></i> <font class="font-medium">54</font></a></div>
                     </div>
-                    <div class="col-md-8 column">
-                        <form th:action="@{/user/profileSave}" method="post" th:object="${user}" id="userForm">
-                            <input type="hidden" name="id" th:value="*{id}">
-                            <div class="form-group col-md-10">
-                                <label class="col-form-label">账号</label>
-                                <input type="text" class="form-control" name="username" th:value="*{username}" readonly="readonly">
-                            </div>
-                            <div class="form-group col-md-10">
-                                <label class="col-form-label">昵称</label>
-                                <input type="text" class="form-control" name="nickname" th:value="*{nickname}" maxlength="10">
-                            </div>
-                            <div class="form-group col-md-10">
-                                <div class="form-check">
-                                    <label class="form-check-label">
-                                        <input type="radio" class="form-check-input" name="sex" value="boy" th:checked="*{sex} == 'boy' ? true : false">
-                                        男
-                                    </label>
-                                    <label class="form-check-label">
-                                        <input type="radio" class="form-check-input" name="sex" value="girl" th:checked="*{sex} == 'girl' ? true : false">
-                                        女
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="form-group col-md-10">
-                                <label class="col-form-label">邮箱</label>
-                                <input type="email" class="form-control" name="email" th:value="*{email}" maxlength="30">
-                            </div>
-                            <div class="form-group col-md-10">
-                                <label class="col-form-label">电话</label>
-                                <input type="text" class="form-control" name="phoneNumber" th:value="*{phoneNumber}" maxlength="15">
-                            </div>
-                            <div class="form-group col-md-10">
-                                <label class="col-form-label">生日</label>
-                                <input type="date" class="form-control" name="birthday" th:value="*{#dates.format(birthday, 'yyyy-MM-dd')}">
-                            </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary">保存</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                </center>
             </div>
         </div>
     </div>
+    <!-- Column -->
+    <!-- Column -->
+    <div class="col-lg-8 col-xlg-9 col-md-7">
+        <div class="card">
+            <div class="card-block">
+                <form th:object="${user}" id="profileForm">
+                    <input type="hidden" name="id" th:value="*{id}">
+                    <div class="form-group">
+                        <label class="col-md-12">Nickname</label>
+                        <div class="col-md-12">
+                            <input type="text" th:placeholder="*{nickname}" name="nickname" class="form-control form-control-line" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="example-email" class="col-md-12">Email</label>
+                        <div class="col-md-12">
+                            <input type="email" th:placeholder="*{email}" class="form-control form-control-line" name="email" id="example-email" maxlength="30">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-12">Phone No</label>
+                        <div class="col-md-12">
+                            <input type="text" th:placeholder="*{phoneNumber}" class="form-control form-control-line" name="phoneNumber">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-12">Sex</label>
+                        <div class="form-check col-md-12">
+                            <label class="form-check-label">
+                                <input type="radio" class="form-check-input" name="sex" value="boy" th:checked="*{sex} == 'boy' ? true : false">
+                                男
+                            </label>
+                            <label class="form-check-label">
+                                <input type="radio" class="form-check-input" name="sex" value="girl" th:checked="*{sex} == 'girl' ? true : false">
+                                女
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-12">Birthday</label>
+                        <div class="col-md-12">
+                            <input type="date" class="form-control form-control-line" name="birthday" th:value="*{#dates.format(birthday, 'yyyy-MM-dd')}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-12">Introduction</label>
+                        <div class="col-md-12">
+                            <textarea rows="3" class="form-control form-control-line" name="introduction" maxlength="64">[[${user.introduction}]]</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-12">Password</label>
+                        <div class="col-md-12">
+                            <input type="password" placeholder="old password" class="form-control form-control-line" name="password">
+                            <input type="password" placeholder="new password" class="form-control form-control-line mt-2" id="newPassword1">
+                            <input type="password" placeholder="again new password" class="form-control form-control-line mt-2" name="newPassword" id="newPassword2">
+                            <p id="passwordError" class="text-danger"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <button type="button" class="btn btn-success" id="submit">Update Profile</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Column -->
 </div>
-<!-- /.container -->
 
 <!-- 保存成功modal -->
 <div class="modal fade saveSuccess" data-th-attr="afterSave=${afterSave}">
@@ -77,7 +123,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p class="text-success">保存成功</p>
+                <p>保存成功</p>
             </div>
         </div>
     </div>
@@ -101,7 +147,7 @@
             <div class="preview-box-parcel">
                 <p>图片预览：</p>
                 <div class="square previewImg"></div>
-                <div class="circular previewImg"></div>
+                <div class="circularDong previewImg"></div>
             </div>
         </div>
         <div class="tailoring-content-three">
@@ -114,17 +160,6 @@
 </div>
 <!--图片裁剪框 end-->
 
-<div th:replace="~{fragments/footer :: footer}">...</div>
-
-<script src="/js/lib/base64.js"></script>
-<script src="/js/lib/crypto1/crypto/crypto.js"></script>
-<script src="/js/lib/crypto1/hmac/hmac.js"></script>
-<script src="/js/lib/crypto1/sha1/sha1.js"></script>
-
-
 <script src="/js/cropper.min.js"></script>
 <script src="/js/user/profile.js"></script>
 <script src="/js/user/avatarEdit.js"></script>
-
-</body>
-</html>

@@ -1,13 +1,10 @@
 package com.dong.ebook.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ResponseBlogSaveDto extends ResponseCommonDto {
-    Long blogId;
-
-    public Long getBlogId() {
-        return blogId;
-    }
-
-    public void setBlogId(Long blogId) {
-        this.blogId = blogId;
-    }
+    private Long blogId;
 }

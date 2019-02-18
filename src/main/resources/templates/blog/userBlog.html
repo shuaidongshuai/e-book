@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}">
+<head>
+    <meta charset="UTF-8">
+    <title>Dong E-Book</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/dongebook.css" rel="stylesheet">
+    <!-- 展现mavonEditor需要 -->
+    <link href="/mavonEditor/markdown/github-markdown.min.css" rel="stylesheet">
+    <!-- 展现数学公式需要 -->
+    <link href="/mavonEditor/katex/katex.css" rel="stylesheet">
+    <!--代码展示-->
+    <link href="/mavonEditor/highlightjs/styles/atom-one-dark.min.css" rel="stylesheet">
 </head>
 <body>
-<!-- 展现mavonEditor需要 -->
-<link href="/mavonEditor/markdown/github-markdown.min.css" rel="stylesheet">
-<!-- 展现数学公式需要 -->
-<link href="/mavonEditor/katex/katex.css" rel="stylesheet">
+<div th:replace="~{fragments/header :: header}"></div>
 
 <div th:if="not  ${userBlog.success}" class="alert alert-danger" role="alert">
     <strong>Oh snap!</strong>
@@ -15,14 +22,14 @@
 <div th:if="${userBlog.success}" class="container-fluid">
     <div class="row clearfix">
         <div class="col-md-4">
-            <div class="card">
+            <div class="card mt-2">
                 <div class="card-block" th:object="${userBlog}">
                     <a th:href="'/blog/userBlogList?userId='+*{blogDto.userId}">
                         <img th:src="*{avatar}" class="img-thumbnail img-rounded float-left" width="50px" height="50px"
                              style="cursor: pointer;">
                     </a>
                     <div id="blog" data-th-attr="userId=*{blogDto.userId},blogId=*{blogDto.id}"></div>
-                    <a th:href="'/blog/userBlogList?userId='+*{blogDto.userId}" class="float-left mr-2 my-3">
+                    <a th:href="'/blog/userBlogList?userId='+*{blogDto.userId}" class="float-left mr-2 my-3 changeRed">
                         <strong class="card-title ml-md-3" th:text="*{nickname}"></strong>
                     </a>
                     <div th:if="not *{selfBlog}" id="selfBlog" data-th-attr="concern=*{concern}">

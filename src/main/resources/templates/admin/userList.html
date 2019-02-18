@@ -1,43 +1,63 @@
-<div class="card-block">
-    <div class="input-group col-md-5 col-xl-4">
-        <input type="text" class="form-control searchUsername" placeholder="输入账号进行搜索">
-        <button type="button" class="btn btn-link btn-sm searchUsernameBtn">
-            <img src="/images/search.png" class="thumbnail" width="22">
-        </button>
+<!-- ============================================================== -->
+<!-- Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">用户管理</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item active">usersManager</li>
+        </ol>
+    </div>
+    <div class="col-md-6 col-4 align-self-center">
+        <a href="/" class="btn pull-right hidden-sm-down btn-success"> Upgrade to Pro</a>
     </div>
 </div>
-<div class="container" id="userList">
-    <div class="row" id="userListReplace">
-        <table class="table">
-            <thead class="thead-inverse">
-            <tr>
-                <th>ID</th>
-                <th>账号</th>
-                <th>邮箱</th>
-                <th>角色</th>
-                <th>状态</th>
-                <th>操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="user : ${users}">
-                <td th:text="${user.id}"></td>
-                <td th:text="${user.username}"></td>
-                <td th:text="${user.email}"></td>
-                <td th:text="${user.role}"></td>
-                <td th:text="${user.status}"></td>
-                <td class="btn-group">
-                    <div sec:authorize="hasAnyRole('SUPERADMIN')" class="mx-1">
-                        <button class="role btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#roleModel" data-whatever="升级为管理员" data-th-attr="userId=${user.id},role=${user.role}" data-th-if="${user.role} ne '管理员'">升级</button>
-                        <button class="role btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#roleModel" data-whatever="降级为普通用户" data-th-attr="userId=${user.id},role=${user.role}" data-th-if="${user.role} eq '管理员'">降级</button>
-                    </div>
-                    <button class="userStatus btn btn-outline-warning btn-sm" data-toggle="modal" data-target="#lockModel" data-whatever="加锁" data-th-attr="userId=${user.id},userStatus=${user.status}" data-th-if="${user.status} eq '正常'">加锁</button>
-                    <button class="userStatus btn btn-outline-info btn-sm" data-toggle="modal" data-target="#lockModel" data-whatever="解锁" data-th-attr="userId=${user.id},userStatus=${user.status}" data-th-if="${user.status} ne '正常'">解锁</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <div th:replace="~{fragments/page :: page}"></div>
+<!-- ============================================================== -->
+<!-- End Bread crumb and right sidebar toggle -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- Start Page Content -->
+<!-- ============================================================== -->
+<div class="row">
+    <!-- column -->
+    <div class="col-sm-12">
+        <div class="card" id="userList">
+            <div class="card-block" id="userListReplace">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="thead-inverse">
+                        <tr>
+                            <th>☪</th>
+                            <th>账号</th>
+                            <th>邮箱</th>
+                            <th>角色</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user : ${users}">
+                            <td><img th:src="${user.avatar}" width="30" height="30"></td>
+                            <td th:text="${user.username}"></td>
+                            <td th:text="${user.email}"></td>
+                            <td th:text="${user.role}"></td>
+                            <td th:text="${user.status}"></td>
+                            <td class="btn-group">
+                                <div sec:authorize="hasAnyRole('SUPERADMIN')" class="mx-1">
+                                    <button class="role btn btn-outline-danger btn-sm" data-toggle="modal" data-target="#roleModel" data-whatever="升级为管理员" data-th-attr="userId=${user.id},role=${user.role}" data-th-if="${user.role} ne '管理员'">升级</button>
+                                    <button class="role btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#roleModel" data-whatever="降级为普通用户" data-th-attr="userId=${user.id},role=${user.role}" data-th-if="${user.role} eq '管理员'">降级</button>
+                                </div>
+                                <button class="userStatus btn btn-outline-warning btn-sm" data-toggle="modal" data-target="#lockModel" data-whatever="加锁" data-th-attr="userId=${user.id},userStatus=${user.status}" data-th-if="${user.status} eq '正常'">加锁</button>
+                                <button class="userStatus btn btn-outline-info btn-sm" data-toggle="modal" data-target="#lockModel" data-whatever="解锁" data-th-attr="userId=${user.id},userStatus=${user.status}" data-th-if="${user.status} ne '正常'">解锁</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div th:replace="~{fragments/page :: page}"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!-- The modal -->
@@ -45,13 +65,13 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">提示</h4>
+                <h4 class="modal-title text-danger">提示</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p class="text-warning"></p>
+                <p></p>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
@@ -64,13 +84,13 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">提示</h4>
+                <h4 class="modal-title text-danger">提示</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p class="text-warning"></p>
+                <p></p>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
@@ -79,5 +99,9 @@
         </div>
     </div>
 </div>
+<!-- ============================================================== -->
+<!-- End PAge Content -->
+<!-- ============================================================== -->
 
-<script th:src="@{/js/admin/userList.js}"></script>
+<!-- userList -->
+<script src="/js/admin/userList.js"></script>

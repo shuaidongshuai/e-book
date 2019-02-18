@@ -18,8 +18,8 @@ $(function() {
                 "pageSize": pageSize
             },
             success: function(data){
-                var prefix = data.toString().substring(0, 4);
-                if(prefix == '<div'){
+                var prefix = data.toString().substring(0, 15);
+                if(prefix == '<!doctype html>'){
                     $("#rightContainer").html(data);
                 }
             }

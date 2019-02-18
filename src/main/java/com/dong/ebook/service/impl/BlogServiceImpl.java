@@ -65,7 +65,7 @@ public class BlogServiceImpl implements BlogService {
         Date date = new Date();
         blogWithBLOBs.setModifyTime(date);
         blogWithBLOBs.setSummary(summary);
-        if(blogWithBLOBs.getId() == null){
+        if(blogWithBLOBs.getId() == null || blogWithBLOBs.getId() < 1){
             //初始化
             blogWithBLOBs.setCreateTime(date);
             blogWithBLOBs.setTraffic(0);
@@ -85,7 +85,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public ResponseCommonDto deleteBlog(Long blogId) {
+    public ResponseCommonDto deleteBlog(long blogId) {
         ResponseCommonDto responseCommonDto = new ResponseCommonDto();
         responseCommonDto.setSuccess(false);
 
@@ -105,8 +105,8 @@ public class BlogServiceImpl implements BlogService {
                 return responseCommonDto;
             }
             if(UserRole.ADMIN.equals(role)){
-                ResponseUserDto responseUserDto = userService.findById(blogUserId);
-                if(!UserRole.USERSHOW.equals(responseUserDto.getUser().getRole())){
+                User user = userService.findUserById(blogUserId);
+                if(!UserRole.USERSHOW.equals(user.getRole())){
                     responseCommonDto.setErrorMsg("没有权限删除该博客");
                     return responseCommonDto;
                 }
@@ -121,7 +121,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public ResponseBlogPageDto getUserBlogById(Long blogId) {
+    public ResponseBlogPageDto getUserBlogById(long blogId) {
         ResponseBlogPageDto responseBlogPageDto = new ResponseBlogPageDto();
 
         //每次进入一个完整blog页面都要修改阅读数
@@ -139,10 +139,10 @@ public class BlogServiceImpl implements BlogService {
         List<Integer> extraMsg = getUserBlogExtraMsg(blogUserId);
 
         //获取用户的信息
-        ResponseUserDto responseUserDto = userService.findById(blogUserId);
+        User user = userService.findUserById(blogUserId);
 
         //前端展示nickname不超过13个字符
-        String nickname = responseUserDto.getUser().getNickname();
+        String nickname = user.getNickname();
         if(nickname.length() > 13){
             nickname = nickname.substring(0, 13) + "...";
         }
@@ -190,7 +190,7 @@ public class BlogServiceImpl implements BlogService {
         responseBlogPageDto.setVoteNum(extraMsg.get(2));
         responseBlogPageDto.setCommentNum(extraMsg.get(3));
         responseBlogPageDto.setNickname(nickname);
-        responseBlogPageDto.setAvatar(responseUserDto.getUser().getAvatar());
+        responseBlogPageDto.setAvatar(user.getAvatar());
         responseBlogPageDto.setSelfBlog(selfBlog);
         responseBlogPageDto.setConcern(concern);
         responseBlogPageDto.setVote(vote);
@@ -218,12 +218,11 @@ public class BlogServiceImpl implements BlogService {
         }
 
         //user
-        ResponseUserDto responseUserDto = userService.findById(userId);
-        if(!responseUserDto.isSuccess()){
+        User user = userService.findUserById(userId);
+        if(user == null){
             responseUserBlogListDto.setErrorMsg("没用此用户");
             return responseUserBlogListDto;
         }
-        UserDto user = responseUserDto.getUser();
 
         Boolean selfBlog = false;
         User curUser = authUserService.getCurUser();
@@ -252,7 +251,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public ResponseBlogListDto getBlogList(Integer pageNum, Integer pageSize) {
+    public ResponseBlogListDto getBlogList(int pageNum, int pageSize) {
         Page page = PageHelper.startPage(pageNum, pageSize);
         blogDao.selectByExample(new BlogExample());
         PageInfo pageInfo = new PageInfo(page.getResult());
@@ -260,27 +259,22 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public ResponseManagerBlogListDto getManagerBlogList(Integer pageNum, Integer pageSize) {
-        Page page = PageHelper.startPage(pageNum, pageSize);
-        blogDao.selectByExample(new BlogExample());
-        PageInfo pageInfo = new PageInfo(page.getResult());
-        return assembleResponseManagerBlogListDto(pageInfo);
+    public ResponseManagerBlogListDto getManagerBlogList(int pageNum, int pageSize, boolean desc) {
+        return getManagerBlogList(pageNum, pageSize, desc, null);
     }
 
     @Override
-    public ResponseManagerBlogListDto getManagerBlogList(Integer pageNum, Integer pageSize, String query) {
-        if(query == null || query.isEmpty()){
-            return getManagerBlogList(pageNum, pageSize);
-        }
-
+    public ResponseManagerBlogListDto getManagerBlogList(int pageNum, int pageSize, boolean desc, String query) {
         Page page = PageHelper.startPage(pageNum, pageSize);
-        BlogExample blogExample = new BlogExample();
+        BlogExample blogExample = assembleBlogExampleByDesc(desc);
         BlogExample.Criteria criteria = blogExample.createCriteria();
-        try {
-            Long id = Long.parseLong(query);
-            criteria.andIdEqualTo(id);
-        }catch (Exception e){
-            criteria.andTitleLike(query);
+        if(query != null && !query.isEmpty()){
+            try {
+                Long id = Long.parseLong(query);
+                criteria.andIdEqualTo(id);
+            }catch (Exception e){
+                criteria.andTitleLike(query);
+            }
         }
         blogDao.selectByExample(blogExample);
         PageInfo pageInfo = new PageInfo(page.getResult());
@@ -288,14 +282,14 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public ResponseBlogEditDto editBlog(Long blogId) {
+    public ResponseBlogEditDto editBlog(long blogId) {
         User curUser = authUserService.getCurUser();
         if(curUser == null){
             throw new RuntimeException("editBlog user not exist");
         }
 
         String title = "", content = "";
-        if(blogId != null){
+        if(blogId > 0){
             BlogWithBLOBs blogWithBLOBs = blogDao.selectByPrimaryKey(blogId);
             //检查是否是博主
             if(!blogWithBLOBs.getUserId().equals(curUser.getId())){
@@ -317,7 +311,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public ResponseCommonDto voteBlog(Long blogId) {
+    public ResponseCommonDto voteBlog(long blogId) {
         ResponseCommonDto responseCommonDto = new ResponseCommonDto();
         responseCommonDto.setSuccess(false);
         User curUser = authUserService.getCurUser();
@@ -349,7 +343,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public ResponseCommonDto cancelVoteBlog(Long blogId) {
+    public ResponseCommonDto cancelVoteBlog(long blogId) {
         ResponseCommonDto responseCommonDto = new ResponseCommonDto();
         responseCommonDto.setSuccess(false);
         User curUser = authUserService.getCurUser();
@@ -380,7 +374,7 @@ public class BlogServiceImpl implements BlogService {
         return responseCommonDto;
     }
 
-    private List<Integer> getUserBlogExtraMsg(Long userId){
+    private List<Integer> getUserBlogExtraMsg(long userId){
         List<Integer> extraMsg = blogExtraMsgCache.getAll(userId);
         if(extraMsg == null){
             extraMsg = new ArrayList<>(4);
@@ -404,7 +398,7 @@ public class BlogServiceImpl implements BlogService {
      * @param userId
      * @return
      */
-    private List<Blog> getAllBlogByUserId(Long userId){
+    private List<Blog> getAllBlogByUserId(long userId){
         BlogExample blogExample = new BlogExample();
         BlogExample.Criteria criteria = blogExample.createCriteria();
         criteria.andUserIdEqualTo(userId);
@@ -419,14 +413,14 @@ public class BlogServiceImpl implements BlogService {
      * @param pageSize
      * @return
      */
-    private PageInfo getBlogListByUserId(Long userId, int pageNum, int pageSize){
+    private PageInfo getBlogListByUserId(long userId, int pageNum, int pageSize){
         Page page = PageHelper.startPage(pageNum, pageSize);
         getAllBlogByUserId(userId);
         PageInfo pageInfo = new PageInfo(page.getResult());
         return pageInfo;
     }
 
-    private Integer getFansNum(Long userId){
+    private Integer getFansNum(long userId){
         List<Concern> fans = concernService.findFans(userId);
         return fans.size();
     }
@@ -454,8 +448,8 @@ public class BlogServiceImpl implements BlogService {
         return blogDtos;
     }
 
-    public Boolean isSelf(Long curUserId, Long blogUserId){
-        if(curUserId.equals(blogUserId)){
+    public Boolean isSelf(long curUserId, long blogUserId){
+        if(curUserId == blogUserId){
             return true;
         }
         return false;
@@ -489,11 +483,11 @@ public class BlogServiceImpl implements BlogService {
                 title += "...";
             }
 
-            String userNickname = userService.findById(blog.getUserId()).getUser().getNickname();
-
+            User user = userService.findUserById(blog.getUserId());
             managerBlogDto.setBlogId(blog.getId());
             managerBlogDto.setBlogTitle(title);
-            managerBlogDto.setUserNickname(userNickname);
+            managerBlogDto.setUserNickname(user.getNickname());
+            managerBlogDto.setUserAvatar(user.getAvatar());
         }
         pageInfo.setList(managerBlogDtos);
 
@@ -501,5 +495,15 @@ public class BlogServiceImpl implements BlogService {
         responseManagerBlogListDto.setPageInfo(pageInfo);
         responseManagerBlogListDto.setSuccess(true);
         return responseManagerBlogListDto;
+    }
+
+    public BlogExample assembleBlogExampleByDesc(boolean desc){
+        BlogExample blogExample = new BlogExample();
+        if(desc){
+            blogExample.setOrderByClause("modify_time desc");
+        } else {
+            blogExample.setOrderByClause("modify_time asc");
+        }
+        return blogExample;
     }
 }

@@ -1,15 +1,11 @@
 package com.dong.ebook.dto;
 
 import com.github.pagehelper.PageInfo;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ResponseManagerBlogListDto extends ResponseCommonDto{
     private PageInfo<ManagerBlogDto> pageInfo;
-
-    public PageInfo<ManagerBlogDto> getPageInfo() {
-        return pageInfo;
-    }
-
-    public void setPageInfo(PageInfo<ManagerBlogDto> pageInfo) {
-        this.pageInfo = pageInfo;
-    }
 }

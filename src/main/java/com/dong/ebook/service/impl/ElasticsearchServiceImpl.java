@@ -1,7 +1,10 @@
 package com.dong.ebook.service.impl;
 
-import com.dong.ebook.dto.*;
+import com.dong.ebook.dto.ElasticsearchBlogDto;
+import com.dong.ebook.dto.ResponseSearchBlogDto;
+import com.dong.ebook.dto.SearchBlogDto;
 import com.dong.ebook.esdao.ElasticsearchBlogDao;
+import com.dong.ebook.model.User;
 import com.dong.ebook.service.ElasticsearchService;
 import com.dong.ebook.service.UserService;
 import com.github.pagehelper.PageInfo;
@@ -99,7 +102,7 @@ public class ElasticsearchServiceImpl implements ElasticsearchService {
     public List<SearchBlogDto> assembleSearchBlogDtos(List<ElasticsearchBlogDto> elasticsearchBlogDtos){
         List<SearchBlogDto> list = new ArrayList<>();
         for(ElasticsearchBlogDto elasticsearchBlogDto : elasticsearchBlogDtos){
-            UserDto user = userService.findById(elasticsearchBlogDto.getUserId()).getUser();
+            User user = userService.findUserById(elasticsearchBlogDto.getUserId());
 
             SearchBlogDto searchBlogDto = new SearchBlogDto();
             list.add(searchBlogDto);

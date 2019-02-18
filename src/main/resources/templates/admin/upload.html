@@ -4,14 +4,16 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-    <link rel="stylesheet" type="text/css" href="/css/upload/reset.css">
-    <link rel="stylesheet" type="text/css" href="/css/upload/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/upload/default.css">
-    <link rel="stylesheet" type="text/css" href="/css/upload/jquery.filer.css">
-    <link rel="stylesheet" type="text/css" href="/css/upload/jquery.filer-dragdropbox-theme.css">
-    <link rel="stylesheet" type="text/css" href="/css/upload/tomorrow.css">
-    <link rel="stylesheet" type="text/css" href="/css/upload/custom.css">
+    <title>电子图书上传</title>
+    <!--<link rel="stylesheet" type="text/css" href="/css/upload/reset.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/css/upload/bootstrap.min.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/css/upload/default.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/css/upload/jquery.filer.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/css/upload/jquery.filer-dragdropbox-theme.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/css/upload/tomorrow.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/css/upload/custom.css">-->
+    <link href="/css/upload/jquery.filer.css" type="text/css" rel="stylesheet" />
+    <link href="/css/upload/jquery.filer-dragdropbox-theme.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
 <article class="htmleaf-container">
@@ -22,18 +24,31 @@
                     <h2>电子图书上传</h2>
                     <hr>
                     <div>
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation" class="active"><a href="#book" role="tab" data-toggle="tab">图书</a></li>
-                            <li role="presentation"><a href="#video" role="tab" data-toggle="tab">视频</a></li>
-                            <li role="presentation"><a href="#music" role="tab" data-toggle="tab">音乐</a></li>
-                            <li role="presentation"><a href="#picture" role="tab" data-toggle="tab">图片</a>
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#">图书</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">视频</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">音乐</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">图片</a>
                             </li>
                         </ul>
                         <div class="tab-content">
                             <div role="tabpanel" class="tab-pane pt20 pb20 fade in active" id="book">
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <input type="file" name="file" id="file" class="bookUploadInput" multiple="multiple">
+                                    <div class="col-md-4">
+                                        <form>
+                                            <input type="submit" id="bookSubmit" class="btn btn-primary" multiple="multiple">
+                                        </form>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="file" name="file" id="bookFile" multiple="multiple">
+                                        <input type="file" name="file" id="uploadBookCover" multiple="multiple">
                                     </div>
                                 </div>
                             </div>
@@ -47,13 +62,17 @@
     </section>
 </article>
 
-<script src="/js/upload/jquery-2.1.1.min.js"></script>
-<script src="/js/upload/bootstrap.min.js" type="text/javascript"></script>
-<script src="/js/upload/jquery.filer.min.js" type="text/javascript"></script>
-<script src="/js/upload/prettify.js" type="text/javascript"></script>
-<script src="/js/upload/scripts.js" type="text/javascript"></script>
-<script src="/js/upload/custom.js" type="text/javascript"></script>
-<script src="/js/admin/upload.js" type="text/javascript"></script>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="/js/upload/jquery.filer.min.js"></script>
+
+<!--<script src="/js/upload/jquery-2.1.1.min.js"></script>-->
+<!--<script src="/js/upload/bootstrap.min.js" type="text/javascript"></script>-->
+<!--<script src="/js/upload/jquery.filer.min.js" type="text/javascript"></script>-->
+<!--<script src="/js/upload/prettify.js" type="text/javascript"></script>-->
+<!--<script src="/js/upload/scripts.js" type="text/javascript"></script>-->
+<!--<script src="/js/upload/custom.js" type="text/javascript"></script>-->
+<!--<script src="/js/admin/upload.js" type="text/javascript"></script>-->
+
 
 </body>
 </html>

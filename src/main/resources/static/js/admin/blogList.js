@@ -2,20 +2,33 @@
 $(function() {
     var _pageNum = 1
     var _pageSize = 10
-    var blogListUrl = '/admin/BlogListLike'
+    var _desc = true
+    var blogListLikeUrl = '/admin/BlogListLike'
     var delBlogUrl = '/user/deleteBlog'
     var delBlogId
 
+    $("#managerSearch input").attr("placeholder", "输入ID或标题进行搜索")
+
     // 搜索
-    $(".searchBtn").click(function () {
-        getBlogList(1, _pageSize);
+    $("#managerSearch").off("click", "a").on("click", "a", function () {
+        blogListLike(1, _pageSize);
     });
     //绑定回车键
-    $('.search').bind('keydown', function (event) {
+    $("#managerSearch").off("keydown", "input").on("keydown", "input", function (event) {
         if (event.keyCode == 13) {
-            getBlogList(1, _pageSize)
+            blogListLike(1, _pageSize)
         }
     });
+
+    //升降序排列
+    $("#rightContainer").off("change", "#desc").on("change", "#desc", function () {
+        if($(this).val() == '1'){
+            _desc = true
+        }else{
+            _desc = false
+        }
+        blogListLike(_pageNum, _pageSize);
+    })
 
     $("#blogList").off("click", ".delBlog").on("click", ".delBlog", function () {
         delBlogId = $(this).attr("blogId")
@@ -27,20 +40,21 @@ $(function() {
 
     // 分页
     $.tbpage("#blogList", function (pageNum, pageSize) {
-        getBlogList(pageNum, pageSize)
+        blogListLike(pageNum, pageSize)
         _pageNum = pageNum
         _pageSize = pageSize
     });
 
-    function getBlogList(pageNum, pageSize) {
+    function blogListLike(pageNum, pageSize) {
         $.ajax({
-            url: blogListUrl,
+            url: blogListLikeUrl,
             type: "GET",
             contentType: "application/json",
             data: {
                 "pageNum": pageNum,
                 "pageSize": pageSize,
-                "query": $(".search").val()
+                "desc": _desc,
+                "query": $("#managerSearch input").val()
             },
             success: function (data) {
                 var prefix = data.toString().substring(0, 4);
@@ -57,7 +71,7 @@ $(function() {
             type: "delete",
             success: function (response) {
                 if(response.success){
-                    getBlogList(_pageNum, _pageSize)
+                    blogListLike(_pageNum, _pageSize)
                 } else {
                     alert(response.errorMsg)
                 }

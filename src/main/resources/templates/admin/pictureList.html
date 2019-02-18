@@ -1,0 +1,134 @@
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">图片管理</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item active">pictureList</li>
+        </ol>
+    </div>
+    <div class="col-md-6 col-4 align-self-center">
+        <a href="/" class="btn pull-right hidden-sm-down btn-success"> Upgrade to Pro</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card" id="pictureList">
+            <div class="card-block" id="pictureListReplace">
+                <select class="custom-select pull-right" id="desc">
+                    <option value="1" data-th-selected="${desc eq true}">时间降序</option>
+                    <option value="2" data-th-selected="${desc eq false}">时间升序</option>
+                </select>
+                <h4 class="card-title">所有图片</h4>
+                <div class="table-responsive m-t-40">
+                    <table class="table stylish-table">
+                        <thead>
+                        <tr>
+                            <th>☪</th>
+                            <th>标题</th>
+                            <th>最后修改人</th>
+                            <th>最后修改时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="managerPictureList : ${pageInfo.list}" th:object="${managerPictureList}">
+                            <td><img th:src="*{coverUrl}" width="30" height="30"/></td>
+                            <td th:text="*{title}"></td>
+                            <td th:text="*{modifyUserNickname}"></td>
+                            <td th:text="*{#dates.format(modifyTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                            <td>
+                                <button class="btn btn-outline-danger btn-sm modifyButton" data-toggle="modal" data-target="#modifyModel" data-th-attr="pictureId=*{id}">修改</button>
+                                <div sec:authorize="hasAnyRole('SUPERADMIN')">
+                                    <button class="btn btn-outline-success btn-sm delButton" data-toggle="modal" data-target="#delModel" data-th-attr="pictureId=*{id}">删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div th:replace="~{fragments/page :: page}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modifyModel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title text-danger">修改图片信息</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="pictureForm">
+                    <input type="hidden" name="id" class="id" required="true">
+                    <div class="form-group" id="pictureTitle">
+                        <label class="col-md-12">标题</label>
+                        <div class="col-md-12">
+                            <input type="text" name="title" class="form-control form-control-line title" maxlength="32" required="true">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-12">分类</label>
+                        <div class="col-md-12">
+                            <select class="form-control form-control-line pictureTypeId" name="pictureTypeId">
+                                <option th:each="pictureType : ${pictureTypes}" th:value="${pictureType.id}">[[${pictureType.className}]]</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-12">文件地址（JSON格式）</label>
+                        <div class="col-md-12">
+                            <textarea rows="6" placeholder="如：&#10;第一章&#32; 开始&#10;第二章&#32; C++浏览&#10;..." class="form-control form-control-line urlJson" name="urlJson"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary submit" type="button">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="delModel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title text-danger">提示</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>确定是否删除</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary submit" type="button" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="saveModel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title text-danger">恭喜</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>修改成功</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary modelSubmit" type="button" data-dismiss="modal">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/admin/pictureList.js"></script>

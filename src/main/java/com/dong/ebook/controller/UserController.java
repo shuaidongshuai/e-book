@@ -27,6 +27,24 @@ public class UserController {
     private BlogService blogService;
 
     @Autowired
+    private BlogTypeService blogTypeService;
+
+    @Autowired
+    private BookTypeService bookTypeService;
+
+    @Autowired
+    private VideoTypeService videoTypeService;
+
+    @Autowired
+    private MusicTypeService musicTypeService;
+
+    @Autowired
+    private PictureTypeService pictureTypeService;
+
+    @Autowired
+    private PreferenceService preferenceService;
+
+    @Autowired
     private ConcernService concernService;
 
     @RequestMapping("/list")
@@ -37,8 +55,16 @@ public class UserController {
 
     @DeleteMapping("/del/{id}")
     public String delUser(@PathVariable("id") Long id, Model model) {
-//        userService.delete(id);
+//        userService.delUser(id);
         return "/";
+    }
+
+    @GetMapping("/personal")
+    public String personal(Model model) {
+        User curUser = authUserService.getCurUser();
+        UserDto userDto = userService.user2dto(curUser);
+        model.addAttribute("user", userDto);
+        return "/user/personal";
     }
 
     @GetMapping("/profile")
@@ -49,17 +75,11 @@ public class UserController {
         return "/user/profile";
     }
 
-    @GetMapping("/profile/afterSave")
-    public String profileAfterSave(Model model) {
-        profile(model);
-        model.addAttribute("afterSave", true);
-        return "/user/profile";
-    }
-
     @PostMapping("/profileSave")
-    public String profileSave(RequestUserDto requestUserDto) {
-        userService.updateById(requestUserDto);
-        return "redirect:/user/profile/afterSave";
+    @ResponseBody
+    public ResponseCommonDto profileSave(RequestUserDto requestUserDto) {
+        ResponseCommonDto responseCommonDto = userService.updateUserById(requestUserDto);
+        return responseCommonDto;
     }
 
     @GetMapping("/avatarEdit")
@@ -70,8 +90,7 @@ public class UserController {
     @GetMapping("/uploadAvatar")
     @ResponseBody
     public ResponseUploadDto uploadAvatar() throws UnsupportedEncodingException {
-        User user = authUserService.getCurUser();
-        ResponseUploadDto responseUploadDto = ossService.uploadAvatar(user);
+        ResponseUploadDto responseUploadDto = ossService.uploadAvatar();
         return responseUploadDto;
     }
 
@@ -83,10 +102,117 @@ public class UserController {
         return "";
     }
 
+    @GetMapping("/preferenceBook")
+    public String preferenceBook(Model model) {
+        ResponsePreferenceDto responsePreferenceDto = preferenceService.getBookPreference();
+        model.addAttribute("preferenceDtos", responsePreferenceDto.getPreferenceDtos());
+        return "/user/preferenceBook";
+    }
+
+    @PutMapping("/addBookTag/{typeId}")
+    @ResponseBody
+    public ResponseCommonDto addBookTag(@PathVariable("typeId") Long typeId) {
+        ResponseCommonDto responseCommonDto = preferenceService.addBookPreference(typeId);
+        return responseCommonDto;
+    }
+
+    @DeleteMapping("/delBookTag/{typeId}")
+    @ResponseBody
+    public ResponseCommonDto delBookTag(@PathVariable("typeId") Long typeId) {
+        ResponseCommonDto responseCommonDto = preferenceService.delBookPreference(typeId);
+        return responseCommonDto;
+    }
+
+    @GetMapping("/preferenceVideo")
+    public String preferenceVideo(Model model) {
+        ResponsePreferenceDto responsePreferenceDto = preferenceService.getVideoPreference();
+        model.addAttribute("preferenceDtos", responsePreferenceDto.getPreferenceDtos());
+        return "/user/preferenceVideo";
+    }
+
+    @PutMapping("/addVideoTag/{typeId}")
+    @ResponseBody
+    public ResponseCommonDto addVideoTag(@PathVariable("typeId") Long typeId) {
+        ResponseCommonDto responseCommonDto = preferenceService.addVideoPreference(typeId);
+        return responseCommonDto;
+    }
+
+    @DeleteMapping("/delVideoTag/{typeId}")
+    @ResponseBody
+    public ResponseCommonDto delVideoTag(@PathVariable("typeId") Long typeId) {
+        ResponseCommonDto responseCommonDto = preferenceService.delVideoPreference(typeId);
+        return responseCommonDto;
+    }
+
+    @GetMapping("/preferenceMusic")
+    public String preferenceMusic(Model model) {
+        ResponsePreferenceDto responsePreferenceDto = preferenceService.getMusicPreference();
+        model.addAttribute("preferenceDtos", responsePreferenceDto.getPreferenceDtos());
+        return "/user/preferenceMusic";
+    }
+
+    @PutMapping("/addMusicTag/{typeId}")
+    @ResponseBody
+    public ResponseCommonDto addMusicTag(@PathVariable("typeId") Long typeId) {
+        ResponseCommonDto responseCommonDto = preferenceService.addMusicPreference(typeId);
+        return responseCommonDto;
+    }
+
+    @DeleteMapping("/delMusicTag/{typeId}")
+    @ResponseBody
+    public ResponseCommonDto delMusicTag(@PathVariable("typeId") Long typeId) {
+        ResponseCommonDto responseCommonDto = preferenceService.delMusicPreference(typeId);
+        return responseCommonDto;
+    }
+
+    @GetMapping("/preferencePicture")
+    public String preferencePicture(Model model) {
+        ResponsePreferenceDto responsePreferenceDto = preferenceService.getPicturePreference();
+        model.addAttribute("preferenceDtos", responsePreferenceDto.getPreferenceDtos());
+        return "/user/preferencePicture";
+    }
+
+    @PutMapping("/addPictureTag/{typeId}")
+    @ResponseBody
+    public ResponseCommonDto addPictureTag(@PathVariable("typeId") Long typeId) {
+        ResponseCommonDto responseCommonDto = preferenceService.addPicturePreference(typeId);
+        return responseCommonDto;
+    }
+
+    @DeleteMapping("/delPictureTag/{typeId}")
+    @ResponseBody
+    public ResponseCommonDto delPictureTag(@PathVariable("typeId") Long typeId) {
+        ResponseCommonDto responseCommonDto = preferenceService.delPicturePreference(typeId);
+        return responseCommonDto;
+    }
+
+    @GetMapping("/preferenceBlog")
+    public String preferenceBlog(Model model) {
+        ResponsePreferenceDto responsePreferenceDto = preferenceService.getBlogPreference();
+        model.addAttribute("preferenceDtos", responsePreferenceDto.getPreferenceDtos());
+        return "/user/preferenceBlog";
+    }
+
+    @PutMapping("/addBlogTag/{typeId}")
+    @ResponseBody
+    public ResponseCommonDto addBlogTag(@PathVariable("typeId") Long typeId) {
+        ResponseCommonDto responseCommonDto = preferenceService.addBlogPreference(typeId);
+        return responseCommonDto;
+    }
+
+    @DeleteMapping("/delBlogTag/{typeId}")
+    @ResponseBody
+    public ResponseCommonDto delBlogTag(@PathVariable("typeId") Long typeId) {
+        ResponseCommonDto responseCommonDto = preferenceService.delBlogPreference(typeId);
+        return responseCommonDto;
+    }
+
     @GetMapping("/blogCreate")
     public String blogCreate(Model model) {
-        ResponseBlogEditDto responseBlogEditDto = blogService.editBlog(null);
+        ResponseBlogEditDto responseBlogEditDto = blogService.editBlog(0);
+        ResponseGetBlogTypeDto responseGetBlogTypeDto = blogTypeService.getBlogType();
         model.addAttribute("blog", responseBlogEditDto);
+        model.addAttribute("blogTypes", responseGetBlogTypeDto.getBlogTypes());
         return "/user/blogEdit";
     }
 
@@ -100,8 +226,7 @@ public class UserController {
     @GetMapping("/blogImgUpload")
     @ResponseBody
     public ResponseUploadDto blogImgUpload() throws UnsupportedEncodingException {
-        User user = authUserService.getCurUser();
-        ResponseUploadDto responseUploadDto = ossService.uploadBlogImage(user);
+        ResponseUploadDto responseUploadDto = ossService.uploadBlogImage();
         return responseUploadDto;
     }
 

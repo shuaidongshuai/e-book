@@ -455,73 +455,63 @@ public class BlogExample {
             return (Criteria) this;
         }
 
-        public Criteria andClassificationIsNull() {
-            addCriterion("classification is null");
+        public Criteria andBlogTypeIdIsNull() {
+            addCriterion("blog_type_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andClassificationIsNotNull() {
-            addCriterion("classification is not null");
+        public Criteria andBlogTypeIdIsNotNull() {
+            addCriterion("blog_type_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andClassificationEqualTo(String value) {
-            addCriterion("classification =", value, "classification");
+        public Criteria andBlogTypeIdEqualTo(Long value) {
+            addCriterion("blog_type_id =", value, "blogTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andClassificationNotEqualTo(String value) {
-            addCriterion("classification <>", value, "classification");
+        public Criteria andBlogTypeIdNotEqualTo(Long value) {
+            addCriterion("blog_type_id <>", value, "blogTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andClassificationGreaterThan(String value) {
-            addCriterion("classification >", value, "classification");
+        public Criteria andBlogTypeIdGreaterThan(Long value) {
+            addCriterion("blog_type_id >", value, "blogTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andClassificationGreaterThanOrEqualTo(String value) {
-            addCriterion("classification >=", value, "classification");
+        public Criteria andBlogTypeIdGreaterThanOrEqualTo(Long value) {
+            addCriterion("blog_type_id >=", value, "blogTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andClassificationLessThan(String value) {
-            addCriterion("classification <", value, "classification");
+        public Criteria andBlogTypeIdLessThan(Long value) {
+            addCriterion("blog_type_id <", value, "blogTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andClassificationLessThanOrEqualTo(String value) {
-            addCriterion("classification <=", value, "classification");
+        public Criteria andBlogTypeIdLessThanOrEqualTo(Long value) {
+            addCriterion("blog_type_id <=", value, "blogTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andClassificationLike(String value) {
-            addCriterion("classification like", value, "classification");
+        public Criteria andBlogTypeIdIn(List<Long> values) {
+            addCriterion("blog_type_id in", values, "blogTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andClassificationNotLike(String value) {
-            addCriterion("classification not like", value, "classification");
+        public Criteria andBlogTypeIdNotIn(List<Long> values) {
+            addCriterion("blog_type_id not in", values, "blogTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andClassificationIn(List<String> values) {
-            addCriterion("classification in", values, "classification");
+        public Criteria andBlogTypeIdBetween(Long value1, Long value2) {
+            addCriterion("blog_type_id between", value1, value2, "blogTypeId");
             return (Criteria) this;
         }
 
-        public Criteria andClassificationNotIn(List<String> values) {
-            addCriterion("classification not in", values, "classification");
-            return (Criteria) this;
-        }
-
-        public Criteria andClassificationBetween(String value1, String value2) {
-            addCriterion("classification between", value1, value2, "classification");
-            return (Criteria) this;
-        }
-
-        public Criteria andClassificationNotBetween(String value1, String value2) {
-            addCriterion("classification not between", value1, value2, "classification");
+        public Criteria andBlogTypeIdNotBetween(Long value1, Long value2) {
+            addCriterion("blog_type_id not between", value1, value2, "blogTypeId");
             return (Criteria) this;
         }
 

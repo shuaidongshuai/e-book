@@ -4,9 +4,12 @@ import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.MatchMode;
 import com.aliyun.oss.model.PolicyConditions;
+import com.dong.ebook.common.UploadFileType;
 import com.dong.ebook.dto.ResponseUploadDto;
 import com.dong.ebook.model.User;
+import com.dong.ebook.security.AuthUserService;
 import com.dong.ebook.service.OssService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -15,17 +18,116 @@ import java.util.Date;
 
 @Service
 public class OssServiceImpl implements OssService {
-    String accessId = "LTAIRjwzdCuZyylM"; // 请填写您的AccessKeyId。
-    String accessKey = "KI6Ytx3cJ96q0Bx3ENC3aTlV1xeiyY"; // 请填写您的AccessKeySecret。
-    String endpoint = "oss-cn-beijing.aliyuncs.com"; // 请填写您的 endpoint。
-    String bucket = "e-bookpublic"; // 请填写您的 bucketname 。
+    String accessId = "";
+    String accessKey = "";
+    String endpoint = "oss-cn-beijing.aliyuncs.com";
+    String bucket = "e-bookpublic"; //  bucketname
     String host = "http://" + bucket + "." + endpoint; // host的格式为 bucketname.endpoint
     String avatarDir = "avatar/"; // 用户上传文件时指定的前缀 如：user-avatarDir-prefix/
     String blogImgDir = "blogImg/";
     String bookDir = "book/";
+    String bookCoverDir = "bookCover/";
     String videoDir = "video/";
+    String videoCoverDir = "videoCover/";
     String musicDir = "music/";
+    String musicCoverDir = "musicCover/";
     String pictureDir = "picture/";
+
+    @Autowired
+    AuthUserService authUserService;
+
+    @Override
+    public ResponseUploadDto uploadAvatar() throws UnsupportedEncodingException {
+        User user = authUserService.getCurUser();
+        String filename = user.getId() + ".png";
+        return upload(avatarDir, filename);
+    }
+
+    @Override
+    public ResponseUploadDto uploadBlogImage() throws UnsupportedEncodingException {
+        String filename = buildFilenameByUserTime(".png");
+        return upload(blogImgDir, filename);
+    }
+
+    @Override
+    public ResponseUploadDto uploadBook(String filename) throws UnsupportedEncodingException {
+        return uploadFile(filename, UploadFileType.BOOK);
+    }
+
+    @Override
+    public ResponseUploadDto uploadVideo(String filename) throws UnsupportedEncodingException {
+        return uploadFile(filename, UploadFileType.VIDEO);
+    }
+
+    @Override
+    public ResponseUploadDto uploadMusic(String filename) throws UnsupportedEncodingException {
+        return uploadFile(filename, UploadFileType.MUSIC);
+    }
+
+    @Override
+    public ResponseUploadDto uploadPicture(String filename) throws UnsupportedEncodingException {
+        return uploadFile(filename, UploadFileType.PICTURE);
+    }
+
+    @Override
+    public ResponseUploadDto uploadBookCover(String filename) throws UnsupportedEncodingException {
+        return uploadFile(filename, UploadFileType.BOOKCOVER);
+    }
+
+    @Override
+    public ResponseUploadDto uploadVideoCover(String filename) throws UnsupportedEncodingException {
+        return uploadFile(filename, UploadFileType.VIDEOCOVER);
+    }
+
+    @Override
+    public ResponseUploadDto uploadMusicCover(String filename) throws UnsupportedEncodingException {
+        return uploadFile(filename, UploadFileType.MUSICCOVER);
+    }
+
+    public ResponseUploadDto uploadFile(String filename, String fileType) throws UnsupportedEncodingException {
+        ResponseUploadDto responseUploadDto = new ResponseUploadDto();
+        responseUploadDto.setSuccess(false);
+        if(filename == null || filename.isEmpty()){
+            responseUploadDto.setErrorMsg("文件名为空");
+            return responseUploadDto;
+        }
+        String suffix = splitSuffix(filename);
+        boolean checkRes;
+        String fileDir;
+        if(UploadFileType.BOOK.equals(fileType)){
+            checkRes = checkBook(suffix);
+            fileDir = bookDir;
+        } else if(UploadFileType.VIDEO.equals(fileType)){
+            checkRes = checkVideo(suffix);
+            fileDir = videoDir;
+        } else if(UploadFileType.MUSIC.equals(fileType)){
+            checkRes = checkMusic(suffix);
+            fileDir = musicDir;
+        } else if(UploadFileType.PICTURE.equals(fileType)){
+            checkRes = checkPicture(suffix);
+            fileDir = pictureDir;
+            // 批量上传会出现秒级文件名重复问题，所以后缀以filename结尾
+            suffix = "_" + filename;
+        } else if(UploadFileType.BOOKCOVER.equals(fileType)){
+            checkRes = checkPicture(suffix);
+            fileDir = bookCoverDir;
+        } else if(UploadFileType.VIDEOCOVER.equals(fileType)){
+            checkRes = checkPicture(suffix);
+            fileDir = videoCoverDir;
+        } else if(UploadFileType.MUSICCOVER.equals(fileType)){
+            checkRes = checkPicture(suffix);
+            fileDir = musicCoverDir;
+        } else {
+            responseUploadDto.setErrorMsg("不支持该格式");
+            return responseUploadDto;
+        }
+        if(!checkRes){
+            responseUploadDto.setErrorMsg("不支持该格式");
+            return responseUploadDto;
+        }
+        filename = buildFilenameByUserTime(suffix);
+        return upload(fileDir, filename);
+    }
 
     public ResponseUploadDto upload(String dir, String filename) throws UnsupportedEncodingException {
         ResponseUploadDto responseUploadDto = new ResponseUploadDto();
@@ -48,7 +150,7 @@ public class OssServiceImpl implements OssService {
 
         //filename包含了路径
         filename = dir + filename;
-        String fileUrl = host + filename;
+        String fileUrl = host + "/" + filename;
 
         responseUploadDto.setHost(host);
         responseUploadDto.setAccessKeyId(accessId);
@@ -60,55 +162,75 @@ public class OssServiceImpl implements OssService {
         return responseUploadDto;
     }
 
-    @Override
-    public ResponseUploadDto uploadAvatar(User user) throws UnsupportedEncodingException {
-        String filename = user.getId() + "_" + user.getUsername() + ".png";
-        return upload(avatarDir, filename);
-    }
-
-    @Override
-    public ResponseUploadDto uploadBlogImage(User user) throws UnsupportedEncodingException {
+    /**
+     * 生成  userId_username/2019-10-10_00:00:00.suffix
+     *
+     * @param suffix
+     * @return
+     */
+    public String buildFilenameByUserTime(String suffix) {
+        User user = authUserService.getCurUser();
         Date currentTime = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         String dateString = formatter.format(currentTime);
-        String filename = user.getId() + "_" + user.getUsername() + "/" + dateString + ".png";
-        return upload(blogImgDir, filename);
+        return user.getId() + "/" + dateString + suffix;
     }
 
-    @Override
-    public ResponseUploadDto uploadBook(String filename) throws UnsupportedEncodingException {
-        return upload(bookDir, filename);
-    }
-
-    @Override
-    public ResponseUploadDto uploadVideo(String filename) throws UnsupportedEncodingException {
-        return upload(videoDir, filename);
-    }
-
-    @Override
-    public ResponseUploadDto uploadMusic(String filename) throws UnsupportedEncodingException {
-        return upload(musicDir, filename);
-    }
-
-    @Override
-    public ResponseUploadDto uploadPicture(String filename) throws UnsupportedEncodingException {
-        return upload(pictureDir, filename);
-    }
-
-    @Override
-    public ResponseUploadDto uploadFile(String type, String filename) throws UnsupportedEncodingException {
-        ResponseUploadDto responseUploadDto = new ResponseUploadDto();
-        responseUploadDto.setSuccess(false);
-        responseUploadDto.setErrorMsg("上传类型只能为 Book Video Music Picture");
-        if("Book".equalsIgnoreCase(type)){
-            responseUploadDto = uploadBook(filename);
-        } else if("Video".equalsIgnoreCase(type)){
-            responseUploadDto = uploadVideo(filename);
-        } else if("Music".equalsIgnoreCase(type)){
-            responseUploadDto = uploadMusic(filename);
-        } else if("Picture".equalsIgnoreCase(type)){
-            responseUploadDto = uploadPicture(filename);
+    /**
+     * 提取filename的后缀
+     *
+     * @param filename
+     */
+    public String splitSuffix(String filename) {
+        String[] split = filename.split("\\.");
+        if (split.length <= 1) {
+            throw new RuntimeException("切分" + filename + "Error");
         }
-        return responseUploadDto;
+        return "." + split[split.length - 1];
+    }
+
+    public boolean checkBook(String suffix) {
+        if (".exe".equalsIgnoreCase(suffix) || ".txt".equalsIgnoreCase(suffix) ||
+                ".html".equalsIgnoreCase(suffix) || ".caj".equalsIgnoreCase(suffix) ||
+                ".chm".equalsIgnoreCase(suffix) || ".pdf".equalsIgnoreCase(suffix) ||
+                ".umd".equalsIgnoreCase(suffix) || ".jar".equalsIgnoreCase(suffix)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkVideo(String suffix) {
+        if (".avi".equalsIgnoreCase(suffix) || ".wmv".equalsIgnoreCase(suffix) ||
+                ".mpeg".equalsIgnoreCase(suffix) || ".mp4".equalsIgnoreCase(suffix) ||
+                ".mov".equalsIgnoreCase(suffix) || ".mkv".equalsIgnoreCase(suffix) ||
+                ".flv".equalsIgnoreCase(suffix) || ".f4v".equalsIgnoreCase(suffix) ||
+                ".m4v".equalsIgnoreCase(suffix) || ".rmvb".equalsIgnoreCase(suffix) ||
+                ".rm".equalsIgnoreCase(suffix) || ".3gp".equalsIgnoreCase(suffix) ||
+                ".dat".equalsIgnoreCase(suffix) || ".ts".equalsIgnoreCase(suffix) ||
+                ".mts".equalsIgnoreCase(suffix) || ".vob".equalsIgnoreCase(suffix)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkMusic(String suffix) {
+        if (".wav".equalsIgnoreCase(suffix) || ".mp3".equalsIgnoreCase(suffix) ||
+                ".wmv".equalsIgnoreCase(suffix) || ".au".equalsIgnoreCase(suffix) ||
+                ".mov".equalsIgnoreCase(suffix) || ".mkv".equalsIgnoreCase(suffix) ||
+                ".aiff".equalsIgnoreCase(suffix) || ".vqf".equalsIgnoreCase(suffix) ||
+                ".cd".equalsIgnoreCase(suffix) || ".ape".equalsIgnoreCase(suffix) ||
+                ".midi".equalsIgnoreCase(suffix)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkPicture(String suffix) {
+        if (".jpeg".equalsIgnoreCase(suffix) || ".jpg".equalsIgnoreCase(suffix) ||
+                ".png".equalsIgnoreCase(suffix) || ".gif".equalsIgnoreCase(suffix) ||
+                ".bmp".equalsIgnoreCase(suffix)) {
+            return true;
+        }
+        return false;
     }
 }

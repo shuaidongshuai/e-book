@@ -96,7 +96,8 @@ $(function () {
                 id: $("#blogId").val(),
                 title: _title,
                 content: _value,
-                contentHtml: _render
+                contentHtml: _render,
+                blogTypeId: $("#blogTypeId").val()
             },
             success: function (responseUploadDto) {
                 if (responseUploadDto.success) {

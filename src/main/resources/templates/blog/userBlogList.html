@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/header :: header}">
+<head>
+    <meta charset="UTF-8">
+    <title>Dong E-Book</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/dongebook.css" rel="stylesheet">
 </head>
 <body>
+<div th:replace="~{fragments/header :: header}"></div>
+
 <div data-th-if="${not userBlogs.success}" class="alert alert-danger text-center">
     <strong>抱歉 ! </strong> <span data-th-text="${userBlogs.errorMsg}"></span>
 </div>
+
 <div class="container-fluid" data-th-if="${userBlogs.success}">
     <div class="row clearfix" th:object="${userBlogs}">
         <div class="col-md-4">
-            <div class="card">
+            <div class="card my-2">
                 <div class="card-block">
                     <div id="blog" data-th-attr="userId=*{userId}"></div>
                     <img th:src="*{avatar}" class="img-thumbnail img-rounded float-left" width="50px" height="50px">
@@ -44,10 +51,10 @@
             <div class="card my-md-2" th:each="blogDto : *{pageInfo.list}">
                 <div class="card-block" th:object="${blogDto}">
                     <img th:if="${userBlogs.selfBlog}" src="/images/delete.png" class="float-right delBlog" width="20" title="删除博客" style="cursor: pointer;" data-th-attr="blogId=*{id}">
-                    <a th:href="'/blog/'+*{id}">
+                    <a th:href="'/blog/'+*{id}" class="changeRed">
                         <span th:text="*{title}" style="font-size:25px;"></span>
                     </a>
-                    <a th:href="'/blog/'+*{id}">
+                    <a th:href="'/blog/'+*{id}" class="changeRed">
                         <h6 class="text-muted" th:text="*{summary}"></h6>
                     </a>
                     <span class="text-muted" th:text="*{#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>

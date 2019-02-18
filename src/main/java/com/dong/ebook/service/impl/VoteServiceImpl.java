@@ -8,6 +8,7 @@ import com.dong.ebook.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -24,9 +25,12 @@ public class VoteServiceImpl implements VoteService {
             return responseCommonDto;
         }
 
+        Date date = new Date();
         Vote vote = new Vote();
         vote.setUserId(userId);
         vote.setBlogId(blogId);
+        vote.setCreateTime(date);
+        vote.setModifyTime(date);
         voteDao.insert(vote);
 
         responseCommonDto.setSuccess(true);

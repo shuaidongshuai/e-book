@@ -1,47 +1,27 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
-      data-th-fragment="header">
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <meta charset="UTF-8">
     <title>e-book</title>
     <!-- Bootstrap CSS -->
-    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">-->
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">-->
-    <!--<link rel="shortcut icon" th:href="@{/images/author.jpg}"/>-->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/cropper.min.css" rel="stylesheet">
-    <link href="/css/imgCropping.css" rel="stylesheet">
-    <link href="/css/dongblog.css" type="text/css" rel="stylesheet">
-    <style>
-        a {
-            color: #1f7199;
-            transition: 0.5s;
-            text-decoration: none;
-        }
-        a:hover {
-            color:red;
-            text-decoration: none;
-        }
-    </style>
 </head>
 <body>
-<nav class="navbar navbar-inverse bg-inverse navbar-toggleable-md" id="headerNav">
+<nav class="navbar navbar-inverse bg-inverse navbar-toggleable-md" id="headerNav" data-th-fragment="header">
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <a class="navbar-brand" href="/">E-Book</a>
+            <a class="navbar-brand" href="/">じ☆帥東☆じ</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse">
-            <ul class="navbar-nav mr-auto">
-                <li class="active nav-item"><a href="/" class="nav-link">热度</a></li>
-                <li class="nav-item"><a href="/" class="nav-link">最新</a></li>
-                <form th:action="@{/}" method="post" class="form-inline navbar-left mx-4">
+            <ul class="navbar-nav mr-auto col-6">
+                <form th:action="@{/}" method="post" class="form-inline navbar-left mx-4 w-75">
                     <!--<input type="text" class="form-control" placeholder="搜索" style="background-color:transparent">-->
-                    <input type="text" class="form-control border-0" placeholder="搜索">
+                    <input type="text" class="form-control border-0 w-75" placeholder="搜索">
                     <button type="submit" class="btn btn-link btn-sm">
                         <img src="/images/search.png" class="thumbnail" width="22">
                     </button>
@@ -69,7 +49,7 @@
                 <div class="dropdown-menu">
                     <!--<a class=" dropdown-item" href="/" th:href="@{'/' + ${#authentication.name}}">个人主页</a>-->
                     <a th:href="@{/blog/userBlogList}" class="dropdown-item">博客主页</a>
-                    <a th:href="@{/user/profile}" class="dropdown-item">个人设置</a>
+                    <a th:href="@{/user/personal}" class="dropdown-item">个人中心</a>
                     <div class="dropdown-divider"></div>
                     <a th:href="@{/logout}" class="dropdown-item text-danger">退出</a>
                 </div>
@@ -85,25 +65,5 @@
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
-<div class="container">
-    <!-- 通过 row 在水平方向创建一组 column -->
-    <div class="row mt-1">
-        <!-- 第一列占8格 -->
-        <div class="col-md-7">
-        </div>
-        <div th:if="${param.error}">
-            <button type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom">
-                Invalid username and password.
-            </button>
-            <!-- Generated markup by the plugin -->
-            <div class="tooltip tooltip-top" role="tooltip">
-                <div class="tooltip-arrow"></div>
-                <div class="tooltip-inner">
-                    Some tooltip text!
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 </body>
 </html>

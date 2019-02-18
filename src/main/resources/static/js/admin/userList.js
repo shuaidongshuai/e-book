@@ -14,7 +14,7 @@ $(function () {
             data: {
                 "pageNum": pageNum,
                 "pageSize": pageSize,
-                "username": $(".searchUsername").val()
+                "username": $("#managerSearch input").val()
             },
             success: function (data) {
                 var prefix = data.toString().substring(0, 4);
@@ -25,12 +25,14 @@ $(function () {
         });
     }
 
+    $("#managerSearch input").attr("placeholder", "输入账号进行搜索")
+
     // 搜索
-    $(".searchUsernameBtn").click(function () {
+    $("#managerSearch").off("click", "a").on("click", "a", function () {
         getUserList(1, _pageSize);
     });
     //绑定回车键
-    $('.searchUsername').bind('keydown', function (event) {
+    $("#managerSearch").off("keydown", "input").on("keydown", "input", function (event) {
         if (event.keyCode == 13) {
             getUserList(1, _pageSize)
         }
@@ -76,7 +78,7 @@ $(function () {
     });
 
 
-    $('.lockModelSubmit').click(function () {
+    $('.lockModelSubmit').off("click").on("click", function () {
         $.ajax({
             url: lockUrl,
             type: "GET",

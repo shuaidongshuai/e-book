@@ -1,5 +1,7 @@
 $(function () {
 
+    $("#loginUsername").focus()
+
     $('#password2').off("blur").on("blur", function() {
         checkPassword()
     })
