@@ -275,7 +275,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public ResponseManagerBlogListDto getManagerBlogList(int pageNum, int pageSize, boolean desc, String query) {
         Page page = PageHelper.startPage(pageNum, pageSize);
-        BlogExample blogExample = assembleBlogExampleByDesc(desc);
+        BlogExample blogExample = assembleBlogExampleByModifyTimeDesc(desc);
         BlogExample.Criteria criteria = blogExample.createCriteria();
         if(query != null && !query.isEmpty()){
             try {
@@ -418,14 +418,14 @@ public class BlogServiceImpl implements BlogService {
 
     public List<Blog> getBlogList(int pageNum, int pageSize, boolean desc) {
         Page page = PageHelper.startPage(pageNum, pageSize);
-        BlogExample blogExample = assembleBlogExampleByDesc(desc);
+        BlogExample blogExample = assembleBlogExampleByModifyTimeDesc(desc);
         blogDao.selectByExample(blogExample);
         return page.getResult();
     }
 
     public List<Blog> getBlogListByTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
         Page page = PageHelper.startPage(pageNum, pageSize);
-        BlogExample blogExample = assembleBlogExampleByDesc(desc);
+        BlogExample blogExample = assembleBlogExampleByVoteNumDesc(desc);
         if(typeIds.size() > 0){
             blogExample.createCriteria().andBlogTypeIdIn(typeIds);
         }
@@ -435,7 +435,7 @@ public class BlogServiceImpl implements BlogService {
 
     public List<Blog> getBlogListByNotTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
         Page page = PageHelper.startPage(pageNum, pageSize);
-        BlogExample blogExample = assembleBlogExampleByDesc(desc);
+        BlogExample blogExample = assembleBlogExampleByVoteNumDesc(desc);
         if(typeIds.size() > 0){
             blogExample.createCriteria().andBlogTypeIdNotIn(typeIds);
         }
@@ -538,10 +538,7 @@ public class BlogServiceImpl implements BlogService {
             //删除不必要信息
             blog.setUserId(null);
             blog.setBlogTypeId(null);
-            blog.setCommentNum(null);
-            blog.setCreateTime(null);
             blog.setModifyTime(null);
-            blog.setTraffic(null);
 
             blogDtos.add(BlogDo2dto(blog));
         }
@@ -575,12 +572,22 @@ public class BlogServiceImpl implements BlogService {
         return responseManagerBlogListDto;
     }
 
-    public BlogExample assembleBlogExampleByDesc(boolean desc){
+    public BlogExample assembleBlogExampleByModifyTimeDesc(boolean desc){
         BlogExample blogExample = new BlogExample();
         if(desc){
             blogExample.setOrderByClause("modify_time desc");
         } else {
             blogExample.setOrderByClause("modify_time asc");
+        }
+        return blogExample;
+    }
+
+    public BlogExample assembleBlogExampleByVoteNumDesc(boolean desc){
+        BlogExample blogExample = new BlogExample();
+        if(desc){
+            blogExample.setOrderByClause("vote_num desc");
+        } else {
+            blogExample.setOrderByClause("vote_num asc");
         }
         return blogExample;
     }
