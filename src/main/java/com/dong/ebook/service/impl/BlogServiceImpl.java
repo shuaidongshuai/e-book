@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class BlogServiceImpl implements BlogService {
@@ -52,7 +54,13 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public ResponseBlogSaveDto saveBlog(BlogDto blogDto) {
+        ResponseBlogSaveDto responseBlogSaveDto = new ResponseBlogSaveDto();
+        responseBlogSaveDto.setSuccess(false);
         User user = authUserService.getCurUser();
+        if(user.getIslock()){
+            responseBlogSaveDto.setErrorMsg("你已被上锁不能保存博客，请联系管理员");
+            return responseBlogSaveDto;
+        }
         blogDto.setUserId(user.getId());
         BlogWithBLOBs blogWithBLOBs = BlogDto2do(blogDto);
 
@@ -65,6 +73,12 @@ public class BlogServiceImpl implements BlogService {
         if(txtcontent.length() > 200){
             summary = summary.substring(0, 200);
         }
+
+        /**
+         * 这里有个重要的bug，用户如果提交了<script></script> <style></style> 会修改自己的页面
+         */
+        contentHtml = changeScriptStyle(contentHtml);
+        blogWithBLOBs.setContentHtml(contentHtml);
 
         Date date = new Date();
         blogWithBLOBs.setModifyTime(date);
@@ -82,7 +96,6 @@ public class BlogServiceImpl implements BlogService {
             elasticsearchService.updateBlog(BlogWithBLOBs2Elasticsearch(blogWithBLOBs));
         }
 
-        ResponseBlogSaveDto responseBlogSaveDto = new ResponseBlogSaveDto();
         responseBlogSaveDto.setSuccess(true);
         responseBlogSaveDto.setBlogId(blogWithBLOBs.getId());
         return responseBlogSaveDto;
@@ -289,7 +302,8 @@ public class BlogServiceImpl implements BlogService {
             BlogWithBLOBs blogWithBLOBs = blogDao.selectByPrimaryKey(blogId);
             //检查是否是博主
             if(!blogWithBLOBs.getUserId().equals(curUser.getId())){
-                throw new RuntimeException("editBlog blogUserId != curUserId");
+                logger.warn("有人恶意修改他人blog userId=" + curUser.getId());
+                throw new RuntimeException("请不要修改他人博客");
             }
             title = blogWithBLOBs.getTitle();
             content = blogWithBLOBs.getContent();
@@ -374,20 +388,21 @@ public class BlogServiceImpl implements BlogService {
     public ResponseBlogListDto getMainPageBlogList() {
         int size = 3;
         User user = authUserService.getCurUser();
-        List<Blog> blogList;
+        List<BlogDto> blogDtoList;
         if(user == null){
-            blogList = getBlogList(1, size, true);
+            blogDtoList = getHotBlog(size);
         } else{
             //根据兴趣爱好找
             List<Long> typeIdList = preferenceService.getPreferenceTypeId(user.getId(), PreferenceTypeName.BLOG);
-            blogList = getBlogListByTypeId(1, size, true, typeIdList);
+            List<Blog> blogList = getBlogListByTypeId(1, size, true, typeIdList);
             if(blogList.size() < size){
                 List<Blog> blogListByNotTypeId = getBlogListByNotTypeId(1, size - blogList.size(), true, typeIdList);
                 blogList.addAll(blogListByNotTypeId);
             }
+            blogDtoList = assembleMainPageBlogListDto(blogList);
         }
         ResponseBlogListDto responseBlogListDto = new ResponseBlogListDto();
-        responseBlogListDto.setPageInfo(new PageInfo(blogList));
+        responseBlogListDto.setPageInfo(new PageInfo(blogDtoList));
         responseBlogListDto.setSuccess(true);
         return responseBlogListDto;
     }
@@ -513,11 +528,14 @@ public class BlogServiceImpl implements BlogService {
         return dozerBeanMapper.map(blogWithBLOBs, ElasticsearchBlogDto.class);
     }
 
+    public List<BlogDto> assembleMainPageBlogListDto(List<Blog> blogs) {
+        return assembleHotBlogListDto(blogs);
+    }
+
     public List<BlogDto> assembleHotBlogListDto(List<Blog> blogs) {
         List<BlogDto> blogDtos = new ArrayList<>(blogs.size());
         for(Blog blog : blogs){
             //删除不必要信息
-            blog.setSummary(null);
             blog.setUserId(null);
             blog.setBlogTypeId(null);
             blog.setCommentNum(null);
@@ -565,5 +583,45 @@ public class BlogServiceImpl implements BlogService {
             blogExample.setOrderByClause("modify_time asc");
         }
         return blogExample;
+    }
+
+    /**
+     * 把<script...></script...> 改为<pre></><code><script...></script...></code></pre>
+     * @param contentHtml
+     * @return
+     */
+    public String changeScriptStyle(String contentHtml){
+        String regex = "<(script[\\s\\S]*)>([\\s\\S]*)<(/script.*?)>|<(style[\\s\\S]*)>([\\s\\S]*)<(/style.*?)>";
+        Pattern pattern = Pattern.compile(regex) ;
+        Matcher matcher = pattern.matcher(contentHtml);
+        StringBuffer sb = new StringBuffer();
+        while(matcher.find()){
+            String oldStr1 = matcher.group(1);
+            String oldStr2 = matcher.group(2);
+            String oldStr3 = matcher.group(3);
+            if(oldStr1 == null){
+                oldStr1 = matcher.group(4);
+                oldStr2 = matcher.group(5);
+                oldStr3 = matcher.group(6);
+            }
+            //变成 <code>&lt;script..."&gt;</code>
+            String newStr = "<pre><code>&lt;" + oldStr1 + "&gt;" + oldStr2 + "&lt;" + oldStr3 + "&gt;</code></pre>";
+            matcher.appendReplacement(sb, newStr);
+        }
+        String newContentHtml = sb.toString();
+        if(newContentHtml.isEmpty()){
+            //不存在嵌入script style
+            newContentHtml = contentHtml;
+        }
+        return newContentHtml;
+    }
+
+    public void test() {
+        changeScriptStyle("<script>\n" +
+                "for(var i = 0; i<2; ++i){\n" +
+                "alert(\"dong\")\n" +
+                "}\n" +
+                "</script>\n" +
+                "<style>body{background-color: red;}</style>");
     }
 }

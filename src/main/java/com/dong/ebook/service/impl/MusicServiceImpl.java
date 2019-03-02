@@ -49,6 +49,11 @@ public class MusicServiceImpl implements MusicService {
         ResponseCommonDto responseCommonDto = new ResponseCommonDto();
         responseCommonDto.setSuccess(false);
 
+        if(authUserService.getCurUser().getIslock()){
+            responseCommonDto.setErrorMsg("你已被上锁，不能上传任何信息");
+            return responseCommonDto;
+        }
+
         Music music = RequestMusic2do(requestMusicDto);
         if(requestMusicDto.getId() == null || requestMusicDto.getId() < 1){
             if(getMusicByFileUrl(requestMusicDto.getFileUrl()) != null){

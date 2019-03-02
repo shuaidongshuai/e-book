@@ -49,6 +49,12 @@ public class PictureServiceImpl implements PictureService {
     public ResponseCommonDto savePicture(RequestPictureDto requestPictureDto) {
         ResponseCommonDto responseCommonDto = new ResponseCommonDto();
         responseCommonDto.setSuccess(false);
+
+        if(authUserService.getCurUser().getIslock()){
+            responseCommonDto.setErrorMsg("你已被上锁，不能上传任何信息");
+            return responseCommonDto;
+        }
+
         if(requestPictureDto.getTitle() == null || requestPictureDto.getTitle().isEmpty()){
             responseCommonDto.setErrorMsg("标题为空");
             return responseCommonDto;

@@ -18,8 +18,8 @@ import java.util.Date;
 
 @Service
 public class OssServiceImpl implements OssService {
-    String accessId = "LTAIusAuN2Y14710";
-    String accessKey = "FdoUn7i66qif3mJk8IONY7TFL4p9UO";
+    String accessId = "";
+    String accessKey = "";
     String endpoint = "oss-cn-beijing.aliyuncs.com";
     String bucket = "e-bookpublic"; //  bucketname
     String host = "http://" + bucket + "." + endpoint; // host的格式为 bucketname.endpoint
@@ -45,6 +45,12 @@ public class OssServiceImpl implements OssService {
 
     @Override
     public ResponseUploadDto uploadBlogImage() throws UnsupportedEncodingException {
+        ResponseUploadDto responseUploadDto = new ResponseUploadDto();
+        responseUploadDto.setSuccess(false);
+        if(checkUserIsLock()){
+            responseUploadDto.setErrorMsg("你已被上锁，不能博客图片");
+            return responseUploadDto;
+        }
         String filename = buildFilenameByUserTime(".png");
         return upload(blogImgDir, filename);
     }
@@ -87,6 +93,12 @@ public class OssServiceImpl implements OssService {
     public ResponseUploadDto uploadFile(String filename, String fileType) throws UnsupportedEncodingException {
         ResponseUploadDto responseUploadDto = new ResponseUploadDto();
         responseUploadDto.setSuccess(false);
+
+        if(checkUserIsLock()){
+            responseUploadDto.setErrorMsg("你已被上锁，不能上传");
+            return responseUploadDto;
+        }
+
         if(filename == null || filename.isEmpty()){
             responseUploadDto.setErrorMsg("文件名为空");
             return responseUploadDto;
@@ -229,6 +241,13 @@ public class OssServiceImpl implements OssService {
         if (".jpeg".equalsIgnoreCase(suffix) || ".jpg".equalsIgnoreCase(suffix) ||
                 ".png".equalsIgnoreCase(suffix) || ".gif".equalsIgnoreCase(suffix) ||
                 ".bmp".equalsIgnoreCase(suffix)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkUserIsLock(){
+        if(authUserService.getCurUser().getIslock()){
             return true;
         }
         return false;

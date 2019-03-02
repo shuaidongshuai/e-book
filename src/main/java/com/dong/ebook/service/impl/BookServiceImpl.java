@@ -49,6 +49,11 @@ public class BookServiceImpl implements BookService {
         ResponseCommonDto responseCommonDto = new ResponseCommonDto();
         responseCommonDto.setSuccess(false);
 
+        if(authUserService.getCurUser().getIslock()){
+            responseCommonDto.setErrorMsg("你已被上锁，不能上传任何信息");
+            return responseCommonDto;
+        }
+
         BookWithBLOBs bookWithBLOBs = RequestBook2doWithBLOBs(requestBookDto);
         if(requestBookDto.getId() == null){
             if (getBookByFileUrl(requestBookDto.getFileUrl()) != null) {

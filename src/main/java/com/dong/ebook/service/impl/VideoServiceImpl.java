@@ -49,6 +49,11 @@ public class VideoServiceImpl implements VideoService {
         ResponseCommonDto responseCommonDto = new ResponseCommonDto();
         responseCommonDto.setSuccess(false);
 
+        if(authUserService.getCurUser().getIslock()){
+            responseCommonDto.setErrorMsg("你已被上锁，不能上传任何信息");
+            return responseCommonDto;
+        }
+
         Video video = RequestVideo2do(requestVideoDto);
         if(requestVideoDto.getId() == null){
             if(getVideoByFileUrl(requestVideoDto.getFileUrl()) != null){

@@ -41,10 +41,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResponseUserDto addUser(RequestUserDto requestUserDto) {
-        ResponseUserDto responseUser = new ResponseUserDto();
-        responseUser.setSuccess(false);
-        if (requestUserDto == null) {
-            responseUser.setErrorMsg("RequestUserDto is null");
+        ResponseUserDto responseUser = checkAddUser(requestUserDto);
+        if(!responseUser.isSuccess()){
             return responseUser;
         }
         User user = dozerBeanMapper.map(requestUserDto, User.class);
@@ -90,7 +88,13 @@ public class UserServiceImpl implements UserService {
             return responseCommonDto;
         }
 
-        changeRequestUserNullParameter(requestUserDto);
+        try {
+            changeRequestUserNullParameter(requestUserDto);
+        }catch (Exception e){
+            logger.warn("updateUserById 有人直接提交了空数据");
+            responseCommonDto.setErrorMsg("参数不能为空");
+            return responseCommonDto;
+        }
 
         //检查是否修改了密码
         String password = requestUserDto.getPassword();
@@ -335,8 +339,8 @@ public class UserServiceImpl implements UserService {
 
         //不能改自己
         User curUser = authUserService.getCurUser();
-        if(curUser == null){
-            responseCommonDto.setErrorMsg("未登录");
+        if(curUser.getIslock()){
+            responseCommonDto.setErrorMsg("你已被上锁，不能修改任何信息");
             return responseCommonDto;
         }
         if(curUser.getId().equals(userId)){
@@ -372,5 +376,63 @@ public class UserServiceImpl implements UserService {
         if(requestUserDto.getNewPassword().isEmpty()){
             requestUserDto.setNewPassword(null);
         }
+    }
+
+    private ResponseUserDto checkAddUser(RequestUserDto requestUserDto){
+        ResponseUserDto responseUser = new ResponseUserDto();
+        responseUser.setSuccess(false);
+        String username = requestUserDto.getUsername();
+        String password = requestUserDto.getPassword();
+        String email = requestUserDto.getEmail();
+        Date birthday = requestUserDto.getBirthday();
+        String nickname = requestUserDto.getNickname();
+        String sex = requestUserDto.getSex();
+        String phoneNumber = requestUserDto.getPhoneNumber();
+        if(requestUserDto == null){
+            responseUser.setErrorMsg("请求参数为空");
+        }else if(username == null){
+            responseUser.setErrorMsg("用户名为空");
+            return responseUser;
+        }else if(password == null){
+            responseUser.setErrorMsg("密码为空");
+            return responseUser;
+        }else if(email == null){
+            responseUser.setErrorMsg("邮箱为空");
+            return responseUser;
+        }else if(birthday == null){
+            responseUser.setErrorMsg("生日为空");
+            return responseUser;
+        }else if(nickname == null){
+            responseUser.setErrorMsg("昵称为空");
+            return responseUser;
+        }else if(sex == null){
+            responseUser.setErrorMsg("性别为空");
+            return responseUser;
+        }else if(phoneNumber == null){
+            responseUser.setErrorMsg("电话号为空");
+            return responseUser;
+        }
+
+        if(username.length() < 6 || username.length() > 30){
+            responseUser.setErrorMsg("用户名长度必须在6-30以内");
+            return responseUser;
+        }else if(password.length() < 6 || username.length() > 20){
+            responseUser.setErrorMsg("密码长度必须在6-20以内");
+            return responseUser;
+        }else if(email.length() < 6 || email.length() > 20){
+            responseUser.setErrorMsg("邮箱长度必须在6-20以内");
+            return responseUser;
+        }else if(nickname.length() < 1 || username.length() > 10){
+            responseUser.setErrorMsg("昵称长度必须在1-10以内");
+            return responseUser;
+        }else if(!"girl".equals(sex) || !"boy".equals(sex)){
+            responseUser.setErrorMsg("性别错误");
+            return responseUser;
+        }else if(phoneNumber.length() < 3 || phoneNumber.length() > 30){
+            responseUser.setErrorMsg("电话号长度必须3-30以内");
+            return responseUser;
+        }
+        responseUser.setSuccess(true);
+        return responseUser;
     }
 }

@@ -1,4 +1,5 @@
 $(function () {
+
     $("#sidebarnav a").off("click").on("click", function () {
         var url = $(this).attr("url")
         if(url == null){
@@ -16,5 +17,5 @@ $(function () {
         });
     })
 
-
+    $("#sidebarnav li:first").trigger("click")
 })

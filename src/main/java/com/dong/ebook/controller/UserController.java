@@ -38,12 +38,6 @@ public class UserController {
     @Autowired
     private VideoService videoService;
 
-    @RequestMapping("/list")
-    public String listUser(Model model) {
-        model.addAttribute("users", userService);
-        return "list";
-    }
-
     @DeleteMapping("/del/{id}")
     public String delUser(@PathVariable("id") Long id, Model model) {
 //        userService.delUser(id);
