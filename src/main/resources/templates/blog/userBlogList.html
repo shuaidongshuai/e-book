@@ -36,10 +36,10 @@
                             <span>喜欢</span>
                             <span th:text="*{voteNum}"></span>
                         </button>
-                        <button class="btn btn-info active mx-1">
-                            <span>评论</span>
-                            <span th:text="*{commentNum}"></span>
-                        </button>
+                        <!--<button class="btn btn-info active mx-1">-->
+                            <!--<span>评论</span>-->
+                            <!--<span th:text="*{commentNum}"></span>-->
+                        <!--</button>-->
                     </div>
                 </div>
             </div>
@@ -58,10 +58,10 @@
                         <h6 class="text-muted" th:text="*{summary}"></h6>
                     </a>
                     <span class="text-muted" th:text="*{#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
-                    <span class="text-muted" th:text="阅读数："></span>
+                    <span class="text-muted">阅读:</span>
                     <span class="text-primary" th:text="*{traffic}"></span>
-                    <span class="text-muted" th:text=" 评论数："></span>
-                    <span class="text-primary" th:text="*{commentNum}"></span>
+                    <span class="text-muted"> 点赞:</span>
+                    <span class="text-primary" th:text="*{voteNum}"></span>
                 </div>
             </div>
             <div th:replace="~{fragments/page :: page}"></div>

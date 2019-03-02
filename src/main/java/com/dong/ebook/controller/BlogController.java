@@ -20,7 +20,7 @@ public class BlogController {
     public String blog(@PathVariable("blogId") Long blogId, Model model) {
         ResponseBlogPageDto responseBlogPageDto = blogService.getUserBlogById(blogId);
         model.addAttribute("userBlog", responseBlogPageDto);
-        return "/blog/userBlog";
+        return "blog/userBlog";
     }
 
     @GetMapping("/userBlogList")
@@ -28,7 +28,7 @@ public class BlogController {
         ResponseUserBlogListDto responseUserBlogListDto = blogService.getUserBlogList(userId, pageNum, pageSize);
         model.addAttribute("pageInfo", responseUserBlogListDto.getPageInfo());
         model.addAttribute("userBlogs", responseUserBlogListDto);
-        return "/blog/userBlogList";
+        return "blog/userBlogList";
     }
 
 }

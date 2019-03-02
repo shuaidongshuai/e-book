@@ -10,7 +10,6 @@ import java.util.Date;
 public class ManagerPictureDto {
     private Long id;
     private String fileUrl;
-    private String coverUrl;
     private Long pictureTypeId;
     private String title;
     private Date modifyTime;

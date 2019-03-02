@@ -543,6 +543,7 @@
             var _formData = formData
             $.ajax(ajaxOptions).done(function (responseData, textStatus, jqXHR) {
                 //dong: 为了适应自己系统做的修改-start
+                var _responseData = responseData
                 if (responseData.success) {
                     var fileUrl = responseData.fileUrl
                     var fileServerHost = responseData.host
@@ -565,9 +566,9 @@
                         success: function () {
                             var msg, title = '', dataType = 'error', spanClass = 'exclamation', data;
                             try {
-                                data = $.parseJSON(responseData);
+                                data = $.parseJSON(_responseData);
                             } catch (err) {
-                                data = responseData;
+                                data = _responseData;
                             }
                             if (thisS.options.responseValidation) {
                                 var valData = thisS.options.responseValidation;

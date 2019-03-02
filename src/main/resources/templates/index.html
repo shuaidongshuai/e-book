@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Dong E-Book</title>
+    <title>じ☆帥東☆じ E-Book</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/dongebook.css" rel="stylesheet">
 
@@ -72,30 +72,10 @@
                     <span class="banner_btn_arrow"><i></i></span>
                 </a>
                 <ul>
-                    <li id="imgCard0">
-                        <a href=""><span style="opacity:0;"></span></a>
-                        <img src="/images/mainPage/mainBanner/2ad7c5e1ff2e0064a6e785a73c9b7364.png" alt="">
-                        <p style="bottom:0">对不起，你一直在等我，但是我却现在才来.</p>
-                    </li>
-                    <li id="imgCard1">
-                        <a href=""><span style="opacity:0.4;"></span></a>
-                        <img src="/images/mainPage/mainBanner/eebf049cd4bd31196478bdee66acdcdd.png" alt="">
-                        <p>樱花满地集于我心 楪舞纷飞祈愿相随.</p>
-                    </li>
-                    <li id="imgCard2">
-                        <a href=""><span style="opacity:0.4;" ></span></a>
-                        <img src="/images/mainPage/mainBanner/161a3567e85b53621a1074fcb64d62bb.png" alt="">
-                        <p>无意义的理想,迟早会在现实面前崩溃.</p>
-                    </li>
-                    <li id="imgCard3">
-                        <a href=""><span style="opacity:0.4;"></span></a>
-                        <img src="/images/mainPage/mainBanner/873b57828b3a0a67-2a532e4245c541ae-71f399aeb90edf9940ed27bd2accbccb.png" alt="">
-                        <p>什么都无法舍弃的人，什么也改变不了.</p>
-                    </li>
-                    <li id="imgCard4">
-                        <a href=""><span style="opacity:0.4;"></span></a>
-                        <img src="/images/mainPage/mainBanner/6c4c5d3e62274e1fa1a314aa8bede506.png" alt="">
-                        <p>再见了！只要是活着的东西，就算是神都杀给你看……无垢识 开境！死亡啊，别站在我面前!</p>
+                    <li data-th-each="video,stat : ${videos}" data-th-id="'imgCard'+${stat.index}" data-th-object="${video}">
+                        <a data-th-href="'/user/videoPlay/'+*{id}" target="_blank"><span style="opacity:0;"></span></a>
+                        <img data-th-src="*{coverUrl}">
+                        <p style="bottom:0" data-th-text="*{title}"></p>
                     </li>
                 </ul>
                 <!--火狐倒影图层-->
@@ -110,130 +90,85 @@
     </div>
     <!--轮播图 结束 -->
 
-
-    <div class="new_mv new_common">
-
-        <div class="new_mv_title new_common_title index_mv_title">
-            <span>Magic box</span>
-            <a href="?cat=6" class="more"></a>
-            <ul>
-                <li><a class="cur" href="javascript:;">dream</a></li>
-                <li><a href="javascript:;">spirit</a></li>
-                <li><a href="javascript:;">magic</a></li>
+    <!-- 图书 -->
+    <div class="omnibus hot_singer">
+        <div class="omnibus_cont_100 new_common_100">
+            <div class="omnibus_title new_common_title">
+                <span>推荐图书</span>
+                <a href="" class="more"></a>
+            </div>
+            <ul id="omnibus_list">
+                <li class="post_big" data-th-each="book,stat : ${bigBooks}" data-th-object="${book}">
+                    <a data-th-href="*{fileUrl}" target="_blank">
+                        <img data-th-src="*{coverUrl}" width="280" height="335">
+                        <i></i>
+                    </a>
+                    <a data-th-href="*{fileUrl}" target="_blank" data-th-text="*{name}"></a>
+                </li>
+                <li class="post_small" data-th-each="book,stat : ${smallBooks}" data-th-object="${book}">
+                    <a data-th-href="*{fileUrl}" target="_blank">
+                        <img data-th-src="*{coverUrl}" width="125" height="155">
+                        <span></span>
+                    </a>
+                    <a data-th-href="*{fileUrl}" target="_blank" data-th-text="*{name}"></a>
+                </li>
             </ul>
         </div>
+        <div style="clear:both"></div>
+    </div>
 
+    <!-- 博客 -->
+    <div class="omnibus">
+        <div class="omnibus_cont_100 new_common_blog">
+            <div class="omnibus_title new_common_title">
+                <span>推荐博客</span>
+                <a href="" class="more"></a>
+            </div>
+            <ul id="omnibus_list">
+                <div class="card my-md-2 bgTransparent" data-th-each="blogDto : *{blogList}">
+                    <div class="card-block" data-th-object="${blogDto}">
+                        <a data-th-href="'/blog/'+*{id}" target="_blank" class="changeRed">
+                            <span th:text="*{title}" style="font-size:25px;"></span>
+                        </a>
+                        <a data-th-href="'/blog/'+*{id}" target="_blank" class="changeRed">
+                            <h6 class="text-muted" data-th-text="*{summary}"></h6>
+                        </a>
+                        <span class="text-muted" data-th-text="'发表于'+*{#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                        <img src="images/eye.png" class="img-thumbnail border-0 bgTransparent" width="30" height="30">
+                        <span class="text-primary" data-th-text="*{traffic}"></span>
+                        <img src="images/love.png" class="img-thumbnail border-0 bgTransparent" width="30" height="30">
+                        <span class="text-primary" data-th-text="*{voteNum}"></span>
+                        <img src="images/message.png" class="img-thumbnail border-0 bgTransparent" width="30" height="30">
+                        <span class="text-primary" data-th-text="*{commentNum}"></span>
+                    </div>
+                </div>
+            </ul>
+        </div>
+        <div style="clear:both"></div>
+    </div>
+
+    <!-- 音乐 -->
+    <div class="new_mv new_common">
+        <div class="new_mv_title new_common_title index_mv_title">
+            <span>推荐音乐</span>
+            <a href="#" class="more"></a>
+            <ul>
+                <li><a class="cur" href="javascript:;">1</a></li>
+                <li><a href="javascript:;">2</a></li>
+                <li><a href="javascript:;">3</a></li>
+            </ul>
+        </div>
         <div class="new_mv_body index_mv_body">
-
             <div class="mvList" id="mv_rank_list" style="display:block;">
                 <ul class="sb" id="main">
-                    <li>
-                        <a href="javascript:;" class="playIcon" >
-                            <img width="220" height="125" src="http://p1.music.126.net/DpmzdxcucvbDztcuaBbWiQ==/18734578627337366.jpg" class="attachment-220x125 wp-post-image" alt="mv_1x2_10" />
-                            <strong>周兴哲</strong>
+                    <li data-th-each="music,stat : ${firstPageMusic}" data-th-object="${music}">
+                        <a href="javascript:;" class="playIcon" data-th-attr="fileUrl=*{fileUrl}">
+                            <img width="220" height="125" data-th-src="*{coverUrl}" class="attachment-220x125 wp-post-image"/>
+                            <strong data-th-text="*{singer}"></strong>
                             <span>
-                                 <font>在你耳边说 &#8211; 周兴哲</font>
+                                 <font data-th-text="*{name}">在你耳边说 &#8211; 周兴哲</font>
                                  <font><i></i></font>
-                                 <font><i></i>10<em>2</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/wME0oX7VY7fEkKvbXgzlrA==/19122706230471650.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>澤野弘之</strong>
-                            <span>
-                                <font>God of ink &#8211;  SawanoHiroyuki</font>
-                                <font><i></i></font>
-                                <font><i></i>9<em>2</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/OX-yCGzOUHbhqiKK9Xx4Vg==/4442026976217692.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>flowering</strong>
-                            <span>
-                                <font>white silence(album version) &#8211; TK from 凛として時雨</font>
-                                <font><i></i></font>
-                                <font><i></i>3<em>2</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/dlC4rAiDvq_uUi2fpnxKMA==/109951162819138078.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>饭碗的彼岸</strong>
-                            <span>
-                                <font>结び -饭碗的彼岸</font>
-                                <font><i></i></font>
-                                <font><i></i>1<em>2 </em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/WStPGvMUlDC89Wus9813zA==/109951163014870789.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>SawanoHiroyuki[nZk]</strong>
-                            <span>
-                                <font>VV - ALK &#8211; SawanoHiroyuki[nZk]</font>
-                                <font><i></i></font>
-                                <font><i></i>0<em>2</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/lf9G9OQf_ouA_FuPZjm1HA==/890604418498843.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>梶浦由记</strong>
-                            <span>
-                                <font>M41+42 &#8211; 梶浦由记</font>
-                                <font><i></i></font>
-                                <font><i></i>0<em>2</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/2-_sPmCBnN6VfwFmONRy2Q==/46179488378975.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>张芸京</strong>
-                            <span>
-                                <font>偏爱 &#8211; 张芸京</font>
-                                <font><i></i></font>
-                                <font><i></i>10<em>2</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/4E5b_0eDTiMCzYKiVSAerw==/19165587184063665.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>周杰伦</strong>
-                            <span>
-                                <font>算什么男人 &#8211; 周杰伦</font>
-                                <font><i></i></font>
-                                <font><i></i>1<em>26</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/YIhF9kpKMx_wBKQFN-DwTw==/81363860472987.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>刘亦菲</strong>
-                            <span>
-                                <font>兰若词 &#8211; 刘亦菲</font>
-                                <font><i></i></font>
-                                <font><i></i>7<em>23</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/fJ4Y4PN_h0Mg3ByQ2yfL9g==/838927371993316.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>miu-clips</strong>
-                            <span>
-                                <font>open &#8211; miu-clips</font>
-                                <font><i></i></font>
-                                <font><i></i>90<em>3</em></font>
+                                 <!--<font><i></i>10<em>2</em></font>-->
                             </span>
                         </a>
                     </li>
@@ -242,113 +177,14 @@
             <!--2spirit-->
             <div class="mvList">
                 <ul id="spirit">
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/lW4YKD6cMgm32nI66CzWVg==/5702067301704441.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>梶浦由記</strong>
+                    <li data-th-each="music,stat : ${secondPageMusic}" data-th-object="${music}">
+                        <a href="javascript:;" class="playIcon" data-th-attr="fileUrl=*{fileUrl}">
+                            <img width="220" height="125" data-th-src="*{coverUrl}" class="attachment-220x125 wp-post-image"/>
+                            <strong data-th-text="*{singer}"></strong>
                             <span>
-                                <font>M19+20 &#8211; 梶浦由記</font>
+                                <font data-th-text="*{name}">M19+20 &#8211; 梶浦由記</font>
                                 <font><i></i></font>
-                                <font><i></i>12<em>6</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/tFTRt1H87rReNTyO1K9IDQ==/18498183627713149.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>梶浦由記</strong>
-                            <span>
-                                <font>Sis puella magica! &#8211; 梶浦由記</font>
-                                <font><i></i></font>
-                                <font><i></i>4<em>27</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/7xaV2qB-T1d9m8b1XZC6tQ==/725677674344222.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>梶浦由記</strong>
-                            <span>
-                                <font>月は优しく (月) &#8211; 梶浦由記</font>
-                                <font><i></i></font>
-                                <font><i></i>7<em>22</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/Iqckrd2sOB1ztqrSOw4XzA==/109951162841140691.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>染音若蔡</strong>
-                            <span>
-                                <font>Euterpe エウテルペ  &#8211; 染音若蔡</font>
-                                <font><i></i></font>
-                                <font><i></i>4<em>9</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/4xHOkSVWH-n6p5pB3Jf0yQ==/109951162922204274.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>杨秉音</strong>
-                            <span>
-                                <font>幻光&#8211; 杨秉音</font>
-                                <font><i></i></font>
-                                <font><i></i>23<em>1</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/rkJSVKRZkfLXOoVwXtiB4w==/18283778858733705.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>神罗Shinra</strong>
-                            <span>
-                                <font>世界の約束 -神罗Shinra</font>
-                                <font><i></i></font>
-                                <font><i></i>8<em>7</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/HdmtedPRZEEBduHcmUnk3w==/853221023209311.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>久石譲</strong>
-                            <span>
-                                <font>Cave OF Mind &#8211; 久石譲</font>
-                                <font><i></i></font>
-                                <font><i></i>6<em>9</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/GNKtRK8w7edPw3jAsavL2A==/5980243743832365.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>K. Williams</strong>
-                            <span>
-                                <font>幽灵公主 &#8211; K. Williams</font>
-                                <font><i></i></font>
-                                <font><i></i>1<em>9</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/k_WRxDY1qQ4ztB5uFFrvoA==/17907745881679448.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>魏小涵</strong>
-                            <span>
-                                <font>心之逆鳞&#8211; 魏小涵</font>
-                                <font><i></i></font>
-                                <font><i></i>7<em>25</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/-c3qURPNRNLe-YJMbiZoKA==/109951163072509863.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>Qaijff</strong>
-                            <span>
-                                <font>愛を教えてくれた君へ &#8211; Qaijff</font>
-                                <font><i></i></font>
-                                <font><i></i>10<em>2</em></font>
+                                <!--<font><i></i>12<em>6</em></font>-->
                             </span>
                         </a>
                     </li>
@@ -357,113 +193,14 @@
             <!--3magic-->
             <div class="mvList">
                 <ul id="magic">
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/r4TK33y6f8cwlntVidXZbQ==/931286348726555.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>川井憲次</strong>
+                    <li data-th-each="music,stat : ${thirdPageMusic}" data-th-object="${music}">
+                        <a href="javascript:;" class="playIcon" data-th-attr="fileUrl=*{fileUrl}">
+                            <img width="220" height="125" data-th-src="*{coverUrl}" class="attachment-220x125 wp-post-image" alt="" />
+                            <strong data-th-text="*{singer}">川井憲次</strong>
                             <span>
-                                <font>群雄疾走 &#8211; 川井憲次</font>
+                                <font data-th-text="*{name}">群雄疾走 &#8211; 川井憲次</font>
                                 <font><i></i></font>
-                                <font><i></i>100<em>2</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/ivONokvElv9ZCzyrZp84FQ==/3297435373557125.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>EGOIST</strong>
-                            <span>
-                                <font>Ghost of a smile &#8211; EGOIST</font>
-                                <font><i></i></font>
-                                <font><i></i>54<em>22</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/Q4Dg5QXwft213TBKMv26_A==/3276544653004159.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>大竹佑季</strong>
-                            <span>
-                                <font>樱子小姐的脚下埋着尸体 &#8211; 大竹佑季</font>
-                                <font><i></i></font>
-                                <font><i></i>8<em>26</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/84dpde0vkfsDAVsNNjulXg==/7906588115750467.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>豚乙女</strong>
-                            <span>
-                                <font>非科学的表裏一体 &#8211; 豚乙女</font>
-                                <font><i></i></font>
-                                <font><i></i>10<em>2</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/b04i7LFbHLJkmkzwhwRLMA==/2343059278838229.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>FELT</strong>
-                            <span>
-                                <font>You're the Shine &#8211; FELT</font>
-                                <font><i></i></font>
-                                <font><i></i>9<em>23</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/4BgAnUbCDFex3m4z-hWULA==/2509085534622060.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>清浦夏実</strong>
-                            <span>
-                                <font>旅の途中 &#8211; 清浦夏実</font>
-                                <font><i></i></font>
-                                <font><i></i>90<em>8</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/3eyBH8RjxjXG-EqWShU1wg==/18887410742154555.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>東山奈央</strong>
-                            <span>
-                                <font>夏祭り &#8211;東山奈央</font>
-                                <font><i></i></font>
-                                <font><i></i>5<em>29</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/KmPcFcxxg61d15R8yu5x_A==/18681802069425034.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>Nevve</strong>
-                            <span>
-                                <font>Sway &#8211; Nevve</font>
-                                <font><i></i></font>
-                                <font><i></i>8<em>28</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/xaX_RkkW0cT4f38k62N8yg==/3413983630702236.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong> Breathe Carolina</strong>
-                            <span>
-                                <font>Vanish &#8211;  Breathe Carolina</font>
-                                <font><i></i></font>
-                                <font><i></i>0<em>28</em></font>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;" class="playIcon">
-                            <img width="220" height="125" src="http://p1.music.126.net/foJM2P9nq8pXHnCZjcf75w==/19047939439716625.jpg" class="attachment-220x125 wp-post-image" alt="" />
-                            <strong>MEIDEN</strong>
-                            <span>
-                                <font>It's Over &#8211; MEIDEN</font>
-                                <font><i></i></font>
-                                <font><i></i>20<em>8</em></font>
+                                <!--<font><i></i>100<em>2</em></font>-->
                             </span>
                         </a>
                     </li>
@@ -472,163 +209,42 @@
         </div>
     </div>
 
-
     <div class="songs_rcmd_title">
         <div class="rcmd_left_title rcmd_title">
-            <span>Elegant</span>
+            <span>流行</span>
             <a href="" class="more">/more</a>
         </div>
         <div class="rcmd_center_title rcmd_title">
-            <span>Ethereal</span>
+            <span>英文</span>
             <a href="" class="more">/more</a>
         </div>
         <div class="rcmd_right_title rcmd_title">
-            <span>Silence</span>
+            <span>抖音</span>
             <a href="" class="more">/more</a>
         </div>
     </div>
 
     <div class="songs_rcmd" id="songs_rcmd">
         <div class="songs_rcmd_cont">
-            <ul class="rcmd_left rcmd_cont" id="latest">
-                <li>
-                    <a href="" class="musicName"> Fleur de lis &#8211; Noicybino</a>
+            <ul class="rcmd_left rcmd_cont" id="popularMusic">
+                <li data-th-each="music,stat : ${popularMusic}" data-th-object="${music}">
+                    <a href="javascript:;" class="musicName" data-th-text="*{name +' - '+ singer}"></a>
                     <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Dance, cherry blossoms! &#8211; Yuri akiyama</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Lost in Love &#8211; Bois LanYun</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">远すぎた空 &#8211; Akito</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Whether &#8211;  AniFace</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Constellation Of Tatyana &#8211; Yakuro</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Princess &#8211; α·Pav</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Day by Day &#8211; Shirfine</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">blue blossoms &#8211; 久遠</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
+                    <a class="playIcon" href="javascript:;" data-th-attr="fileUrl=*{fileUrl},coverUrl=*{coverUrl},name=*{name},singer=*{singer}"></a>
                 </li>
             </ul>
-            <ul class="rcmd_center rcmd_cont" id="popular">
-                <li>
-                    <a href="javascript:;" class="musicName">無神論者のためのセレナータ &#8211; love solfege</a>
+            <ul class="rcmd_center rcmd_cont" id="englishMusic">
+                <li data-th-each="music,stat : ${englishMusic}" data-th-object="${music}">
+                    <a href="javascript:;" class="musicName" data-th-text="*{name +' - '+ singer}"></a>
                     <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Proschenie &#8211; love solfege</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">神の光 -Μοιρα- &#8211; Sound Horizon</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">星女神の巫女 -Αρτεμισια- &#8211; Sound Horizon</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">石畳の緋い悪魔 &#8211; Sound Horizon</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">この狭い鳥籠の中で &#8211; Sound Horizon</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Secret Track &#8211; Sound Horizon</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">a fairy tale &#8211; MUSIRISCA</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Prayer &#8211; MUSIRISCA</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
+                    <a class="playIcon" href="javascript:;" data-th-attr="fileUrl=*{fileUrl},coverUrl=*{coverUrl},name=*{name},singer=*{singer}"></a>
                 </li>
             </ul>
-            <ul class="rcmd_right rcmd_cont" id="rank">
-                <li>
-                    <a href="javascript:;" class="musicName">创奏&#8211; 霜月はるか</a>
+            <ul class="rcmd_right rcmd_cont" id="douyinMusic">
+                <li data-th-each="music,stat : ${douyinMusic}" data-th-object="${music}">
+                    <a href="javascript:;" class="musicName" data-th-text="*{name +' - '+ singer}"></a>
                     <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">願い枯れゆく歌声 &#8211; Ether</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">LICHT MEER &#8211; 河合夕子</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Nocturne No. 2  &#8211; Chopin</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">夜曲 &#8211; Chopin</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">降E大调夜曲 &#8211; Chopin</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">即兴幻想曲 &#8211; Chopin</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Nocturne op. 32 &#8211; Chopin</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
-                </li>
-                <li>
-                    <a href="javascript:;" class="musicName">Prelude in Des &#8211; Chopin</a>
-                    <a class="shareIcon" href="javascript:;"></a>
-                    <a class="playIcon" href="javascript:;"></a>
+                    <a class="playIcon" href="javascript:;" data-th-attr="fileUrl=*{fileUrl},coverUrl=*{coverUrl},name=*{name},singer=*{singer}"></a>
                 </li>
             </ul>
         </div>
@@ -637,106 +253,43 @@
     <div class="omnibus hot_singer">
         <div class="omnibus_cont new_common">
             <div class="omnibus_title new_common_title">
-                <span>A fantasy world</span>
+                <span>推荐图片</span>
                 <a href="" class="more"></a>
             </div>
             <ul id="omnibus_list">
-                <li class="post_big">
-                    <a href="javascript:;">
-                        <img src="/images/mainPage/ksoa.png" alt="" width="305" height="290">
+                <li class="post_big" data-th-each="picture,stat : ${bigPicture}" data-th-object="${picture}">
+                    <a data-th-href="*{fileUrl}" target="_blank">
+                        <img data-th-src="*{fileUrl}" width="305" height="290">
                         <i></i>
                     </a>
-                    <a href="javascript:;">The divine comedy as first love</a>
+                    <a data-th-href="*{fileUrl}" target="_blank" data-th-text="*{title}"></a>
                 </li>
-                <li class="post_small">
-                    <a href="">
-                        <img src="/images/mainPage/Deuxième dollars.jpg" alt="" width="130" height="130">
+                <li class="post_small" data-th-each="picture,stat : ${smallPicture}" data-th-object="${picture}">
+                    <a data-th-href="*{fileUrl}" target="_blank">
+                        <img data-th-src="*{fileUrl}" target="_blank" width="130" height="130">
                         <span></span>
                     </a>
-                    <a href="javascript:;">A new world</a>
-                </li>
-                <li class="post_small">
-                    <a href="">
-                        <img src='/images/mainPage/fasd.png' alt="" width="130" height="130">
-                        <span></span>
-                    </a>
-                    <a href="">This is our dream</a>
-                </li>
-                <li class="post_small">
-                    <a href="">
-                        <img src="/images/mainPage/ariko.png" alt="" width="130" height="130">
-                        <span></span>
-                    </a>
-                    <a href="">what feels most natural</a>
-                </li>
-                <li class="post_small">
-                    <a href="">
-                        <img src='/images/mainPage/msoal.png' alt="" width="130" height="130">
-                        <span></span>
-                    </a>
-                    <a href="">I can appreciate that</a>
-                </li>
-                <li class="post_small">
-                    <a href="">
-                        <img src='/images/mainPage/lise.png' alt="" width="130" height="130">
-                        <span></span>
-                    </a>
-                    <a href="">Tell myths about love</a>
-                </li>
-                <li class="post_small">
-                    <a href="">
-                        <img src="/images/mainPage/jisad.png" alt="" width="130" height="130">
-                        <span></span>
-                    </a>
-                    <a href="">In a different world</a>
+                    <a data-th-href="*{fileUrl}" target="_blank" data-th-text="*{title}"></a>
                 </li>
             </ul>
         </div>
         <div class="hot_singer_cont new_common">
             <div class="hot_singer_title new_common_title">
-                <span>Artist's soul</span>
+                <span>图片</span>
                 <a href="" class="more"></a>
             </div>
             <ul class="singer_list">
-                <li>
-                    <a href="" class="singerPhoto">
-                        <img src="/images/mainPage/18808245906449965.jpg" alt="" width="70" height="70"></a>
-                    <a href="" class="singer">梶浦由记</a>
-                </li>
-                <li>
-                    <a href="" class="singerPhoto">
-                        <img src="/images/mainPage/18619129906152259.jpg" alt="" width="70" height="70"></a>
-                    <a href="" class="singer">花たん</a>
-                </li>
-                <li>
-                    <a href="" class="singerPhoto">
-                        <img src="/images/mainPage/19127104277052748.jpg" alt="" width="70" height="70"></a>
-                    <a href="?p=363" class="singer">泽野弘之</a>
-                </li>
-                <li>
-                    <a href="" class="singerPhoto">
-                        <img src="/images/mainPage/19124905253592749.jpg" alt="" width="70" height="70"></a>
-                    <a href="" class="singer">Sound Horizon</a>
-                </li>
-                <li>
-                    <a href="" class="singerPhoto">
-                        <img src='/images/mainPage/109951163112362346.jpg' alt="" width="70" height="70"></a>
-                    <a href="" class="singer">Aimer</a>
-                </li>
-                <li>
-                    <a href="" class="singerPhoto">
-                        <img src="/images/mainPage/3283141725800255.jpg" alt="" width="70" height="70"></a>
-                    <a href="" class="singer">れをる</a>
+                <li data-th-each="picture,stat : ${circlePicture}" data-th-object="${picture}">
+                    <a data-th-href="*{fileUrl}" target="_blank" class="singerPhoto">
+                        <img data-th-src="*{fileUrl}" width="70" height="70"></a>
+                    <a data-th-href="*{fileUrl}" target="_blank" class="singer" data-th-text="*{title}"></a>
                 </li>
                 <div style="clear:both;"></div>
             </ul>
         </div>
-        <div style="clear:both"></div></div>
+        <div style="clear:both"></div>
+    </div>
 </section>
-
-
-
-
 
 <!-- 左侧播放器 开始-->
 <div id="jp_container_N" class="jp-video jp-video-270p" role="application" aria-label="media player">
@@ -826,7 +379,7 @@
                 <li>
                     <a href="" class="twoCode">
                         <span></span>
-                        <img class="tCode" src="/images/mainPage/1517791716.png" width="100" height="100" alt="二维码" />
+                        <!--<img class="tCode" src="/images/mainPage/1517791716.png" width="100" height="100" alt="二维码" />-->
                     </a>
                 </li>
                 <li><a href=""><span></span></a></li>
@@ -838,7 +391,8 @@
 
 </div>
 <!--底部 结束 -->
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<!--<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>-->
+<script src="/js/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
 
 <script type="text/javascript" src="/js/mainPage/jquery.js"></script>

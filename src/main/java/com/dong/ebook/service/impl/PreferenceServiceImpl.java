@@ -136,6 +136,15 @@ public class PreferenceServiceImpl implements PreferenceService {
         return assembleSuccessResponse();
     }
 
+    @Override
+    public List<Long> getPreferenceTypeId(long userId, String typeName) {
+        List<Preference> preferenceList = getPreference(userId, typeName);
+        List<Long> typeIdList = new ArrayList<>(preferenceList.size());
+        for(Preference p : preferenceList){
+            typeIdList.add(p.getTypeId());
+        }
+        return typeIdList;
+    }
 
     public List<Preference> getPreference(long userId, String typeName) {
         PreferenceExample preferenceExample = new PreferenceExample();
@@ -220,16 +229,16 @@ public class PreferenceServiceImpl implements PreferenceService {
                 id = ((BlogType) o).getId();
                 className = ((BlogType) o).getClassName();
             }
-            PreferenceDto responsePreferenceDto = new PreferenceDto();
-            preferenceDtos.add(responsePreferenceDto);
+            PreferenceDto preferenceDto = new PreferenceDto();
+            preferenceDtos.add(preferenceDto);
 
             if(preferenceSet.contains(id)){
-                responsePreferenceDto.setChecked(true);
+                preferenceDto.setChecked(true);
             }else{
-                responsePreferenceDto.setChecked(false);
+                preferenceDto.setChecked(false);
             }
-            responsePreferenceDto.setTypeId(id);
-            responsePreferenceDto.setClassName(className);
+            preferenceDto.setTypeId(id);
+            preferenceDto.setClassName(className);
         }
 
         ResponsePreferenceDto responsePreferenceDtos = new ResponsePreferenceDto();

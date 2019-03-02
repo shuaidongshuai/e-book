@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>じ☆帥東☆じ E-Book</title>
+    <link rel="stylesheet" type="text/css" href="/css/videoPlay/normalize.css" /><!--CSS RESET-->
+    <link rel="stylesheet" href="/css/videoPlay/ckin.min.css">
+    <link rel="stylesheet" href="/css/videoPlay/demo.css">
+</head>
+<body>
+    <div class="container" data-th-object="${video}">
+        <video data-th-poster="*{coverUrl}" data-th-src="*{fileUrl}" data-ckin="default" data-overlay="2" th:data-title="'じ☆帥東☆じ '+*{title}"></video>
+    </div>
+
+    <script src="/js/videoPlay/ckin.min.js"></script>
+</body>
+</html>

@@ -170,6 +170,23 @@
                 </dependencies>
             </plugin>
         </plugins>
-    </build>
 
+        <resources>
+            <!-- 开启filtering功能后，会破坏有二进制内容的文件，所以将静态文件排除在过滤之外 -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>static/**</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>static/**</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
 </project>

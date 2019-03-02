@@ -1,5 +1,6 @@
 package com.dong.ebook.service.impl;
 
+import com.dong.ebook.common.PreferenceTypeName;
 import com.dong.ebook.common.UserRole;
 import com.dong.ebook.dao.BlogDao;
 import com.dong.ebook.dto.*;
@@ -45,6 +46,9 @@ public class BlogServiceImpl implements BlogService {
 
     @Autowired
     private ElasticsearchService elasticsearchService;
+
+    @Autowired
+    private PreferenceService preferenceService;
 
     @Override
     public ResponseBlogSaveDto saveBlog(BlogDto blogDto) {
@@ -251,14 +255,6 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public ResponseBlogListDto getBlogList(int pageNum, int pageSize) {
-        Page page = PageHelper.startPage(pageNum, pageSize);
-        blogDao.selectByExample(new BlogExample());
-        PageInfo pageInfo = new PageInfo(page.getResult());
-        return assembleResponseBlogListDto(pageInfo);
-    }
-
-    @Override
     public ResponseManagerBlogListDto getManagerBlogList(int pageNum, int pageSize, boolean desc) {
         return getManagerBlogList(pageNum, pageSize, desc, null);
     }
@@ -374,6 +370,64 @@ public class BlogServiceImpl implements BlogService {
         return responseCommonDto;
     }
 
+    @Override
+    public ResponseBlogListDto getMainPageBlogList() {
+        int size = 3;
+        User user = authUserService.getCurUser();
+        List<Blog> blogList;
+        if(user == null){
+            blogList = getBlogList(1, size, true);
+        } else{
+            //根据兴趣爱好找
+            List<Long> typeIdList = preferenceService.getPreferenceTypeId(user.getId(), PreferenceTypeName.BLOG);
+            blogList = getBlogListByTypeId(1, size, true, typeIdList);
+            if(blogList.size() < size){
+                List<Blog> blogListByNotTypeId = getBlogListByNotTypeId(1, size - blogList.size(), true, typeIdList);
+                blogList.addAll(blogListByNotTypeId);
+            }
+        }
+        ResponseBlogListDto responseBlogListDto = new ResponseBlogListDto();
+        responseBlogListDto.setPageInfo(new PageInfo(blogList));
+        responseBlogListDto.setSuccess(true);
+        return responseBlogListDto;
+    }
+
+    @Override
+    public List<BlogDto> getHotBlog(Integer size) {
+        Page<Blog> page = PageHelper.startPage(1, size);
+        BlogExample blogExample = new BlogExample();
+        blogExample.setOrderByClause("vote_num desc");
+        blogDao.selectByExample(blogExample);
+        return assembleHotBlogListDto(page.getResult());
+    }
+
+    public List<Blog> getBlogList(int pageNum, int pageSize, boolean desc) {
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        BlogExample blogExample = assembleBlogExampleByDesc(desc);
+        blogDao.selectByExample(blogExample);
+        return page.getResult();
+    }
+
+    public List<Blog> getBlogListByTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        BlogExample blogExample = assembleBlogExampleByDesc(desc);
+        if(typeIds.size() > 0){
+            blogExample.createCriteria().andBlogTypeIdIn(typeIds);
+        }
+        blogDao.selectByExample(blogExample);
+        return page.getResult();
+    }
+
+    public List<Blog> getBlogListByNotTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        BlogExample blogExample = assembleBlogExampleByDesc(desc);
+        if(typeIds.size() > 0){
+            blogExample.createCriteria().andBlogTypeIdNotIn(typeIds);
+        }
+        blogDao.selectByExample(blogExample);
+        return page.getResult();
+    }
+
     private List<Integer> getUserBlogExtraMsg(long userId){
         List<Integer> extraMsg = blogExtraMsgCache.getAll(userId);
         if(extraMsg == null){
@@ -459,15 +513,21 @@ public class BlogServiceImpl implements BlogService {
         return dozerBeanMapper.map(blogWithBLOBs, ElasticsearchBlogDto.class);
     }
 
-    public ResponseBlogListDto assembleResponseBlogListDto(PageInfo pageInfo) {
-        List<BlogDto> blogDtos = BlogDos2dto(pageInfo.getList());
+    public List<BlogDto> assembleHotBlogListDto(List<Blog> blogs) {
+        List<BlogDto> blogDtos = new ArrayList<>(blogs.size());
+        for(Blog blog : blogs){
+            //删除不必要信息
+            blog.setSummary(null);
+            blog.setUserId(null);
+            blog.setBlogTypeId(null);
+            blog.setCommentNum(null);
+            blog.setCreateTime(null);
+            blog.setModifyTime(null);
+            blog.setTraffic(null);
 
-        pageInfo.setList(blogDtos);
-
-        ResponseBlogListDto responseBlogListDto = new ResponseBlogListDto();
-        responseBlogListDto.setPageInfo(pageInfo);
-        responseBlogListDto.setSuccess(true);
-        return responseBlogListDto;
+            blogDtos.add(BlogDo2dto(blog));
+        }
+        return blogDtos;
     }
 
     public ResponseManagerBlogListDto assembleResponseManagerBlogListDto(PageInfo pageInfo){

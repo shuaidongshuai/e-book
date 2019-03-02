@@ -8,4 +8,6 @@ public interface PictureService {
     ResponseManagerPictureListDto getManagerPictureList(int pageNum, int pageSize, boolean desc, String query);
     ResponsePictureDto getPicture(long id);
     ResponseCommonDto delPicture(Long id);
+
+    ResponseMainPagePictureListDto getMainPagePictureList();
 }

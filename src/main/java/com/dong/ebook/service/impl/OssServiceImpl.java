@@ -18,8 +18,8 @@ import java.util.Date;
 
 @Service
 public class OssServiceImpl implements OssService {
-    String accessId = "";
-    String accessKey = "";
+    String accessId = "LTAIusAuN2Y14710";
+    String accessKey = "FdoUn7i66qif3mJk8IONY7TFL4p9UO";
     String endpoint = "oss-cn-beijing.aliyuncs.com";
     String bucket = "e-bookpublic"; //  bucketname
     String host = "http://" + bucket + "." + endpoint; // host的格式为 bucketname.endpoint

@@ -52,10 +52,10 @@
                             <span>喜欢</span>
                             <span th:text="${userBlog.voteNum}"></span>
                         </button>
-                        <button class="btn btn-info active mx-1">
-                            <span>评论</span>
-                            <span th:text="${userBlog.commentNum}"></span>
-                        </button>
+                        <!--<button class="btn btn-info active mx-1">-->
+                            <!--<span>评论</span>-->
+                            <!--<span th:text="${userBlog.commentNum}"></span>-->
+                        <!--</button>-->
                     </div>
                     <!--<div class="card-text my-1">-->
                     <!--</div>-->
@@ -80,7 +80,7 @@
                         </div>
                     </div>
                     <p class="card-text ml-md-3 text-muted"
-                       th:text="*{#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}+' '+${userBlog.nickname}+' 阅读数：'+*{traffic}"></p>
+                       th:text="*{#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}+' '+${userBlog.nickname}+' 阅读：'+*{traffic}+' 点赞：'+*{voteNum}"></p>
                     <div class="card-block markdown-body">
                         <div id="blogContent" data-th-attr="data=*{contentHtml}"></div>
                     </div>

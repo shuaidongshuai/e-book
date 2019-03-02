@@ -32,7 +32,7 @@
                         </thead>
                         <tbody>
                         <tr th:each="managerPictureList : ${pageInfo.list}" th:object="${managerPictureList}">
-                            <td><img th:src="*{coverUrl}" width="30" height="30"/></td>
+                            <td><img th:src="*{fileUrl}" width="30" height="30"/></td>
                             <td th:text="*{title}"></td>
                             <td th:text="*{modifyUserNickname}"></td>
                             <td th:text="*{#dates.format(modifyTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
@@ -77,10 +77,10 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-md-12">文件地址（JSON格式）</label>
+                    <div class="form-group" id="pictureUrl">
+                        <label class="col-md-12">文件地址</label>
                         <div class="col-md-12">
-                            <textarea rows="6" placeholder="如：&#10;第一章&#32; 开始&#10;第二章&#32; C++浏览&#10;..." class="form-control form-control-line urlJson" name="urlJson"></textarea>
+                            <input type="text" name="urlJson" class="form-control form-control-line fileUrl" required="true">
                         </div>
                     </div>
                 </form>

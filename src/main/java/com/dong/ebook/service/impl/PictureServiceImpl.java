@@ -1,14 +1,15 @@
 package com.dong.ebook.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.dong.ebook.common.PreferenceTypeName;
 import com.dong.ebook.common.UserRole;
 import com.dong.ebook.dao.PictureDao;
 import com.dong.ebook.dto.*;
-import com.dong.ebook.model.Picture;
-import com.dong.ebook.model.PictureExample;
-import com.dong.ebook.model.User;
+import com.dong.ebook.model.*;
 import com.dong.ebook.security.AuthUserService;
+import com.dong.ebook.service.ElasticsearchService;
 import com.dong.ebook.service.PictureService;
+import com.dong.ebook.service.PreferenceService;
 import com.dong.ebook.service.UserService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -30,13 +31,19 @@ public class PictureServiceImpl implements PictureService {
     DozerBeanMapper dozerBeanMapper;
 
     @Autowired
-    private PictureDao pictureDao;
+    PictureDao pictureDao;
 
     @Autowired
     AuthUserService authUserService;
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    PreferenceService preferenceService;
+
+    @Autowired
+    ElasticsearchService elasticsearchService;
 
     @Override
     public ResponseCommonDto savePicture(RequestPictureDto requestPictureDto) {
@@ -46,48 +53,23 @@ public class PictureServiceImpl implements PictureService {
             responseCommonDto.setErrorMsg("标题为空");
             return responseCommonDto;
         }
-        String requestUrlJson = requestPictureDto.getUrlJson();
-        List<String> requestUrlList = requestPictureDto.getUrls();
-        if(requestUrlList == null && requestUrlJson == null){
-            responseCommonDto.setErrorMsg("url为空");
-            return responseCommonDto;
-        }
 
         //用id判断是上传还是修改
         Long id = requestPictureDto.getId();
-        Picture picture = getPicture(requestPictureDto.getTitle());
+        String requestUrlJson = requestPictureDto.getUrlJson();
         if(id == null){
-            //上传picture
-            if(picture != null){
-                //追加url
-                addUrls(picture, requestUrlList);
-            } else{
-                picture = RequestPictureDto2do(requestPictureDto);
+            if(requestUrlJson == null || requestUrlJson.isEmpty()){
+                responseCommonDto.setErrorMsg("savePicture, url is empty");
+                return responseCommonDto;
+            }
+            List<Picture> pictures = RequestPictureDto2dos(requestPictureDto);
+            // ** 这里可以优化成批量插入 **
+            for(Picture picture : pictures){
                 insertPicture(picture);
             }
         } else if(id > 0){
             //修改picture
-            if(requestUrlJson == null){
-                responseCommonDto.setErrorMsg("update picture, urlJson is empty");
-                return responseCommonDto;
-            }
-            //检查标题是否有重复
-            if(picture != null){
-                if(id.equals(picture.getId())){
-                    //说明没有修改title
-                    picture.setUrlJson(requestUrlJson);
-                    updatePicture(picture);
-                } else{
-                    //修改了标题并且和别的标题重复
-                    //删除修改的这行记录
-                    pictureDao.deleteByPrimaryKey(id);
-                    //追加url
-                    addUrls(picture, requestUrlJson);
-                }
-            } else{
-                //说明修改了标题，并且没有重复的标题
-                updatePicture(requestPictureDto);
-            }
+            updatePicture(requestPictureDto);
         } else {
             responseCommonDto.setErrorMsg("id error");
             return responseCommonDto;
@@ -106,7 +88,7 @@ public class PictureServiceImpl implements PictureService {
         } else {
             pictureExample.setOrderByClause("modify_time asc");
         }
-        pictureDao.selectByExampleWithBLOBs(pictureExample);
+        pictureDao.selectByExample(pictureExample);
         PageInfo pageInfo = new PageInfo(page.getResult());
         return assembleResponseManagerPictureListDto(pageInfo);
     }
@@ -118,7 +100,7 @@ public class PictureServiceImpl implements PictureService {
         if(query != null && !query.isEmpty()){
             pictureExample.createCriteria().andTitleLike(query);
         }
-        pictureDao.selectByExampleWithBLOBs(pictureExample);
+        pictureDao.selectByExample(pictureExample);
         PageInfo pageInfo = new PageInfo(page.getResult());
         return assembleResponseManagerPictureListDto(pageInfo);
     }
@@ -153,19 +135,81 @@ public class PictureServiceImpl implements PictureService {
             return responseCommonDto;
         }
         pictureDao.deleteByPrimaryKey(id);
+        elasticsearchService.delPicture(id);
         responseCommonDto.setSuccess(true);
         return responseCommonDto;
+    }
+
+    @Override
+    public ResponseMainPagePictureListDto getMainPagePictureList() {
+        int bigSize = 1, smallSize = 6, circleSize = 6;
+        int totalSize = bigSize + smallSize + circleSize;
+        List<Picture> pictures;
+        User user = authUserService.getCurUser();
+        if(user == null){
+            pictures = getPictureList(1, totalSize, true);
+        }else{
+            //根据兴趣爱好找
+            List<Long> typeIdList = preferenceService.getPreferenceTypeId(user.getId(), PreferenceTypeName.PICTURE);
+            pictures = getPictureListByTypeId(1, totalSize, true, typeIdList);
+            if(pictures.size() < totalSize){
+                //数量不够就找别的
+                pictures.addAll(getPictureListByNotTypeId(1, totalSize - pictures.size(), true, typeIdList));
+            }
+        }
+        if(pictures.size() > totalSize){
+            logger.info("getMainPageVideoList pictures.size()=" + pictures.size() + " > size=" + totalSize);
+            pictures = pictures.subList(0, totalSize);
+        }
+        return assembleResponseMainPagePictureListDto(pictures, bigSize, smallSize, circleSize);
+    }
+
+    private ResponseMainPagePictureListDto assembleResponseMainPagePictureListDto(List<Picture> pictures, int bigSize, int smallSize, int circleSize) {
+        List<PictureDto> bigPictureDtos = new ArrayList<>(bigSize);
+        List<PictureDto> smallPictureDtos = new ArrayList<>(smallSize);
+        List<PictureDto> circlePictureDtos = new ArrayList<>(circleSize);
+
+        int idx = 0;
+        for(Picture picture : pictures){
+            //删除不需要的数据
+            picture.setCreateTime(null);
+            picture.setModifyTime(null);
+            picture.setPictureTypeId(null);
+            picture.setModifyUserId(null);
+
+            PictureDto pictureDto = do2dtos(picture);
+            if(++idx <= bigSize){
+                bigPictureDtos.add(pictureDto);
+            }else if(idx <= bigSize + smallSize){
+                smallPictureDtos.add(pictureDto);
+            }else if(idx <= bigSize + smallSize + circleSize){
+                circlePictureDtos.add(pictureDto);
+            }
+        }
+        ResponseMainPagePictureListDto responseMainPagePictureListDto = new ResponseMainPagePictureListDto();
+        responseMainPagePictureListDto.setSuccess(true);
+        responseMainPagePictureListDto.setBigPictureDtos(bigPictureDtos);
+        responseMainPagePictureListDto.setSmallPictureDtos(smallPictureDtos);
+        responseMainPagePictureListDto.setCirclePictureDtos(circlePictureDtos);
+        return responseMainPagePictureListDto;
     }
 
     public Picture getPicture(String title){
         PictureExample pictureExample = new PictureExample();
         PictureExample.Criteria criteria = pictureExample.createCriteria();
         criteria.andTitleEqualTo(title);
-        List<Picture> pictures = pictureDao.selectByExampleWithBLOBs(pictureExample);
+        List<Picture> pictures = pictureDao.selectByExample(pictureExample);
         if(pictures.size() > 0){
             return pictures.get(0);
         }
         return null;
+    }
+
+    public List<Picture> getPictureList(int pageNum, int pageSize, boolean desc){
+        Page<Picture> page = PageHelper.startPage(pageNum, pageSize);
+        PictureExample pictureExample = assemblePictureExampleByDesc(desc);
+        pictureDao.selectByExample(pictureExample);
+        return page.getResult();
     }
 
     public Picture getPictureById(long id){
@@ -175,44 +219,19 @@ public class PictureServiceImpl implements PictureService {
         return pictureDao.selectByPrimaryKey(id);
     }
 
-    public void addUrls(Picture picture, List<String> urls){
-        List<String> curUrls = JSON.parseArray(picture.getUrlJson(), String.class);
-        if(curUrls == null){
-            curUrls = urls;
-        }else{
-            curUrls.addAll(urls);
-        }
-        String urlsStr = JSON.toJSONString(curUrls);
-        picture.setUrlJson(urlsStr);
-        picture.setModifyTime(new Date());
-        picture.setModifyUserId(authUserService.getCurUser().getId());
-        pictureDao.updateByPrimaryKeySelective(picture);
-    }
-
-    public void addUrls(Picture picture, String urlJson){
-        List<String> newUrls = JSON.parseArray(urlJson, String.class);
-        addUrls(picture, newUrls);
-    }
-
     public void updatePicture(Picture picture){
         picture.setModifyTime(new Date());
         picture.setModifyUserId(authUserService.getCurUser().getId());
         pictureDao.updateByPrimaryKeySelective(picture);
+        elasticsearchService.updatePicture(Picture2Elasticsearch(picture));
     }
 
     public void updatePicture(RequestPictureDto requestPictureDto){
-        Picture picture = new Picture();
-        picture.setId(requestPictureDto.getId());
-        picture.setTitle(requestPictureDto.getTitle());
-        if(requestPictureDto.getUrlJson() == null){
-            String urlsStr = JSON.toJSONString(requestPictureDto.getUrls());
-            picture.setUrlJson(urlsStr);
-        } else{
-            picture.setUrlJson(requestPictureDto.getUrlJson());
-        }
+        Picture picture = RequestPictureDto2do(requestPictureDto);
         picture.setModifyTime(new Date());
         picture.setModifyUserId(authUserService.getCurUser().getId());
         pictureDao.updateByPrimaryKeySelective(picture);
+        elasticsearchService.updatePicture(Picture2Elasticsearch(picture));
     }
 
     public void insertPicture(Picture picture){
@@ -221,14 +240,27 @@ public class PictureServiceImpl implements PictureService {
         picture.setModifyTime(date);
         picture.setModifyUserId(authUserService.getCurUser().getId());
         pictureDao.insert(picture);
+        elasticsearchService.addPicture(Picture2Elasticsearch(picture));
     }
 
     public Picture RequestPictureDto2do(RequestPictureDto requestPictureDto){
-        Picture picture = dozerBeanMapper.map(requestPictureDto, Picture.class);
-        //url需要从list -> jsonStr
-        String urlsStr = JSON.toJSONString(requestPictureDto.getUrls());
-        picture.setUrlJson(urlsStr);
+        Picture picture = new Picture();
+        picture.setId(requestPictureDto.getId());
+        picture.setFileUrl(requestPictureDto.getUrlJson());
+        picture.setTitle(requestPictureDto.getTitle());
+        picture.setPictureTypeId(requestPictureDto.getPictureTypeId());
         return picture;
+    }
+
+    public List<Picture> RequestPictureDto2dos(RequestPictureDto requestPictureDto){
+        List<String> fileUrls = JSON.parseArray(requestPictureDto.getUrlJson(), String.class);
+        List<Picture> pictures = new ArrayList<>(fileUrls.size());
+        for(String url : fileUrls){
+            Picture picture = dozerBeanMapper.map(requestPictureDto, Picture.class);
+            picture.setFileUrl(url);
+            pictures.add(picture);
+        }
+        return pictures;
     }
 
     private ResponseManagerPictureListDto assembleResponseManagerPictureListDto(PageInfo pageInfo) {
@@ -240,16 +272,6 @@ public class PictureServiceImpl implements PictureService {
 
             String userNickname = userService.findUserById(picture.getModifyUserId()).getNickname();
             managerPictureDto.setModifyUserNickname(userNickname);
-
-            //一个标题有很多图片，把第一张拿出来当封面
-            try {
-                List<String> urls = JSON.parseArray(picture.getUrlJson(), String.class);
-                if(urls != null && urls.size() > 0){
-                    managerPictureDto.setCoverUrl(urls.get(0));
-                }
-            }catch (Exception e){
-                logger.error("picture id=" + picture.getId() + "存放了错误Json的Url=" + picture.getUrlJson());
-            }
         }
         pageInfo.setList(managerPictureDtos);
 
@@ -267,5 +289,33 @@ public class PictureServiceImpl implements PictureService {
             pictureExample.setOrderByClause("modify_time asc");
         }
         return pictureExample;
+    }
+
+    private PictureDto do2dtos(Picture picture) {
+        return dozerBeanMapper.map(picture, PictureDto.class);
+    }
+
+    public ElasticsearchPictureDto Picture2Elasticsearch(Picture picture){
+        return dozerBeanMapper.map(picture, ElasticsearchPictureDto.class);
+    }
+
+    public List<Picture> getPictureListByTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        PictureExample pictureExample = assemblePictureExampleByDesc(desc);
+        if(typeIds.size() > 0){
+            pictureExample.createCriteria().andPictureTypeIdIn(typeIds);
+        }
+        pictureDao.selectByExample(pictureExample);
+        return page.getResult();
+    }
+
+    public List<Picture> getPictureListByNotTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        PictureExample pictureExample = assemblePictureExampleByDesc(desc);
+        if(typeIds.size() > 0){
+            pictureExample.createCriteria().andPictureTypeIdNotIn(typeIds);
+        }
+        pictureDao.selectByExample(pictureExample);
+        return page.getResult();
     }
 }

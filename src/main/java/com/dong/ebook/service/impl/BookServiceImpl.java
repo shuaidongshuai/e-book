@@ -1,14 +1,14 @@
 package com.dong.ebook.service.impl;
 
+import com.dong.ebook.common.PreferenceTypeName;
 import com.dong.ebook.common.UserRole;
 import com.dong.ebook.dao.BookDao;
 import com.dong.ebook.dto.*;
-import com.dong.ebook.model.Book;
-import com.dong.ebook.model.BookExample;
-import com.dong.ebook.model.BookWithBLOBs;
-import com.dong.ebook.model.User;
+import com.dong.ebook.model.*;
 import com.dong.ebook.security.AuthUserService;
 import com.dong.ebook.service.BookService;
+import com.dong.ebook.service.ElasticsearchService;
+import com.dong.ebook.service.PreferenceService;
 import com.dong.ebook.service.UserService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -37,6 +37,12 @@ public class BookServiceImpl implements BookService {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    PreferenceService preferenceService;
+
+    @Autowired
+    private ElasticsearchService elasticsearchService;
 
     @Override
     public ResponseCommonDto saveBook(RequestBookDto requestBookDto) {
@@ -67,16 +73,9 @@ public class BookServiceImpl implements BookService {
             return responseCommonDto;
         }
         bookDao.deleteByPrimaryKey(id);
+        elasticsearchService.delBook(id);
         responseCommonDto.setSuccess(true);
         return responseCommonDto;
-    }
-
-    @Override
-    public ResponseBookListDto getBookList(int pageNum, int pageSize) {
-        Page page = PageHelper.startPage(pageNum, pageSize);
-        bookDao.selectByExample(new BookExample());
-        PageInfo pageInfo = new PageInfo(page.getResult());
-        return assembleResponseBookListDto(pageInfo);
     }
 
     @Override
@@ -111,6 +110,37 @@ public class BookServiceImpl implements BookService {
         return responseBookDto;
     }
 
+    @Override
+    public ResponseMainPageBookListDto getMainPageBookList() {
+        int bigSize = 1, smallSize = 12;
+        int totalSize = bigSize + smallSize;
+        List<Book> books;
+        User user = authUserService.getCurUser();
+        if(user == null){
+            books = getBookList(1, totalSize, true);
+        }else{
+            //根据兴趣爱好找
+            List<Long> typeIdList = preferenceService.getPreferenceTypeId(user.getId(), PreferenceTypeName.BOOK);
+            books = getBookListByTypeId(1, totalSize, true, typeIdList);
+            if(books.size() < totalSize){
+                //数量不够就找别的
+                books.addAll(getBookListByNotTypeId(1, totalSize - books.size(), true, typeIdList));
+            }
+        }
+        if(books.size() > totalSize){
+            logger.info("getMainPageVideoList books.size()=" + books.size() + " > size=" + totalSize);
+            books = books.subList(0, totalSize);
+        }
+        return assembleResponseMainPageBookListDto(books, bigSize, smallSize);
+    }
+
+    public List<Book> getBookList(int pageNum, int pageSize, boolean desc) {
+        Page<Book> page = PageHelper.startPage(pageNum, pageSize);
+        BookExample bookExample = assembleBookExampleByDesc(desc);
+        bookDao.selectByExample(bookExample);
+        return page.getResult();
+    }
+
     public Book getBookByFileUrl(String fileUrl) {
         BookExample bookExample = new BookExample();
         BookExample.Criteria criteria = bookExample.createCriteria();
@@ -128,12 +158,14 @@ public class BookServiceImpl implements BookService {
         bookWithBLOBs.setCreateTime(date);
         bookWithBLOBs.setModifyTime(date);
         bookDao.insert(bookWithBLOBs);
+        elasticsearchService.addBook(BookWithBLOBs2Elasticsearch(bookWithBLOBs));
     }
 
     public void updateBookWithBLOBsById(BookWithBLOBs bookWithBLOBs) {
         bookWithBLOBs.setModifyUserId(authUserService.getCurUser().getId());
         bookWithBLOBs.setModifyTime(new Date());
         bookDao.updateByPrimaryKeySelective(bookWithBLOBs);
+        elasticsearchService.updateBook(BookWithBLOBs2Elasticsearch(bookWithBLOBs));
     }
 
     public BookWithBLOBs RequestBook2doWithBLOBs(RequestBookDto requestBookDto) {
@@ -153,15 +185,28 @@ public class BookServiceImpl implements BookService {
         return bookDtos;
     }
 
-    public ResponseBookListDto assembleResponseBookListDto(PageInfo pageInfo) {
-        List<BookDto> bookDtos = dos2dtos(pageInfo.getList());
+    public ResponseMainPageBookListDto assembleResponseMainPageBookListDto(List<Book> books, int bigSize, int smallSize) {
+        List<BookDto> bigBookDtos = new ArrayList<>(bigSize);
+        List<BookDto> smallBookDtos = new ArrayList<>(smallSize);
+        int idx = 0;
+        for(Book book : books){
+            //删除不需要的数据
+            book.setCreateTime(null);
+            book.setModifyTime(null);
+            book.setBookTypeId(null);
+            book.setModifyUserId(null);
 
-        pageInfo.setList(bookDtos);
+            if(++idx <= bigSize){
+                bigBookDtos.add(do2dto(book));
+            }else{
+                smallBookDtos.add(do2dto(book));
+            }
+        }
 
-        ResponseBookListDto responseBookListDto = new ResponseBookListDto();
-        responseBookListDto.setPageInfo(pageInfo);
-        responseBookListDto.setSuccess(true);
-        return responseBookListDto;
+        ResponseMainPageBookListDto responseMainPageBookListDto = new ResponseMainPageBookListDto();
+        responseMainPageBookListDto.setBigBookDtos(bigBookDtos);
+        responseMainPageBookListDto.setSmallBookDtos(smallBookDtos);
+        return responseMainPageBookListDto;
     }
 
     public ResponseManagerBookListDto assembleResponseManagerBookListDto(PageInfo pageInfo) {
@@ -190,5 +235,29 @@ public class BookServiceImpl implements BookService {
             bookExample.setOrderByClause("modify_time asc");
         }
         return bookExample;
+    }
+
+    public ElasticsearchBookDto BookWithBLOBs2Elasticsearch(BookWithBLOBs bookWithBLOBs){
+        return dozerBeanMapper.map(bookWithBLOBs, ElasticsearchBookDto.class);
+    }
+
+    public List<Book> getBookListByTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        BookExample bookExample = assembleBookExampleByDesc(desc);
+        if(typeIds.size() > 0){
+            bookExample.createCriteria().andBookTypeIdIn(typeIds);
+        }
+        bookDao.selectByExample(bookExample);
+        return page.getResult();
+    }
+
+    public List<Book> getBookListByNotTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        BookExample bookExample = assembleBookExampleByDesc(desc);
+        if(typeIds.size() > 0){
+            bookExample.createCriteria().andBookTypeIdNotIn(typeIds);
+        }
+        bookDao.selectByExample(bookExample);
+        return page.getResult();
     }
 }

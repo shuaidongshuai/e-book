@@ -1023,6 +1023,28 @@ nav.fixed ul .search_box .hot_search>div.open {
 	top: 0;
 }
 
+.new_common_100 {
+	width: 1180px;
+	height: 410px;
+	margin: 35px auto 0;
+	background: #272626;
+	box-shadow: -1px -1px 2px #482639;
+	position: relative;
+	left: 0;
+	top: 0;
+}
+
+.new_common_blog {
+	width: 1180px;
+	height: 566px;
+	margin: 35px auto 0;
+	background: #272626;
+	box-shadow: -1px -1px 2px #482639;
+	position: relative;
+	left: 0;
+	top: 0;
+}
+
 .new_common_title {
 	width: 1175px;
 	height: 35px;
@@ -1381,7 +1403,7 @@ nav.fixed ul .search_box .hot_search>div.open {
 
 .mvList ul li a span {
 	width: 223px;
-	/*height: 115px;*/
+	height: 103%;
 	position: absolute;
 	left: -2px;
 	top: -2px;
@@ -1831,6 +1853,78 @@ ul.rcmd_cont li i.third_place {
 	background: rgba(0, 0, 0, .2);
 }
 
+.omnibus_cont_100 ul {
+	width: 100%;
+	padding: 15px 0 15px 15px;
+}
+
+.omnibus_cont_100 ul li {
+	width: 125px;
+	height: 180px;
+	float: left;
+	margin-right: 17px;
+	overflow: hidden;
+}
+
+.omnibus_cont_100 ul li.post_big {
+	width: 280px;
+	height: 360px;
+}
+
+.omnibus_cont_100 ul li a {
+	color: #a78fa9;
+	font-size: 12px;
+	line-height: 27px;
+}
+
+.omnibus_cont_100 ul li a:hover {
+	text-decoration: underline;
+}
+
+.omnibus_cont_100 ul li.post_big>a {
+	width: 280px;
+	height: 335px;
+	display: block;
+	position: relative;
+	left: 0;
+	top: 0;
+}
+
+.omnibus_cont_100 ul li.post_big>a i {
+	width: 280px;
+	height: 335px;
+	display: block;
+	position: absolute;
+	left: -280px;
+	top: 0;
+	background: rgba(0, 0, 0, .2);
+}
+
+.omnibus_cont_100 ul li.post_small>a {
+	width: 125px;
+	height: 155px;
+	display: block;
+	position: relative;
+	left: 0;
+	top: 0;
+}
+
+.omnibus_cont_100 ul li.post_small>a span {
+	width: 125px;
+	height: 155px;
+	display: block;
+	position: absolute;
+	left: -130px;
+	top: 0;
+	background: rgba(0, 0, 0, .2);
+}
+
+.omnibus_cont_100 .omnibus_title {
+	width: 100%;
+	border-left: 5px solid #4a3561;
+	border-bottom: 1px solid #422b2b;
+}
+
 /*精选集 结束*/
 
 /*热门歌手 开始*/
@@ -1859,8 +1953,8 @@ ul.rcmd_cont li i.third_place {
 }
 
 .hot_singer_cont ul.singer_list {
-	width: 320px;
-	padding: 30px 50px 73px 50px;
+	width: 420px;
+	padding: 5px 50px 73px 50px;
 	border-bottom: 1px dotted #5A3B6E;
 }
 

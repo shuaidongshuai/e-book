@@ -376,6 +376,7 @@ $(function(){
 
 
 //十二、MV视频播放器---------------------------------------------------------------------------------------------------
+/*
 	//数组 保存 MV.url
 	var arrSongs = ["http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",
 	"http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4",
@@ -394,8 +395,6 @@ $(function(){
 		video[0].play();
 		$(".playPause").css({"backgroundPosition":"-54px -10px"});
 	});
-
-
 
 	//MV视频播放器
 	var video=$("#video");
@@ -440,7 +439,7 @@ $(function(){
 	}
 
 	//点击或拖动进度条
-	var timeDrag=false;   /* 拖动状态 */
+	var timeDrag=false;   //拖动状态
 	$(".progressBar").mousedown(function(e){
 	   timeDrag=true;
 	   updatebar(e.pageX);
@@ -505,7 +504,7 @@ $(function(){
 	});
 
 	//音量条 点击或拖动
-	var timeDrag2=false;   /* 拖动状态 */
+	var timeDrag2=false;   //拖动状态
 	$(".volumeBar").mousedown(function(e){
 		timeDrag2=true;
 		updatebar2(e.pageX);
@@ -550,3 +549,4 @@ $(function(){
 		video[0].RequestFullScreen();
 		return false;
 	});
+*/

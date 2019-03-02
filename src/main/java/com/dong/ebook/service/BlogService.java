@@ -2,6 +2,8 @@ package com.dong.ebook.service;
 
 import com.dong.ebook.dto.*;
 
+import java.util.List;
+
 public interface BlogService {
     /**
      * 保存blog
@@ -31,14 +33,6 @@ public interface BlogService {
      * @return
      */
     ResponseUserBlogListDto getUserBlogList(Long userId, Integer pageNum, Integer pageSize);
-
-    /**
-     * 获取blog列表
-     * @param pageNum
-     * @param pageSize
-     * @return
-     */
-    ResponseBlogListDto getBlogList(int pageNum, int pageSize);
 
     /**
      * 获取管理页面的blog列表
@@ -77,4 +71,17 @@ public interface BlogService {
      * @return
      */
     ResponseCommonDto cancelVoteBlog(long blogId);
+
+    /**
+     * 主页博客
+     * @return
+     */
+    ResponseBlogListDto getMainPageBlogList();
+
+    /**
+     * 获取热门blog
+     * @param size
+     * @return
+     */
+    List<BlogDto> getHotBlog(Integer size);
 }

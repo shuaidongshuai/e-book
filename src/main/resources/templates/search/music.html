@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>じ☆帥東☆じ E-Book</title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/dongemusic.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container">
+    <!-- 通过 row 在水平方向创建一组 column -->
+    <div class="row">
+        <!-- 第一列占8格 -->
+        <div class="col-md-12" id="musicList">
+            <ul class="nav nav-tabs mb-1" id="searchType">
+                <li class="nav-item">
+                    <a href="javascript:void(0)" class="nav-link" data-th-attr="url='/search/blog'">博客</a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" class="nav-link" data-th-attr="url='/search/book'">图书</a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" class="nav-link" data-th-attr="url='/search/video'">视频</a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" class="nav-link active" data-th-attr="url='/search/music'">音频</a>
+                </li>
+                <li class="nav-item">
+                    <a href="javascript:void(0)" class="nav-link" data-th-attr="url='/search/picture'">图片</a>
+                </li>
+            </ul>
+            <div th:if="${pageInfo.total eq 0}" class="alert alert-warning my-2" role="alert">
+                <strong>抱歉!</strong> 没有找到符合的结果
+            </div>
+            <div class="row mt-1">
+                <div class="col-md-3" th:each="music : ${pageInfo.list}" th:object="${music}">
+                    <div class="card mb-2" align="center" style="height:340px;">
+                        <a data-th-href="*{fileUrl}" target="_blank"><img class="card-img-top" data-th-src="*{coverUrl}" width="200px" height="250px"></a>
+                        <div class="card-block">
+                            <a data-th-href="*{fileUrl}" target="_blank" class="decorationNone"><p class="card-title" data-th-text="*{name}"></p></a>
+                            <span class="card-text text-muted" data-th-text="'歌手：'+*{singer}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:replace="~{fragments/page :: page}"></div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script th:src="@{/js/paginator.js}"></script>
+<script th:src="@{/js/search/music.js}"></script>
+
+</body>
+</html>

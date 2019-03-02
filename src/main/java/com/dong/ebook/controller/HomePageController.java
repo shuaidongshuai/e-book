@@ -1,9 +1,9 @@
 package com.dong.ebook.controller;
 
-import com.dong.ebook.dto.RequestUserDto;
+import com.dong.ebook.dto.*;
 import com.dong.ebook.model.User;
 import com.dong.ebook.security.AuthUserService;
-import com.dong.ebook.service.UserService;
+import com.dong.ebook.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,11 +20,51 @@ public class HomePageController {
     @Autowired
     AuthUserService authUserService;
 
+    @Autowired
+    BookService bookService;
+
+    @Autowired
+    VideoService videoService;
+
+    @Autowired
+    MusicService musicService;
+
+    @Autowired
+    PictureService pictureService;
+
+    @Autowired
+    BlogService blogService;
+
     @RequestMapping("/")
     public String index(Model model) {
+        //用户
         User curUser = authUserService.getCurUser();
+        //图书
+        ResponseMainPageBookListDto responseMainPageBookListDto = bookService.getMainPageBookList();
+        //视频
+        ResponseMainPageVideoListDto responseMainPageVideoListDto = videoService.getMainPageVideoList();
+        //音乐
+        ResponseMainPageMusicListDto responseMainPageMusicListDto = musicService.getMainPageMusicList();
+        //图片
+        ResponseMainPagePictureListDto responseMainPagePictureListDto = pictureService.getMainPagePictureList();
+        //博客
+        ResponseBlogListDto mainPagePictureList = blogService.getMainPageBlogList();
+
         model.addAttribute("user", curUser);
-        return "/index";
+        model.addAttribute("bigBooks", responseMainPageBookListDto.getBigBookDtos());
+        model.addAttribute("smallBooks", responseMainPageBookListDto.getSmallBookDtos());
+        model.addAttribute("videos", responseMainPageVideoListDto.getVideoDtos());
+        model.addAttribute("firstPageMusic", responseMainPageMusicListDto.getFirstPageMusic());
+        model.addAttribute("secondPageMusic", responseMainPageMusicListDto.getSecondPageMusic());
+        model.addAttribute("thirdPageMusic", responseMainPageMusicListDto.getThirdPageMusic());
+        model.addAttribute("popularMusic", responseMainPageMusicListDto.getPopularMusic());
+        model.addAttribute("englishMusic", responseMainPageMusicListDto.getEnglishMusic());
+        model.addAttribute("douyinMusic", responseMainPageMusicListDto.getDouyinMusic());
+        model.addAttribute("bigPicture", responseMainPagePictureListDto.getBigPictureDtos());
+        model.addAttribute("smallPicture", responseMainPagePictureListDto.getSmallPictureDtos());
+        model.addAttribute("circlePicture", responseMainPagePictureListDto.getCirclePictureDtos());
+        model.addAttribute("blogList", mainPagePictureList.getPageInfo().getList());
+        return "index";
     }
 
     @GetMapping("/register")
@@ -40,12 +80,12 @@ public class HomePageController {
 
     @RequestMapping("/login")
     public String login() {
-        return "/login";
+        return "login";
     }
 
     @GetMapping("/search")
     public String search(){
-        return "/search/main";
+        return "search/main";
     }
 
 

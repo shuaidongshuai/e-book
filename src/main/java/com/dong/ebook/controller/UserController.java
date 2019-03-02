@@ -30,33 +30,24 @@ public class UserController {
     private BlogTypeService blogTypeService;
 
     @Autowired
-    private BookTypeService bookTypeService;
-
-    @Autowired
-    private VideoTypeService videoTypeService;
-
-    @Autowired
-    private MusicTypeService musicTypeService;
-
-    @Autowired
-    private PictureTypeService pictureTypeService;
-
-    @Autowired
     private PreferenceService preferenceService;
 
     @Autowired
     private ConcernService concernService;
 
+    @Autowired
+    private VideoService videoService;
+
     @RequestMapping("/list")
     public String listUser(Model model) {
         model.addAttribute("users", userService);
-        return "/list";
+        return "list";
     }
 
     @DeleteMapping("/del/{id}")
     public String delUser(@PathVariable("id") Long id, Model model) {
 //        userService.delUser(id);
-        return "/";
+        return "";
     }
 
     @GetMapping("/personal")
@@ -64,7 +55,7 @@ public class UserController {
         User curUser = authUserService.getCurUser();
         UserDto userDto = userService.user2dto(curUser);
         model.addAttribute("user", userDto);
-        return "/user/personal";
+        return "user/personal";
     }
 
     @GetMapping("/profile")
@@ -72,7 +63,7 @@ public class UserController {
         User user = authUserService.getCurUser();
         UserDto userDto = userService.user2dto(user);
         model.addAttribute("user", userDto);
-        return "/user/profile";
+        return "user/profile";
     }
 
     @PostMapping("/profileSave")
@@ -84,7 +75,7 @@ public class UserController {
 
     @GetMapping("/avatarEdit")
     public String avatarEdit() {
-        return "/user/avatarEdit";
+        return "user/avatarEdit";
     }
 
     @GetMapping("/uploadAvatar")
@@ -106,7 +97,7 @@ public class UserController {
     public String preferenceBook(Model model) {
         ResponsePreferenceDto responsePreferenceDto = preferenceService.getBookPreference();
         model.addAttribute("preferenceDtos", responsePreferenceDto.getPreferenceDtos());
-        return "/user/preferenceBook";
+        return "user/preferenceBook";
     }
 
     @PutMapping("/addBookTag/{typeId}")
@@ -127,7 +118,7 @@ public class UserController {
     public String preferenceVideo(Model model) {
         ResponsePreferenceDto responsePreferenceDto = preferenceService.getVideoPreference();
         model.addAttribute("preferenceDtos", responsePreferenceDto.getPreferenceDtos());
-        return "/user/preferenceVideo";
+        return "user/preferenceVideo";
     }
 
     @PutMapping("/addVideoTag/{typeId}")
@@ -144,11 +135,18 @@ public class UserController {
         return responseCommonDto;
     }
 
+    @GetMapping("/videoPlay/{id}")
+    public String videoPlay(@PathVariable("id") Long id, Model model) {
+        ResponseVideoDto responseVideoDto = videoService.getVideo(id);
+        model.addAttribute("video", responseVideoDto.getVideoDto());
+        return "user/videoPlay";
+    }
+
     @GetMapping("/preferenceMusic")
     public String preferenceMusic(Model model) {
         ResponsePreferenceDto responsePreferenceDto = preferenceService.getMusicPreference();
         model.addAttribute("preferenceDtos", responsePreferenceDto.getPreferenceDtos());
-        return "/user/preferenceMusic";
+        return "user/preferenceMusic";
     }
 
     @PutMapping("/addMusicTag/{typeId}")
@@ -169,7 +167,7 @@ public class UserController {
     public String preferencePicture(Model model) {
         ResponsePreferenceDto responsePreferenceDto = preferenceService.getPicturePreference();
         model.addAttribute("preferenceDtos", responsePreferenceDto.getPreferenceDtos());
-        return "/user/preferencePicture";
+        return "user/preferencePicture";
     }
 
     @PutMapping("/addPictureTag/{typeId}")
@@ -190,7 +188,7 @@ public class UserController {
     public String preferenceBlog(Model model) {
         ResponsePreferenceDto responsePreferenceDto = preferenceService.getBlogPreference();
         model.addAttribute("preferenceDtos", responsePreferenceDto.getPreferenceDtos());
-        return "/user/preferenceBlog";
+        return "user/preferenceBlog";
     }
 
     @PutMapping("/addBlogTag/{typeId}")
@@ -213,14 +211,16 @@ public class UserController {
         ResponseGetBlogTypeDto responseGetBlogTypeDto = blogTypeService.getBlogType();
         model.addAttribute("blog", responseBlogEditDto);
         model.addAttribute("blogTypes", responseGetBlogTypeDto.getBlogTypes());
-        return "/user/blogEdit";
+        return "user/blogEdit";
     }
 
     @GetMapping("/blogEdit/{blogId}")
     public String blogEdit(@PathVariable("blogId") Long blogId, Model model) {
         ResponseBlogEditDto responseBlogEditDto = blogService.editBlog(blogId);
+        ResponseGetBlogTypeDto responseGetBlogTypeDto = blogTypeService.getBlogType();
         model.addAttribute("blog", responseBlogEditDto);
-        return "/user/blogEdit";
+        model.addAttribute("blogTypes", responseGetBlogTypeDto.getBlogTypes());
+        return "user/blogEdit";
     }
 
     @GetMapping("/blogImgUpload")
@@ -271,5 +271,6 @@ public class UserController {
         ResponseCommonDto responseCommonDto = blogService.deleteBlog(blogId);
         return responseCommonDto;
     }
+
 
 }

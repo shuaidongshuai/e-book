@@ -30,7 +30,6 @@ $(function () {
         var form = document.querySelector("#pictureForm");
         var formData = new FormData(form)
         var title = formData.get("title")
-        console.log(title)
         if(title == null || title == ''){
             $("#pictureTitle").addClass("has-danger")
             return
@@ -40,11 +39,12 @@ $(function () {
             alert("未上传文件")
             return
         }
-        formData.append("urls", fileUrls)
+        var urlJson = JSON.stringify(fileUrls)
+        formData.append("urlJson", urlJson)
         $.ajax({
             url: savePictureUrl,
             type: "POST",
-            traditional: true,//不让jquery深度序列化参数对象
+            // traditional: true,//不让jquery深度序列化参数对象
             contentType: false,// 不设置内容类型
             processData: false,//用于对data参数进行序列化处理 这里必须false
             data: formData,

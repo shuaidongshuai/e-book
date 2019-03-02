@@ -1,5 +1,6 @@
 package com.dong.ebook.controller;
 
+import com.dong.ebook.common.InitEs;
 import com.dong.ebook.dto.*;
 import com.dong.ebook.model.User;
 import com.dong.ebook.security.AuthUserService;
@@ -50,11 +51,14 @@ public class AdminController {
     @Autowired
     AuthUserService authUserService;
 
+    @Autowired
+    InitEs initEs;
+
     @GetMapping("/manager")
     public String manager(Model model) {
         User curUser = authUserService.getCurUser();
         model.addAttribute("user", curUser);
-        return "/admin/manager";
+        return "admin/manager";
     }
 
     @GetMapping("/userList")
@@ -62,7 +66,7 @@ public class AdminController {
         ResponseUserListDto responseUserListDto = userService.managerFindList(pageNum, pageSize);
         model.addAttribute("pageInfo", responseUserListDto.getPageInfo());
         model.addAttribute("users", responseUserListDto.getPageInfo().getList());
-        return "/admin/userList";
+        return "admin/userList";
     }
 
     @GetMapping("/findUsername")
@@ -70,7 +74,7 @@ public class AdminController {
         ResponseUserListDto responseUserListDto = userService.managerFindList(pageNum, pageSize, username);
         model.addAttribute("pageInfo", responseUserListDto.getPageInfo());
         model.addAttribute("users", responseUserListDto.getPageInfo().getList());
-        return "/admin/userList :: #userListReplace";
+        return "admin/userList :: #userListReplace";
     }
 
     @GetMapping("/blogList")
@@ -78,7 +82,7 @@ public class AdminController {
         ResponseManagerBlogListDto responseManagerBlogListDto = blogService.getManagerBlogList(pageNum, pageSize, desc);
         model.addAttribute("pageInfo", responseManagerBlogListDto.getPageInfo());
         model.addAttribute("desc", desc);
-        return "/admin/blogList";
+        return "admin/blogList";
     }
 
     @GetMapping("/BlogListLike")
@@ -86,7 +90,7 @@ public class AdminController {
         ResponseManagerBlogListDto responseManagerBlogListDto = blogService.getManagerBlogList(pageNum, pageSize, desc, query);
         model.addAttribute("pageInfo", responseManagerBlogListDto.getPageInfo());
         model.addAttribute("desc", desc);
-        return "/admin/blogList :: #blogListReplace";
+        return "admin/blogList :: #blogListReplace";
     }
 
     @GetMapping("/changeStatus")
@@ -110,7 +114,7 @@ public class AdminController {
     public String uploadAdapt(Model model) {
         ResponseGetBookTypeDto responseGetBookTypeDto = bookTypeService.getBookType();
         model.addAttribute("bookTypes", responseGetBookTypeDto.getBookTypes());
-        return "/admin/uploadTest";
+        return "admin/uploadTest";
     }
 
     /**
@@ -122,7 +126,7 @@ public class AdminController {
     public String uploadBook(Model model) {
         ResponseGetBookTypeDto responseGetBookTypeDto = bookTypeService.getBookType();
         model.addAttribute("bookTypes", responseGetBookTypeDto.getBookTypes());
-        return "/admin/uploadBook";
+        return "admin/uploadBook";
     }
 
     @PostMapping("/saveBook")
@@ -138,7 +142,7 @@ public class AdminController {
         ResponseGetBookTypeDto responseGetBookTypeDto = bookTypeService.getBookType();
         model.addAttribute("pageInfo", responseManagerBookListDto.getPageInfo());
         model.addAttribute("bookTypes", responseGetBookTypeDto.getBookTypes());
-        return "/admin/bookList";
+        return "admin/bookList";
     }
 
     @GetMapping("/bookListLike")
@@ -146,7 +150,7 @@ public class AdminController {
         ResponseManagerBookListDto responseManagerBookListDto = bookService.getManagerBookList(pageNum, pageSize, desc, query);
         model.addAttribute("pageInfo", responseManagerBookListDto.getPageInfo());
         model.addAttribute("desc", desc);
-        return "/admin/bookList :: #bookListReplace";
+        return "admin/bookList :: #bookListReplace";
     }
 
     @GetMapping("/getBook")
@@ -171,7 +175,7 @@ public class AdminController {
     public String uploadVideo(Model model) {
         ResponseGetVideoTypeDto responseGetVideoTypeDto = videoTypeService.getVideoType();
         model.addAttribute("videoTypes", responseGetVideoTypeDto.getVideoTypes());
-        return "/admin/uploadVideo";
+        return "admin/uploadVideo";
     }
 
     @PostMapping("/saveVideo")
@@ -187,7 +191,7 @@ public class AdminController {
         ResponseGetVideoTypeDto responseGetVideoTypeDto = videoTypeService.getVideoType();
         model.addAttribute("pageInfo", responseManagerVideoListDto.getPageInfo());
         model.addAttribute("videoTypes", responseGetVideoTypeDto.getVideoTypes());
-        return "/admin/videoList";
+        return "admin/videoList";
     }
 
     @GetMapping("/videoListLike")
@@ -195,7 +199,7 @@ public class AdminController {
         ResponseManagerVideoListDto responseManagerVideoListDto = videoService.getManagerVideoList(pageNum, pageSize, desc, query);
         model.addAttribute("pageInfo", responseManagerVideoListDto.getPageInfo());
         model.addAttribute("desc", desc);
-        return "/admin/videoList :: #videoListReplace";
+        return "admin/videoList :: #videoListReplace";
     }
 
     @GetMapping("/getVideo")
@@ -220,7 +224,7 @@ public class AdminController {
     public String uploadMusic(Model model) {
         ResponseGetMusicTypeDto responseGetMusicTypeDto = musicTypeService.getMusicType();
         model.addAttribute("musicTypes", responseGetMusicTypeDto.getMusicTypes());
-        return "/admin/uploadMusic";
+        return "admin/uploadMusic";
     }
 
     @PostMapping("/saveMusic")
@@ -236,7 +240,7 @@ public class AdminController {
         ResponseGetMusicTypeDto responseGetMusicTypeDto = musicTypeService.getMusicType();
         model.addAttribute("pageInfo", responseManagerMusicListDto.getPageInfo());
         model.addAttribute("musicTypes", responseGetMusicTypeDto.getMusicTypes());
-        return "/admin/musicList";
+        return "admin/musicList";
     }
 
     @GetMapping("/musicListLike")
@@ -244,7 +248,7 @@ public class AdminController {
         ResponseManagerMusicListDto responseManagerMusicListDto = musicService.getManagerMusicList(pageNum, pageSize, desc, query);
         model.addAttribute("pageInfo", responseManagerMusicListDto.getPageInfo());
         model.addAttribute("desc", desc);
-        return "/admin/musicList :: #musicListReplace";
+        return "admin/musicList :: #musicListReplace";
     }
 
     @GetMapping("/getMusic")
@@ -269,7 +273,7 @@ public class AdminController {
     public String uploadPicture(Model model) {
         ResponseGetPictureTypeDto responseGetPictureTypeDto = pictureTypeService.getPictureType();
         model.addAttribute("pictureTypes", responseGetPictureTypeDto.getPictureTypes());
-        return "/admin/uploadPicture";
+        return "admin/uploadPicture";
     }
 
     @PostMapping("/savePicture")
@@ -285,7 +289,7 @@ public class AdminController {
         ResponseGetPictureTypeDto responseGetPictureTypeDto = pictureTypeService.getPictureType();
         model.addAttribute("pageInfo", responseManagerPictureListDto.getPageInfo());
         model.addAttribute("pictureTypes", responseGetPictureTypeDto.getPictureTypes());
-        return "/admin/pictureList";
+        return "admin/pictureList";
     }
 
     @GetMapping("/pictureListLike")
@@ -293,7 +297,7 @@ public class AdminController {
         ResponseManagerPictureListDto responseManagerPictureListDto = pictureService.getManagerPictureList(pageNum, pageSize, desc, query);
         model.addAttribute("pageInfo", responseManagerPictureListDto.getPageInfo());
         model.addAttribute("desc", desc);
-        return "/admin/pictureList :: #pictureListReplace";
+        return "admin/pictureList :: #pictureListReplace";
     }
 
     @GetMapping("/getPicture")
@@ -365,4 +369,10 @@ public class AdminController {
         return responseUploadDto;
     }
 
+    @GetMapping("/initEs")
+    @ResponseBody
+    public String initEs(){
+        boolean init = initEs.init();
+        return init ? "Es初始化成功" : "Es初始化失败";
+    }
 }

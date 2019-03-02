@@ -4,7 +4,7 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <meta charset="UTF-8">
-    <title>e-book</title>
+    <title>じ☆帥東☆じ E-Book</title>
     <!-- Bootstrap CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -19,13 +19,12 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto col-6">
-                <form th:action="@{/}" method="post" class="form-inline navbar-left mx-4 w-75">
-                    <!--<input type="text" class="form-control" placeholder="搜索" style="background-color:transparent">-->
-                    <input type="text" class="form-control border-0 w-75" placeholder="搜索">
+                <div class="form-inline navbar-left mx-4 w-75" id="search">
+                    <input type="text" class="form-control border-0 w-75" data-th-value="${query} == null ? '' : ${query}" placeholder="搜索" name="query">
                     <button type="submit" class="btn btn-link btn-sm">
                         <img src="/images/search.png" class="thumbnail" width="22">
                     </button>
-                </form>
+                </div>
             </ul>
 
             <!-- 游客 -->

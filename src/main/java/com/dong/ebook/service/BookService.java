@@ -8,5 +8,10 @@ public interface BookService {
     ResponseBookDto getBook(long id);
     ResponseManagerBookListDto getManagerBookList(int pageNum, int pageSize, boolean desc);
     ResponseManagerBookListDto getManagerBookList(int pageNum, int pageSize, boolean desc, String query);
-    ResponseBookListDto getBookList(int pageNum, int pageSize);
+
+    /**
+     * 为主页定制的List
+     * @return
+     */
+    ResponseMainPageBookListDto getMainPageBookList();
 }

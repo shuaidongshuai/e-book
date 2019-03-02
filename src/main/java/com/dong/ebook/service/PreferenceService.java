@@ -3,6 +3,8 @@ package com.dong.ebook.service;
 import com.dong.ebook.dto.ResponseCommonDto;
 import com.dong.ebook.dto.ResponsePreferenceDto;
 
+import java.util.List;
+
 public interface PreferenceService {
     ResponsePreferenceDto getBookPreference();
     ResponseCommonDto addBookPreference(long typeId);
@@ -19,5 +21,7 @@ public interface PreferenceService {
     ResponsePreferenceDto getBlogPreference();
     ResponseCommonDto addBlogPreference(long typeId);
     ResponseCommonDto delBlogPreference(long typeId);
+
+    List<Long> getPreferenceTypeId(long userId, String typeName);
 }
 

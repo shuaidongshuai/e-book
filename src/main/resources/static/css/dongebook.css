@@ -21,3 +21,11 @@ a.changeRed:hover {
     color: red;
     text-decoration: none;
 }
+
+a.decorationNone:hover {
+    text-decoration: none;
+}
+
+.bgTransparent {
+    background-color: rgba(0,0,0,0);
+}

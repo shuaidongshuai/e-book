@@ -13,5 +13,5 @@ public class PictureDto {
     private Long pictureTypeId;
     private Date createTime;
     private Date modifyTime;
-    private String urlJson;
+    private String fileUrl;
 }

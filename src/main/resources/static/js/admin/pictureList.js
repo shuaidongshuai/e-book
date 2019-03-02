@@ -89,7 +89,7 @@ $(function() {
                     $("#pictureForm .id").val(pictureDto.id)
                     $("#pictureForm .title").val(pictureDto.title)
                     $("#pictureForm .pictureTypeId").val(pictureDto.pictureTypeId)
-                    $("#pictureForm .urlJson").val(pictureDto.urlJson)
+                    $("#pictureForm .fileUrl").val(pictureDto.fileUrl)
                 } else {
                     alert(responsePictureDto.errorMsg)
                 }
@@ -107,8 +107,8 @@ $(function() {
         }
         $("#pictureTitle").removeClass("has-danger")
 
-        var urlJson = formData.get("urlJson")
-        if(urlJson == null || urlJson == ''){
+        var fileUrl = formData.get("urlJson")
+        if(fileUrl == null || fileUrl == ''){
             $("#pictureUrl").addClass("has-danger")
             return
         }
