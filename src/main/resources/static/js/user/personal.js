@@ -17,5 +17,5 @@ $(function () {
         });
     })
 
-    $("#sidebarnav li:first").trigger("click")
+    $("#sidebarnav a:first").trigger("click")
 })
