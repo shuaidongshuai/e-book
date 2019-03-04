@@ -88,5 +88,9 @@ public class HomePageController {
         return "search/main";
     }
 
+    @GetMapping("/pagesError403")
+    public String pagesError403(){
+        return "error/pages-error-403";
+    }
 
 }
