@@ -253,6 +253,7 @@ public class MusicServiceImpl implements MusicService {
 
     private void insertMusic(Music music) {
         Date date = new Date();
+        music.setTraffic(0);
         music.setCreateTime(date);
         music.setModifyTime(date);
         music.setModifyUserId(authUserService.getCurUser().getId());

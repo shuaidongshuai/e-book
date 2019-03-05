@@ -159,6 +159,7 @@ public class BookServiceImpl implements BookService {
 
     public void insertBookWithBLOBs(BookWithBLOBs bookWithBLOBs) {
         Date date = new Date();
+        bookWithBLOBs.setTraffic(0);
         bookWithBLOBs.setModifyUserId(authUserService.getCurUser().getId());
         bookWithBLOBs.setCreateTime(date);
         bookWithBLOBs.setModifyTime(date);

@@ -167,6 +167,7 @@ public class VideoServiceImpl implements VideoService {
 
     public void insertVideo(Video video){
         Date date = new Date();
+        video.setTraffic(0);
         video.setCreateTime(date);
         video.setModifyTime(date);
         video.setModifyUserId(authUserService.getCurUser().getId());

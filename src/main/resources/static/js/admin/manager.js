@@ -2,6 +2,7 @@
 $(function() {
 	var pageNum = 1
 	var pageSize = 10
+    var pageViewUrl = '/admin/getPageView'
 
     // 菜单事件
     $("#sidebarnav").off("click", "a").on("click", "a", function () {

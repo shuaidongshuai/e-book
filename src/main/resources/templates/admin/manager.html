@@ -8,8 +8,8 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="/personal/favicon.ico">
-    <title>Monster Admin Template - The Most Complete & Trusted Bootstrap 4 Admin Template</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+    <title>じ☆帥東☆じ E-Book</title>
     <!-- Bootstrap Core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
@@ -120,7 +120,7 @@
             <nav class="sidebar-nav">
                 <ul id="sidebarnav">
                     <li>
-                        <a class="waves-effect">
+                        <a class="waves-effect" data-th-attr="url='/admin/main'">
                             <i class="fa fa-ravelry m-r-10" aria-hidden="true"></i>
                             <span>管理主页</span>
                         </a>
@@ -209,7 +209,7 @@
                     </li>
                 </ul>
                 <div class="text-center m-t-30">
-                    <a href="/" class="btn btn-danger"> Upgrade to Pro</a>
+                    <a href="/" class="btn btn-danger">Back to Home</a>
                 </div>
             </nav>
             <!-- End Sidebar navigation -->
@@ -272,14 +272,13 @@
 <!-- Flot Charts JavaScript -->
 <script src="/personal/js/jquery.flot.js"></script>
 <script src="/personal/js/jquery.flot.tooltip.min.js"></script>
-<script src="/personal/js/flot-data.js"></script>
 <!-- ============================================================== -->
 <!-- Style switcher -->
 <!-- ============================================================== -->
 <script src="/personal/js/jQuery.style.switcher.js"></script>
 
 <!-- page -->
-<script th:src="@{/js/paginator.js}"></script>
+<script src="/js/paginator.js"></script>
 <!-- manager -->
 <script src="/js/admin/manager.js"></script>
 <script src="/js/admin/uploadSuccess.js"></script>

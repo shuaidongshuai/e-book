@@ -795,6 +795,66 @@ public class MusicExample {
             return (Criteria) this;
         }
 
+        public Criteria andTrafficIsNull() {
+            addCriterion("traffic is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrafficIsNotNull() {
+            addCriterion("traffic is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrafficEqualTo(Integer value) {
+            addCriterion("traffic =", value, "traffic");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrafficNotEqualTo(Integer value) {
+            addCriterion("traffic <>", value, "traffic");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrafficGreaterThan(Integer value) {
+            addCriterion("traffic >", value, "traffic");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrafficGreaterThanOrEqualTo(Integer value) {
+            addCriterion("traffic >=", value, "traffic");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrafficLessThan(Integer value) {
+            addCriterion("traffic <", value, "traffic");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrafficLessThanOrEqualTo(Integer value) {
+            addCriterion("traffic <=", value, "traffic");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrafficIn(List<Integer> values) {
+            addCriterion("traffic in", values, "traffic");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrafficNotIn(List<Integer> values) {
+            addCriterion("traffic not in", values, "traffic");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrafficBetween(Integer value1, Integer value2) {
+            addCriterion("traffic between", value1, value2, "traffic");
+            return (Criteria) this;
+        }
+
+        public Criteria andTrafficNotBetween(Integer value1, Integer value2) {
+            addCriterion("traffic not between", value1, value2, "traffic");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;

@@ -1,0 +1,39 @@
+<div class="col-sm-12">
+    <div class="card">
+        <div class="card-block">
+            <h4 class="card-title">系统访问量统计</h4>
+            <div class="flot-chart">
+                <div class="flot-chart-content" id="pageView"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-sm-12">
+    <div class="card">
+        <div class="card-block">
+            <h4 class="card-title">搜索关键词统计</h4>
+            <div class="table-responsive m-t-40" id="hotWordsList">
+                <div id="hotWordsListReplace">
+                    <table class="table stylish-table">
+                        <thead>
+                        <tr>
+                            <th>搜索词</th>
+                            <th>搜索次数</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr data-th-each="hotWordsList : ${pageInfo.list}" data-th-object="${hotWordsList}">
+                            <td data-th-text="*{word}"></td>
+                            <td data-th-text="*{number}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div th:replace="~{fragments/page :: page}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/admin/main.js"></script>

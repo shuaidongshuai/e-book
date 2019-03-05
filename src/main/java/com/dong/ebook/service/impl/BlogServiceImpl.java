@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +54,8 @@ public class BlogServiceImpl implements BlogService {
     @Autowired
     private PreferenceService preferenceService;
 
+    private Lock lock = new ReentrantLock();
+
     @Override
     public ResponseBlogSaveDto saveBlog(BlogDto blogDto) {
         ResponseBlogSaveDto responseBlogSaveDto = new ResponseBlogSaveDto();
@@ -61,7 +65,16 @@ public class BlogServiceImpl implements BlogService {
             responseBlogSaveDto.setErrorMsg("你已被上锁不能保存博客，请联系管理员");
             return responseBlogSaveDto;
         }
-        blogDto.setUserId(user.getId());
+
+        //设置用户上传blog数量为200
+        Long userId = user.getId();
+        int userBlogCount = getUserBlogCount(userId);
+        if(userBlogCount >= 200){
+            responseBlogSaveDto.setErrorMsg("用户上传博客数量最多为200篇");
+            return responseBlogSaveDto;
+        }
+
+        blogDto.setUserId(userId);
         BlogWithBLOBs blogWithBLOBs = BlogDto2do(blogDto);
 
         //自动生成摘要
@@ -182,17 +195,13 @@ public class BlogServiceImpl implements BlogService {
                     concern = true;
                 }
                 //不是博主，文章阅读数+1
-                blogWithBLOBs.setTraffic(blogWithBLOBs.getTraffic() + 1);
-                blogDao.updateByPrimaryKey(blogWithBLOBs);
-                elasticsearchService.updateBlog(BlogWithBLOBs2Elasticsearch(blogWithBLOBs));
+                addBlogTraffic(blogId, 1);
             }
             //是否点赞
             vote = voteService.checkVote(curUser.getId(), blogId);
         } else{
             //不是博主，文章阅读数+1
-            blogWithBLOBs.setTraffic(blogWithBLOBs.getTraffic() + 1);
-            blogDao.updateByPrimaryKey(blogWithBLOBs);
-            elasticsearchService.updateBlog(BlogWithBLOBs2Elasticsearch(blogWithBLOBs));
+            addBlogTraffic(blogId, 1);
         }
 
         //不需要返回content
@@ -416,14 +425,14 @@ public class BlogServiceImpl implements BlogService {
         return assembleHotBlogListDto(page.getResult());
     }
 
-    public List<Blog> getBlogList(int pageNum, int pageSize, boolean desc) {
+    private List<Blog> getBlogList(int pageNum, int pageSize, boolean desc) {
         Page page = PageHelper.startPage(pageNum, pageSize);
         BlogExample blogExample = assembleBlogExampleByModifyTimeDesc(desc);
         blogDao.selectByExample(blogExample);
         return page.getResult();
     }
 
-    public List<Blog> getBlogListByTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
+    private List<Blog> getBlogListByTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
         Page page = PageHelper.startPage(pageNum, pageSize);
         BlogExample blogExample = assembleBlogExampleByVoteNumDesc(desc);
         if(typeIds.size() > 0){
@@ -433,7 +442,7 @@ public class BlogServiceImpl implements BlogService {
         return page.getResult();
     }
 
-    public List<Blog> getBlogListByNotTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
+    private List<Blog> getBlogListByNotTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {
         Page page = PageHelper.startPage(pageNum, pageSize);
         BlogExample blogExample = assembleBlogExampleByVoteNumDesc(desc);
         if(typeIds.size() > 0){
@@ -517,22 +526,22 @@ public class BlogServiceImpl implements BlogService {
         return blogDtos;
     }
 
-    public Boolean isSelf(long curUserId, long blogUserId){
+    private Boolean isSelf(long curUserId, long blogUserId){
         if(curUserId == blogUserId){
             return true;
         }
         return false;
     }
 
-    public ElasticsearchBlogDto BlogWithBLOBs2Elasticsearch(BlogWithBLOBs blogWithBLOBs){
+    private ElasticsearchBlogDto BlogWithBLOBs2Elasticsearch(BlogWithBLOBs blogWithBLOBs){
         return dozerBeanMapper.map(blogWithBLOBs, ElasticsearchBlogDto.class);
     }
 
-    public List<BlogDto> assembleMainPageBlogListDto(List<Blog> blogs) {
+    private List<BlogDto> assembleMainPageBlogListDto(List<Blog> blogs) {
         return assembleHotBlogListDto(blogs);
     }
 
-    public List<BlogDto> assembleHotBlogListDto(List<Blog> blogs) {
+    private List<BlogDto> assembleHotBlogListDto(List<Blog> blogs) {
         List<BlogDto> blogDtos = new ArrayList<>(blogs.size());
         for(Blog blog : blogs){
             //删除不必要信息
@@ -545,7 +554,7 @@ public class BlogServiceImpl implements BlogService {
         return blogDtos;
     }
 
-    public ResponseManagerBlogListDto assembleResponseManagerBlogListDto(PageInfo pageInfo){
+    private ResponseManagerBlogListDto assembleResponseManagerBlogListDto(PageInfo pageInfo){
         List<Blog> blogs = pageInfo.getList();
         List<ManagerBlogDto> managerBlogDtos = new ArrayList<>();
         for(Blog blog : blogs){
@@ -572,7 +581,7 @@ public class BlogServiceImpl implements BlogService {
         return responseManagerBlogListDto;
     }
 
-    public BlogExample assembleBlogExampleByModifyTimeDesc(boolean desc){
+    private BlogExample assembleBlogExampleByModifyTimeDesc(boolean desc){
         BlogExample blogExample = new BlogExample();
         if(desc){
             blogExample.setOrderByClause("modify_time desc");
@@ -582,7 +591,7 @@ public class BlogServiceImpl implements BlogService {
         return blogExample;
     }
 
-    public BlogExample assembleBlogExampleByVoteNumDesc(boolean desc){
+    private BlogExample assembleBlogExampleByVoteNumDesc(boolean desc){
         BlogExample blogExample = new BlogExample();
         if(desc){
             blogExample.setOrderByClause("vote_num desc");
@@ -592,12 +601,26 @@ public class BlogServiceImpl implements BlogService {
         return blogExample;
     }
 
+    private void addBlogTraffic(Long blogId, int num){
+        lock.lock();
+        try {
+            BlogWithBLOBs blogWithBLOBs = blogDao.selectByPrimaryKey(blogId);
+            blogWithBLOBs.setTraffic(blogWithBLOBs.getTraffic() + num);
+            blogDao.updateByPrimaryKeySelective(blogWithBLOBs);
+            elasticsearchService.updateBlog(BlogWithBLOBs2Elasticsearch(blogWithBLOBs));
+        } catch (Exception e) {
+            logger.error("addBlogTraffic:", e);
+        } finally {
+            lock.unlock();
+        }
+    }
+
     /**
      * 把<script...></script...> 改为<pre></><code><script...></script...></code></pre>
      * @param contentHtml
      * @return
      */
-    public String changeScriptStyle(String contentHtml){
+    private String changeScriptStyle(String contentHtml){
         String regex = "<(script[\\s\\S]*)>([\\s\\S]*)<(/script.*?)>|<(style[\\s\\S]*)>([\\s\\S]*)<(/style.*?)>";
         Pattern pattern = Pattern.compile(regex) ;
         Matcher matcher = pattern.matcher(contentHtml);
@@ -623,12 +646,10 @@ public class BlogServiceImpl implements BlogService {
         return newContentHtml;
     }
 
-    public void test() {
-        changeScriptStyle("<script>\n" +
-                "for(var i = 0; i<2; ++i){\n" +
-                "alert(\"dong\")\n" +
-                "}\n" +
-                "</script>\n" +
-                "<style>body{background-color: red;}</style>");
+    private int getUserBlogCount(Long userId){
+        BlogExample blogExample = new BlogExample();
+        blogExample.createCriteria().andUserIdEqualTo(userId);
+        List<Blog> blogs = blogDao.selectByExample(blogExample);
+        return blogs.size();
     }
 }

@@ -52,6 +52,12 @@ public class AdminController {
     AuthUserService authUserService;
 
     @Autowired
+    PageViewService pageViewService;
+
+    @Autowired
+    HotWordsService hotWordsService;
+
+    @Autowired
     InitEs initEs;
 
     @GetMapping("/manager")
@@ -367,6 +373,27 @@ public class AdminController {
     public ResponseUploadDto getMusicCoverServer(String filename) throws UnsupportedEncodingException {
         ResponseUploadDto responseUploadDto = ossService.uploadMusicCover(filename);
         return responseUploadDto;
+    }
+
+    @GetMapping("/main")
+    public String main(Model model) {
+        ResponseHotWordsList hotWords = hotWordsService.getHotWords(null, null, null);
+        model.addAttribute("pageInfo", hotWords.getPageInfo());
+        return "admin/main";
+    }
+
+    @GetMapping("/hotWords")
+    public String hotWords(Integer pageNum, Integer pageSize, Boolean desc, Model model) {
+        ResponseHotWordsList hotWords = hotWordsService.getHotWords(pageNum, pageSize, desc);
+        model.addAttribute("pageInfo", hotWords.getPageInfo());
+        return "admin/main :: #hotWordsListReplace";
+    }
+
+    @GetMapping("/getPageView")
+    @ResponseBody
+    public ResponsePageViewList getPageView() {
+        ResponsePageViewList responsePageViewList = pageViewService.getPageView();
+        return responsePageViewList;
     }
 
     @GetMapping("/initEs")

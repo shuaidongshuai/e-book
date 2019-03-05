@@ -242,6 +242,7 @@ public class PictureServiceImpl implements PictureService {
 
     public void insertPicture(Picture picture){
         Date date = new Date();
+        picture.setTraffic(0);
         picture.setCreateTime(date);
         picture.setModifyTime(date);
         picture.setModifyUserId(authUserService.getCurUser().getId());
