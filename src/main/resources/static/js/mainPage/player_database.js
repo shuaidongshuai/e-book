@@ -76,6 +76,21 @@
     });
 	//添加歌曲结束
 
+    // $("#popularMusic li").find("a.shareIcon").click(function() {
+    // 	var url = $(this).attr("url")
+    //     downloadFile(url)
+    // });
+    // function downloadFile(url) {
+    //     try{
+    //         var elemIF = document.createElement("iframe");
+    //         elemIF.src = url;
+    //         elemIF.style.display = "none";
+    //         document.body.appendChild(elemIF);
+    //     }catch(e){
+	//
+    //     }
+    // }
+
 
 	//移除
 	$("#playlist-remove").click(function() {
