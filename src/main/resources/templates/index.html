@@ -229,21 +229,21 @@
             <ul class="rcmd_left rcmd_cont" id="popularMusic">
                 <li data-th-each="music,stat : ${popularMusic}" data-th-object="${music}">
                     <a href="javascript:;" class="musicName" data-th-text="*{name +' - '+ singer}"></a>
-                    <a class="shareIcon" data-th-attr="url=*{fileUrl}" target="_blank" download=""></a>
+                    <a class="shareIcon" data-th-href="*{fileUrl}" target="_blank" download=""></a>
                     <a class="playIcon" href="javascript:;" data-th-attr="fileUrl=*{fileUrl},coverUrl=*{coverUrl},name=*{name},singer=*{singer}"></a>
                 </li>
             </ul>
             <ul class="rcmd_center rcmd_cont" id="englishMusic">
                 <li data-th-each="music,stat : ${englishMusic}" data-th-object="${music}">
                     <a href="javascript:;" class="musicName" data-th-text="*{name +' - '+ singer}"></a>
-                    <a class="shareIcon" data-th-attr="url=*{fileUrl}" target="_blank" download=""></a>
+                    <a class="shareIcon" data-th-href="*{fileUrl}" target="_blank" download=""></a>
                     <a class="playIcon" href="javascript:;" data-th-attr="fileUrl=*{fileUrl},coverUrl=*{coverUrl},name=*{name},singer=*{singer}"></a>
                 </li>
             </ul>
             <ul class="rcmd_right rcmd_cont" id="douyinMusic">
                 <li data-th-each="music,stat : ${douyinMusic}" data-th-object="${music}">
                     <a href="javascript:;" class="musicName" data-th-text="*{name +' - '+ singer}"></a>
-                    <a class="shareIcon" data-th-attr="url=*{fileUrl}" target="_blank" download=""></a>
+                    <a class="shareIcon" data-th-href="*{fileUrl}" target="_blank" download=""></a>
                     <a class="playIcon" href="javascript:;" data-th-attr="fileUrl=*{fileUrl},coverUrl=*{coverUrl},name=*{name},singer=*{singer}"></a>
                 </li>
             </ul>

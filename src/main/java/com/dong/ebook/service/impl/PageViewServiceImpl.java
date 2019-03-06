@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -31,8 +33,16 @@ public class PageViewServiceImpl implements PageViewService {
         int size = 11;
         List<PageView> pageViews = getPageView(1, size, true);
         List<PageViewDto> pageViewDtos = new ArrayList<>(pageViews.size());
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(new Date());
+        Calendar cal2 = Calendar.getInstance();
         for(PageView pageView : pageViews){
-            pageViewDtos.add(do2dto(pageView));
+            cal2.setTime(pageView.getCreateTime());
+            //过滤不是当前的信息
+            if(cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                && cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH)){
+                pageViewDtos.add(do2dto(pageView));
+            }
         }
         ResponsePageViewList responsePageViewList = new ResponsePageViewList();
         responsePageViewList.setPageViewDtoList(pageViewDtos);

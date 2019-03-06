@@ -5,6 +5,7 @@ $(function() {
     var _desc = true
     var pageViewUrl = '/admin/getPageView'
     var hotWordsUrl = '/admin/hotWords'
+    var _dateStr = null
 
 	//访问量-图表
     $.ajax({
@@ -16,6 +17,14 @@ $(function() {
                 var pageViewDtoList = response.pageViewDtoList
                 for(let pageView of pageViewDtoList){
                     var date = new Date(pageView.createTime);
+                    if(_dateStr == null){
+                        var curr_date = date.getDate();
+                        var curr_month = date.getMonth() + 1;
+                        var curr_year = date.getFullYear();
+                        String(curr_month).length < 2 ? (curr_month = "0" + curr_month): curr_month;
+                        String(curr_date).length < 2 ? (curr_date = "0" + curr_date): curr_date;
+                        _dateStr= curr_year + "年" + curr_month +"月"+ curr_date + "日";
+                    }
                     data.push([date.getHours(), pageView.number]);
                 }
                 initChart(data)
@@ -24,6 +33,16 @@ $(function() {
             }
         }
     })
+
+    // $("#pageView").bind("plothover", function (event, pos, item) {
+    //     if (item) {
+    //         console.log(item)
+    //         console.log(pos)
+    //         $("#tooltip").remove();
+    //         var x = item.datapoint[0], y = item.datapoint[1];
+    //         showTooltip(item.pageX, item.pageY, item.series.label + "[" + x + "] : " + y);
+    //     }
+    // });
 
     // 分页
     $.tbpage("#hotWordsList", function (pageNum, pageSize) {
@@ -59,13 +78,26 @@ $(function() {
             }
         };
 
-        var plot = $.plot($("#rightContainer #pageView"), [{
+        var plot = $.plot($("#pageView"), [{
             data: data,
-            label: "访问量",
+            label: "访问量-" + _dateStr,
         }], options);
 
         // plot.draw();
     }
+
+    // function showTooltip(x, y, contents) {
+    //     $('<div id="tooltip">' + contents + '</div>').css( {
+    //         position: 'absolute',
+    //         display: 'none',
+    //         top: y + 10,
+    //         left: x + 10,
+    //         border: '1px solid #fdd',
+    //         padding: '2px',
+    //         'background-color': '#dfeffc',
+    //         opacity: 0.80
+    //     }).appendTo("body").fadeIn(200);
+    // }
 
     function hotWordsList(pageNum, pageSize) {
         $.ajax({
