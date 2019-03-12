@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping
@@ -73,9 +74,10 @@ public class HomePageController {
     }
 
     @PostMapping("/register")
-    public String registerUser(RequestUserDto RequestUserDto) {
-        userService.addUser(RequestUserDto);
-        return "redirect:/";
+    @ResponseBody
+    public ResponseUserDto registerUser(RequestUserDto RequestUserDto) {
+        ResponseUserDto responseUserDto = userService.addUser(RequestUserDto);
+        return responseUserDto;
     }
 
     @RequestMapping("/login")

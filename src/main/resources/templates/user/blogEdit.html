@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>じ☆帥東☆じ E-Book</title>
@@ -7,8 +7,11 @@
     <link href="/mavonEditor/css/index.css" rel="stylesheet">
 </head>
 <body>
-<div class="container-fluid mt-1">
-    <div class="row" th:object="${blog}">
+<div data-th-if="${not blog.success}" class="alert alert-warning my-2" role="alert">
+    <strong>坏蛋!</strong> 请不要尝试修改别人博客
+</div>
+<div class="container-fluid mt-1" data-th-if="${blog.success}">
+    <div class="row" data-th-object="${blog}">
         <div class="col-md-10">
             <input type="hidden" id="blogId" th:value="*{blogId}">
             <input type="text" class="form-control float-left" placeholder="请输入文字标题" id="title" name="title"

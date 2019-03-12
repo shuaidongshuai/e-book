@@ -45,6 +45,8 @@ public class UserServiceImpl implements UserService {
         if(!responseUser.isSuccess()){
             return responseUser;
         }
+        responseUser.setSuccess(false);
+
         User user = dozerBeanMapper.map(requestUserDto, User.class);
         //username不能一样
         User findUser = findUserByUsername(requestUserDto.getUsername());
@@ -416,16 +418,16 @@ public class UserServiceImpl implements UserService {
         if(username.length() < 6 || username.length() > 30){
             responseUser.setErrorMsg("用户名长度必须在6-30以内");
             return responseUser;
-        }else if(password.length() < 6 || username.length() > 20){
+        }else if(password.length() < 6 || password.length() > 20){
             responseUser.setErrorMsg("密码长度必须在6-20以内");
             return responseUser;
         }else if(email.length() < 6 || email.length() > 20){
             responseUser.setErrorMsg("邮箱长度必须在6-20以内");
             return responseUser;
-        }else if(nickname.length() < 1 || username.length() > 10){
+        }else if(nickname.length() < 1 || nickname.length() > 10){
             responseUser.setErrorMsg("昵称长度必须在1-10以内");
             return responseUser;
-        }else if(!"girl".equals(sex) || !"boy".equals(sex)){
+        }else if(!("girl".equals(sex) || "boy".equals(sex))){
             responseUser.setErrorMsg("性别错误");
             return responseUser;
         }else if(phoneNumber.length() < 3 || phoneNumber.length() > 30){

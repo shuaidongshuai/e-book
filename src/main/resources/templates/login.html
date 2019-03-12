@@ -46,24 +46,27 @@
                     </div>
                 </div>
                 <div class="sign-up-htm">
-                    <form action="/register" method="post">
+                    <form id="registerForm">
                         <div class="group">
-                            <input type="text" class="input" name="username" maxlength="30" required="true"
+                            <input id="username" type="text" class="input" name="username" maxlength="30" required="true"
                                    placeholder="账号">
                         </div>
+                        <p id="usernameError" class="text-danger"></p>
                         <div class="group">
                             <input id="password1" type="password" class="input" name="password" maxlength="20" required="true"
                                    placeholder="密码">
                         </div>
+                        <p id="password1Error" class="text-danger"></p>
                         <div class="group">
                             <input id="password2" type="password" class="input" maxlength="20" required="true"
                                    placeholder="确认密码">
                         </div>
-                        <p id="passwordError" class="text-danger"></p>
+                        <p id="password2Error" class="text-danger"></p>
                         <div class="group">
-                            <input type="text" class="input" name="nickname" maxlength="10" required="true"
+                            <input id="nickname" type="text" class="input" name="nickname" maxlength="10" required="true"
                                    placeholder="昵称">
                         </div>
+                        <p id="nicknameError" class="text-danger"></p>
                         <div class="group">
                             <label class="form-check-label">
                                 <input type="radio" class="form-check-input" name="sex" value="boy" checked>
@@ -75,19 +78,21 @@
                             </label>
                         </div>
                         <div class="group">
-                            <input type="email" class="input" name="email" maxlength="30" required="true"
+                            <input id="email" type="email" class="input" name="email" maxlength="30" required="true"
                                    placeholder="邮箱">
                         </div>
+                        <p id="emailError" class="text-danger"></p>
                         <div class="group">
-                            <input type="tel" class="input" name="phoneNumber" maxlength="15" required="true"
+                            <input id="phoneNumber" type="tel" class="input" name="phoneNumber" maxlength="15" required="true"
                                    placeholder="电话">
                         </div>
+                        <p id="phoneNumberError" class="text-danger"></p>
                         <div class="group">
                             <label class="label">生日：</label>
                             <input type="date" class="input" name="birthday" required="true">
                         </div>
                         <div class="group">
-                            <input id="submit" type="submit" class="button" value="Sign Up">
+                            <input id="submit" type="button" class="button" value="Sign Up">
                         </div>
                     </form>
                 </div>

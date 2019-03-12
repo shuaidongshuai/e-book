@@ -301,24 +301,23 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public ResponseBlogEditDto editBlog(long blogId) {
-        User curUser = authUserService.getCurUser();
-        if(curUser == null){
-            throw new RuntimeException("editBlog user not exist");
-        }
+        ResponseBlogEditDto responseBlogEditDto = new ResponseBlogEditDto();
+        responseBlogEditDto.setSuccess(false);
 
+        User curUser = authUserService.getCurUser();
         String title = "", content = "";
         if(blogId > 0){
             BlogWithBLOBs blogWithBLOBs = blogDao.selectByPrimaryKey(blogId);
             //检查是否是博主
             if(!blogWithBLOBs.getUserId().equals(curUser.getId())){
                 logger.warn("有人恶意修改他人blog userId=" + curUser.getId());
-                throw new RuntimeException("请不要修改他人博客");
+                responseBlogEditDto.setErrorMsg("请不要修改别人博客");
+                return responseBlogEditDto;
             }
             title = blogWithBLOBs.getTitle();
             content = blogWithBLOBs.getContent();
         }
 
-        ResponseBlogEditDto responseBlogEditDto = new ResponseBlogEditDto();
         responseBlogEditDto.setBlogId(blogId);
         responseBlogEditDto.setTitle(title);
         responseBlogEditDto.setContent(content);
@@ -616,12 +615,15 @@ public class BlogServiceImpl implements BlogService {
     }
 
     /**
-     * 把<script...></script...> 改为<pre></><code><script...></script...></code></pre>
+     * 把<script...></script...> 改为<pre><div class="hljs"><code><code><script...></script...></code></code></div></pre>
+     * 解决changeScriptStyle2标签内文本处于一行的情况，但是基于上传的标签是成对的
+     * 如果上传的标签是成对的，这里就能很好的展示，如果不是成对的整个代码可能会乱掉
+     * 所以先用changeScriptStyle解析一遍，为了避免changeScriptStyle漏掉的单个标签，再用changeScriptStyle2处理一遍
      * @param contentHtml
      * @return
      */
     private String changeScriptStyle(String contentHtml){
-        String regex = "<(script[\\s\\S]*)>([\\s\\S]*)<(/script.*?)>|<(style[\\s\\S]*)>([\\s\\S]*)<(/style.*?)>";
+        String regex = "<(script[\\s\\S]*?)>([\\s\\S]*)<(/script.*)>|<(style[\\s\\S]*?)>([\\s\\S]*)<(/style.*)>|$";
         Pattern pattern = Pattern.compile(regex) ;
         Matcher matcher = pattern.matcher(contentHtml);
         StringBuffer sb = new StringBuffer();
@@ -634,8 +636,42 @@ public class BlogServiceImpl implements BlogService {
                 oldStr2 = matcher.group(5);
                 oldStr3 = matcher.group(6);
             }
-            //变成 <code>&lt;script..."&gt;</code>
-            String newStr = "<pre><code>&lt;" + oldStr1 + "&gt;" + oldStr2 + "&lt;" + oldStr3 + "&gt;</code></pre>";
+            //变成 <div class="hljs"><code>&lt;script ... &gt;</code></div>
+            String newStr = "";
+            if(oldStr1 != null){
+                newStr = "<pre><div class=\"hljs\"><code>&lt;" + oldStr1 + "&gt;" + oldStr2 + "&lt;" + oldStr3 + "&gt;</code></div></pre>";
+            }
+            matcher.appendReplacement(sb, newStr);
+        }
+        String newContentHtml = sb.toString();
+        if(newContentHtml.isEmpty()){
+            //不存在嵌入script style
+            newContentHtml = contentHtml;
+        }
+        return changeScriptStyle2(newContentHtml);
+    }
+
+    /**
+     * 把<script...></script...> 改为<code><script...></code> <code></script...></code>
+     * 这里是对单个标签进行处理，但是标签内的文本不能很好地展示，都会出现在一行
+     * @param contentHtml
+     * @return
+     */
+    private String changeScriptStyle2(String contentHtml){
+        String regex = "<(/?script[\\s\\S]*?)>|<(/?style[\\s\\S]*?)>|$";
+        Pattern pattern = Pattern.compile(regex) ;
+        Matcher matcher = pattern.matcher(contentHtml);
+        StringBuffer sb = new StringBuffer();
+        while(matcher.find()){
+            String oldStr = matcher.group(1);
+            if(oldStr == null){
+                oldStr = matcher.group(2);
+            }
+            //变成 <div class="hljs"><code>&lt;script ... &gt;</code></div>
+            String newStr = "";
+            if(oldStr != null){
+                newStr = "<code>&lt;" + oldStr + "&gt;</code>";
+            }
             matcher.appendReplacement(sb, newStr);
         }
         String newContentHtml = sb.toString();
