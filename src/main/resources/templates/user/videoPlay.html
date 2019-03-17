@@ -11,6 +11,13 @@
 <body>
     <div class="container mt-2" data-th-object="${video}">
         <video data-th-poster="*{coverUrl}" data-th-src="*{fileUrl}" data-ckin="default" data-overlay="2" th:data-title="'じ☆帥東☆じ '+*{title}"></video>
+        <div class="row">
+            <div class="col-12">
+                <a data-th-href="*{fileUrl}" download="">
+                    <button type="button" class="btn btn-success btn-sm btn-block mb-1">下载</button>
+                </a>
+            </div>
+        </div>
     </div>
 
     <script src="/js/videoPlay/ckin.min.js"></script>
