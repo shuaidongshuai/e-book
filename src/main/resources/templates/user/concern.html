@@ -1,0 +1,48 @@
+<div class="row page-titles">
+    <div class="col-md-6 col-8 align-self-center">
+        <h3 class="text-themecolor m-b-0 m-t-0">关注</h3>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+            <li class="breadcrumb-item active">concern</li>
+        </ol>
+    </div>
+    <div class="col-md-6 col-4 align-self-center">
+        <a href="/" class="btn pull-right hidden-sm-down btn-success"> Upgrade to Pro</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card" id="concernList">
+            <div class="card-block" id="concernListReplace">
+                <select class="custom-select pull-right" id="desc">
+                    <option value="1" data-th-selected="${desc eq true}">时间降序</option>
+                    <option value="2" data-th-selected="${desc eq false}">时间升序</option>
+                </select>
+                <h4 class="card-title">关注信息</h4>
+                <div class="table-responsive m-t-40">
+                    <table class="table stylish-table">
+                        <thead>
+                        <tr>
+                            <th>☪</th>
+                            <th>昵称</th>
+                            <th>邮箱</th>
+                            <th>关注时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr data-th-each="concernUserList : ${pageInfo.list}" th:object="${concernUserList}">
+                            <td><a data-th-href="'/blog/userBlogList?userId='+*{userId}" target="_blank"><img th:src="*{userAvatar}" width="30" height="30"/></a></td>
+                            <td data-th-text="*{userNickname}"></td>
+                            <td data-th-text="*{userEmail}"></td>
+                            <td data-th-text="*{#dates.format(createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div th:replace="~{fragments/page :: page}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/user/concern.js"></script>

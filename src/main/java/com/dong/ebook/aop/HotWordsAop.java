@@ -77,7 +77,9 @@ public class HotWordsAop implements ApplicationRunner {
 
     private void resetDatabaseHotWords(List<HotWords> hotWordsList){
         hotWordsExtralDao.deleteAll();
-        hotWordsExtralDao.insertList(hotWordsList);
+        if(hotWordsList.size() > 0){
+            hotWordsExtralDao.insertList(hotWordsList);
+        }
     }
 
     /**
@@ -88,7 +90,7 @@ public class HotWordsAop implements ApplicationRunner {
     public void autoSave(){
         //先检查size
         int size = hotWordstable.size();
-        long average = Long.MAX_VALUE;
+        long average = Long.MIN_VALUE;
         if(size > TABLESIZE){
             //计算平均值
             long sum = 0;
@@ -102,7 +104,7 @@ public class HotWordsAop implements ApplicationRunner {
         List<HotWords> hotWordsList = new ArrayList<>(size);
         for (Map.Entry<String, Integer> entry : hotWordstable.entrySet()) {
             //小于平均值的都舍去
-            if(entry.getValue() < average){
+            if(entry.getValue() > average){
                 HotWords hotWords = new HotWords();
                 hotWordsList.add(hotWords);
 

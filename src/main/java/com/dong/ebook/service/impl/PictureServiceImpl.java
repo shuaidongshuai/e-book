@@ -272,7 +272,7 @@ public class PictureServiceImpl implements PictureService {
 
     private ResponseManagerPictureListDto assembleResponseManagerPictureListDto(PageInfo pageInfo) {
         List<Picture> pictures = pageInfo.getList();
-        List<ManagerPictureDto> managerPictureDtos = new ArrayList<>();
+        List<ManagerPictureDto> managerPictureDtos = new ArrayList<>(pictures.size());
         for(Picture picture : pictures){
             ManagerPictureDto managerPictureDto = dozerBeanMapper.map(picture, ManagerPictureDto.class);
             managerPictureDtos.add(managerPictureDto);

@@ -184,7 +184,7 @@ public class VideoServiceImpl implements VideoService {
 
     private ResponseManagerVideoListDto assembleResponseManagerVideoListDto(PageInfo pageInfo) {
         List<Video> videos = pageInfo.getList();
-        List<ManagerVideoDto> managerVideoDtos = new ArrayList<>();
+        List<ManagerVideoDto> managerVideoDtos = new ArrayList<>(videos.size());
         for(Video video : videos){
             ManagerVideoDto managerVideoDto = dozerBeanMapper.map(video, ManagerVideoDto.class);
             managerVideoDtos.add(managerVideoDto);

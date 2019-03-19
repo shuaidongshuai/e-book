@@ -21,6 +21,10 @@
                     <div id="blog" data-th-attr="userId=*{userId}"></div>
                     <img th:src="*{avatar}" class="img-thumbnail img-rounded float-left" width="50px" height="50px">
                     <strong class="float-left mr-2 my-3 ml-md-3 text-primary" th:text="*{nickname}"></strong>
+                    <div th:if="not *{selfBlog}" id="selfBlog" data-th-attr="concern=*{concern}">
+                        <button class="btn btn-danger float-right mr-2" style="display: none" id="concern">关注</button>
+                        <button class="btn btn-success float-right mr-2" style="display: none" id="concerned">已关注</button>
+                    </div>
                 </div>
                 <div class="card-block">
                     <div class="card-text">

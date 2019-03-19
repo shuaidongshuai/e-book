@@ -251,10 +251,20 @@ public class BlogServiceImpl implements BlogService {
         }
 
         Boolean selfBlog = false;
+        Boolean concern = false;
         User curUser = authUserService.getCurUser();
-        if(curUser != null && curUser.getId().equals(userId)){
-            selfBlog = true;
+        if(curUser != null){
+            if(curUser.getId().equals(userId)){
+                selfBlog = true;
+            }
+
+            ResponseCommonDto responseCommonDto = concernService.haveConcern(curUser.getId(), userId);
+            if(responseCommonDto.isSuccess()){
+                concern = true;
+            }
         }
+
+
 
         PageInfo pageInfo = getBlogListByUserId(userId, pageNum, pageSize);
         List<BlogDto> blogDtos = BlogDos2dto(pageInfo.getList());
@@ -272,6 +282,7 @@ public class BlogServiceImpl implements BlogService {
         responseUserBlogListDto.setNickname(user.getNickname());
         responseUserBlogListDto.setAvatar(user.getAvatar());
         responseUserBlogListDto.setSelfBlog(selfBlog);
+        responseUserBlogListDto.setConcern(concern);
         responseUserBlogListDto.setSuccess(true);
         return responseUserBlogListDto;
     }
@@ -555,7 +566,7 @@ public class BlogServiceImpl implements BlogService {
 
     private ResponseManagerBlogListDto assembleResponseManagerBlogListDto(PageInfo pageInfo){
         List<Blog> blogs = pageInfo.getList();
-        List<ManagerBlogDto> managerBlogDtos = new ArrayList<>();
+        List<ManagerBlogDto> managerBlogDtos = new ArrayList<>(blogs.size());
         for(Blog blog : blogs){
             ManagerBlogDto managerBlogDto = new ManagerBlogDto();
             managerBlogDtos.add(managerBlogDto);

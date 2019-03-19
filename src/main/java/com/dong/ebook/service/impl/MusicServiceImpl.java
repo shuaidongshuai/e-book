@@ -270,7 +270,7 @@ public class MusicServiceImpl implements MusicService {
 
     private ResponseManagerMusicListDto assembleResponseManagerMusicListDto(PageInfo pageInfo) {
         List<Music> musics = pageInfo.getList();
-        List<ManagerMusicDto> managerMusicDtos = new ArrayList<>();
+        List<ManagerMusicDto> managerMusicDtos = new ArrayList<>(musics.size());
         for(Music music : musics){
             ManagerMusicDto managerMusicDto = dozerBeanMapper.map(music, ManagerMusicDto.class);
             managerMusicDtos.add(managerMusicDto);

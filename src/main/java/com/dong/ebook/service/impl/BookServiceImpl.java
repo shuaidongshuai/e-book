@@ -217,7 +217,7 @@ public class BookServiceImpl implements BookService {
 
     public ResponseManagerBookListDto assembleResponseManagerBookListDto(PageInfo pageInfo) {
         List<Book> books = pageInfo.getList();
-        List<ManagerBookDto> managerBookDtos = new ArrayList<>();
+        List<ManagerBookDto> managerBookDtos = new ArrayList<>(books.size());
         for(Book book : books){
             ManagerBookDto managerBookDto = dozerBeanMapper.map(book, ManagerBookDto.class);
             managerBookDtos.add(managerBookDto);

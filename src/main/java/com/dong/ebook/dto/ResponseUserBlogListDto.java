@@ -16,4 +16,5 @@ public class ResponseUserBlogListDto extends ResponseCommonDto{
     private Integer voteNum;
     private Integer commentNum;
     private Boolean selfBlog;
+    private Boolean concern;
 }

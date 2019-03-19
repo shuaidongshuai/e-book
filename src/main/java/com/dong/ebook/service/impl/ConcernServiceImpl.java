@@ -1,17 +1,20 @@
 package com.dong.ebook.service.impl;
 
 import com.dong.ebook.dao.ConcernDao;
-import com.dong.ebook.dto.ResponseCommonDto;
-import com.dong.ebook.model.Concern;
-import com.dong.ebook.model.ConcernExample;
-import com.dong.ebook.model.User;
+import com.dong.ebook.dao.UserDao;
+import com.dong.ebook.dto.*;
+import com.dong.ebook.model.*;
 import com.dong.ebook.security.AuthUserService;
 import com.dong.ebook.service.BlogExtraMsgCache;
 import com.dong.ebook.service.ConcernService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +24,9 @@ public class ConcernServiceImpl implements ConcernService {
 
     @Autowired
     private ConcernDao concernDao;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private AuthUserService authUserService;
@@ -103,6 +109,26 @@ public class ConcernServiceImpl implements ConcernService {
         return  concernDao.selectByExample(concernExample);
     }
 
+    @Override
+    public ResponseConcernListDto getConcernUserList(int pageNum, int pageSize, boolean desc, String query) {
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        ConcernExample concernExample = assembleConcernExampleByDesc(desc);
+        concernExample.createCriteria().andFromUserIdEqualTo(authUserService.getCurUser().getId());
+        concernDao.selectByExample(concernExample);
+        PageInfo pageInfo = new PageInfo(page.getResult());
+        return assembleResponseCFUserListDto(pageInfo, query, true);
+    }
+
+    @Override
+    public ResponseConcernListDto getFansUserList(int pageNum, int pageSize, boolean desc, String query) {
+        Page page = PageHelper.startPage(pageNum, pageSize);
+        ConcernExample concernExample = assembleConcernExampleByDesc(desc);
+        concernExample.createCriteria().andToUserIdEqualTo(authUserService.getCurUser().getId());
+        concernDao.selectByExample(concernExample);
+        PageInfo pageInfo = new PageInfo(page.getResult());
+        return assembleResponseCFUserListDto(pageInfo, query, false);
+    }
+
     public Concern getConcern(Long fromId, Long toId) {
         ConcernExample concernExample = new ConcernExample();
         ConcernExample.Criteria criteria = concernExample.createCriteria();
@@ -117,4 +143,51 @@ public class ConcernServiceImpl implements ConcernService {
         return concerns.get(0);
     }
 
+    public ConcernExample assembleConcernExampleByDesc(boolean desc){
+        ConcernExample concernExample = new ConcernExample();
+        if(desc){
+            concernExample.setOrderByClause("create_time desc");
+        } else {
+            concernExample.setOrderByClause("create_time asc");
+        }
+        return concernExample;
+    }
+
+    private ResponseConcernListDto assembleResponseCFUserListDto(PageInfo pageInfo, String searchUserNickname, boolean isConcern) {
+        List<Concern> concerns = pageInfo.getList();
+        List<ConcernUserDto> concernUserDtos = new ArrayList<>(concerns.size());
+        List<ConcernUserDto> searchConcernUserDtos = new ArrayList<>(concerns.size());
+        Long userId;
+        for(Concern concern : concerns){
+            if(isConcern){
+                userId = concern.getToUserId();
+            }else{
+                userId = concern.getFromUserId();
+            }
+            User user = userDao.selectByPrimaryKey(userId);
+
+            ConcernUserDto concernUserDto = new ConcernUserDto();
+            concernUserDtos.add(concernUserDto);
+            if(searchUserNickname != null && user.getNickname().equals(searchUserNickname)){
+                searchConcernUserDtos.add(concernUserDto);
+            }
+
+            concernUserDto.setUserId(userId);
+            concernUserDto.setCreateTime(concern.getCreateTime());
+            concernUserDto.setUserNickname(user.getNickname());
+            concernUserDto.setUserEmail(user.getEmail());
+            concernUserDto.setUserAvatar(user.getAvatar());
+        }
+
+        if(searchConcernUserDtos.size() > 0){
+            pageInfo.setList(searchConcernUserDtos);
+        }else{
+            pageInfo.setList(concernUserDtos);
+        }
+
+        ResponseConcernListDto responseConcernListDto = new ResponseConcernListDto();
+        responseConcernListDto.setPageInfo(pageInfo);
+        responseConcernListDto.setSuccess(true);
+        return responseConcernListDto;
+    }
 }

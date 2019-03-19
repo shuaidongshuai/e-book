@@ -266,5 +266,35 @@ public class UserController {
         return responseCommonDto;
     }
 
+    @GetMapping("/concernList")
+    public String concernList(int pageNum, int pageSize, Model model) {
+        ResponseConcernListDto responseConcernListDto = concernService.getConcernUserList(pageNum, pageSize, true, null);
+        model.addAttribute("pageInfo", responseConcernListDto.getPageInfo());
+        model.addAttribute("desc", true);
+        return "user/concern";
+    }
 
+    @GetMapping("/concernListLike")
+    public String concernListLike(int pageNum, int pageSize, boolean desc, String query, Model model) {
+        ResponseConcernListDto responseConcernListDto = concernService.getConcernUserList(pageNum, pageSize, desc, query);
+        model.addAttribute("pageInfo", responseConcernListDto.getPageInfo());
+        model.addAttribute("desc", desc);
+        return "user/concern :: #concernListReplace";
+    }
+
+    @GetMapping("/fansList")
+    public String fansList(int pageNum, int pageSize, Model model) {
+        ResponseConcernListDto responseConcernListDto = concernService.getFansUserList(pageNum, pageSize, true, null);
+        model.addAttribute("pageInfo", responseConcernListDto.getPageInfo());
+        model.addAttribute("desc", true);
+        return "user/fans";
+    }
+
+    @GetMapping("/fansListLike")
+    public String fansListLike(int pageNum, int pageSize, boolean desc, String query, Model model) {
+        ResponseConcernListDto responseConcernListDto = concernService.getFansUserList(pageNum, pageSize, desc, query);
+        model.addAttribute("pageInfo", responseConcernListDto.getPageInfo());
+        model.addAttribute("desc", desc);
+        return "user/fans :: #fansListReplace";
+    }
 }
