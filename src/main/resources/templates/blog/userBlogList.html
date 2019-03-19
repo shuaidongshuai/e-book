@@ -49,8 +49,13 @@
             </div>
         </div>
         <div class="col-md-8" id="blogList">
-            <div data-th-if="${pageInfo.size eq 0}" class="alert alert-info">
-                <strong>您还没有博客哦 ! </strong> 赶快去写一点吧
+            <div data-th-if="${pageInfo.size eq 0}" class="alert alert-info mt-2">
+                <div data-th-if="*{selfBlog}">
+                    <strong>您还没有博客哦 ! </strong> 赶快去写一点吧
+                </div>
+                <div data-th-if="not *{selfBlog}">
+                    <strong>他还没有博客哦 ! </strong>
+                </div>
             </div>
             <div class="card my-md-2" th:each="blogDto : *{pageInfo.list}">
                 <div class="card-block" th:object="${blogDto}">
