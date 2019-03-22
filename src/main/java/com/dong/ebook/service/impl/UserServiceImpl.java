@@ -84,14 +84,11 @@ public class UserServiceImpl implements UserService {
     public ResponseCommonDto updateUserById(RequestUserDto requestUserDto) {
         ResponseCommonDto responseCommonDto = new ResponseCommonDto();
         responseCommonDto.setSuccess(false);
-        User curUser = authUserService.getCurUser();
-        if(!curUser.getId().equals(requestUserDto.getId())){
-            responseCommonDto.setErrorMsg("不能串改他人信息");
-            return responseCommonDto;
-        }
-
         try {
-            changeRequestUserNullParameter(requestUserDto);
+            ResponseCommonDto response = checkUpdateUser(requestUserDto);
+            if(!response.isSuccess()){
+                return response;
+            }
         }catch (Exception e){
             logger.warn("updateUserById 有人直接提交了空数据");
             responseCommonDto.setErrorMsg("参数不能为空");
@@ -104,7 +101,7 @@ public class UserServiceImpl implements UserService {
         if(password != null && newPassword != null){
             //密码使用Bcrypt加密
             BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-            boolean matches = bCryptPasswordEncoder.matches(password, curUser.getPassword());
+            boolean matches = bCryptPasswordEncoder.matches(password, authUserService.getCurUser().getPassword());
             if(matches){
                 String encodePassword = bCryptPasswordEncoder.encode(newPassword);
                 requestUserDto.setPassword(encodePassword);
@@ -112,8 +109,12 @@ public class UserServiceImpl implements UserService {
                 responseCommonDto.setErrorMsg("密码输入错误");
                 return responseCommonDto;
             }
-        }else{
-            requestUserDto.setPassword(null);
+        }else if(password == null && newPassword != null){
+            responseCommonDto.setErrorMsg("密码不能为空");
+            return responseCommonDto;
+        }else if(password != null && newPassword == null){
+            responseCommonDto.setErrorMsg("新密码不能为空");
+            return responseCommonDto;
         }
 
         User user = dozerBeanMapper.map(requestUserDto, User.class);
@@ -362,22 +363,75 @@ public class UserServiceImpl implements UserService {
      * 由于profile页面form表单是直接提交的，所以会上传一些空字符串
      * @param requestUserDto
      */
-    public void changeRequestUserNullParameter(RequestUserDto requestUserDto){
-        if(requestUserDto.getNickname().isEmpty()){
+    public ResponseCommonDto checkUpdateUser(RequestUserDto requestUserDto){
+        ResponseCommonDto responseCommonDto = new ResponseCommonDto();
+        responseCommonDto.setSuccess(false);
+        User curUser = authUserService.getCurUser();
+        if(!curUser.getId().equals(requestUserDto.getId())){
+            responseCommonDto.setErrorMsg("不能串改他人信息");
+            return responseCommonDto;
+        }
+
+        String username = requestUserDto.getUsername();
+        String password = requestUserDto.getPassword();
+        String newPassword = requestUserDto.getNewPassword();
+        String email = requestUserDto.getEmail();
+        String nickname = requestUserDto.getNickname();
+        String phoneNumber = requestUserDto.getPhoneNumber();
+        String sex = requestUserDto.getSex();
+
+        if(username != null && !curUser.getUsername().equals(username)){
+            responseCommonDto.setErrorMsg("不能修改账号");
+            return responseCommonDto;
+        }
+
+        if(nickname.isEmpty()){
             requestUserDto.setNickname(null);
+        }else{
+            if(nickname.length() < 1 || nickname.length() > 10){
+                responseCommonDto.setErrorMsg("昵称长度必须在1-10以内");
+                return responseCommonDto;
+            }
         }
-        if(requestUserDto.getEmail().isEmpty()){
+
+        if(email.isEmpty()){
             requestUserDto.setEmail(null);
+        }else{
+            if(email.length() < 6 || email.length() > 20){
+                responseCommonDto.setErrorMsg("邮箱长度必须在6-20以内");
+                return responseCommonDto;
+            }
         }
-        if(requestUserDto.getPhoneNumber().isEmpty()){
+
+        if(phoneNumber.isEmpty()){
             requestUserDto.setPhoneNumber(null);
+        }else{
+            if(phoneNumber.length() < 3 || phoneNumber.length() > 30){
+                responseCommonDto.setErrorMsg("电话号长度必须3-30以内");
+                return responseCommonDto;
+            }
         }
-        if(requestUserDto.getPassword().isEmpty()){
+
+        if(password.isEmpty()){
             requestUserDto.setPassword(null);
         }
-        if(requestUserDto.getNewPassword().isEmpty()){
+
+        if(newPassword.isEmpty()){
             requestUserDto.setNewPassword(null);
+        }else{
+            if(newPassword.length() < 6 || newPassword.length() > 20){
+                responseCommonDto.setErrorMsg("新密码长度必须在6-20以内");
+                return responseCommonDto;
+            }
         }
+
+        if(!("girl".equals(sex) || "boy".equals(sex))){
+            responseCommonDto.setErrorMsg("性别错误");
+            return responseCommonDto;
+        }
+
+        responseCommonDto.setSuccess(true);
+        return responseCommonDto;
     }
 
     private ResponseUserDto checkAddUser(RequestUserDto requestUserDto){
