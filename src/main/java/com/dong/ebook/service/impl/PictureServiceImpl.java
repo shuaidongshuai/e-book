@@ -150,24 +150,40 @@ public class PictureServiceImpl implements PictureService {
     public ResponseMainPagePictureListDto getMainPagePictureList() {
         int bigSize = 1, smallSize = 6, circleSize = 6;
         int totalSize = bigSize + smallSize + circleSize;
+        List<Picture> pictures = getPictureListByPreference(totalSize);
+        return assembleResponseMainPagePictureListDto(pictures, bigSize, smallSize, circleSize);
+    }
+
+    @Override
+    public ResponseMobileMainPagePictureListDto getMobileMainPagePictureList() {
+        int size = 8;
+        List<Picture> pictures = getPictureListByPreference(size);
+        List<PictureDto> pictureDtos = pictures2Dto(pictures);
+        ResponseMobileMainPagePictureListDto responseMobileMainPagePictureListDto = new ResponseMobileMainPagePictureListDto();
+        responseMobileMainPagePictureListDto.setPictures(pictureDtos);
+        responseMobileMainPagePictureListDto.setSuccess(true);
+        return responseMobileMainPagePictureListDto;
+    }
+
+    public List<Picture> getPictureListByPreference(int size){
         List<Picture> pictures;
         User user = authUserService.getCurUser();
         if(user == null){
-            pictures = getPictureList(1, totalSize, true);
+            pictures = getPictureList(1, size, true);
         }else{
             //根据兴趣爱好找
             List<Long> typeIdList = preferenceService.getPreferenceTypeId(user.getId(), PreferenceTypeName.PICTURE);
-            pictures = getPictureListByTypeId(1, totalSize, true, typeIdList);
-            if(pictures.size() < totalSize){
+            pictures = getPictureListByTypeId(1, size, true, typeIdList);
+            if(pictures.size() < size){
                 //数量不够就找别的
-                pictures.addAll(getPictureListByNotTypeId(1, totalSize - pictures.size(), true, typeIdList));
+                pictures.addAll(getPictureListByNotTypeId(1, size - pictures.size(), true, typeIdList));
             }
         }
-        if(pictures.size() > totalSize){
-            logger.info("getMainPageVideoList pictures.size()=" + pictures.size() + " > size=" + totalSize);
-            pictures = pictures.subList(0, totalSize);
+        if(pictures.size() > size){
+            logger.info("getMainPageVideoList pictures.size()=" + pictures.size() + " > size=" + size);
+            pictures = pictures.subList(0, size);
         }
-        return assembleResponseMainPagePictureListDto(pictures, bigSize, smallSize, circleSize);
+        return pictures;
     }
 
     private ResponseMainPagePictureListDto assembleResponseMainPagePictureListDto(List<Picture> pictures, int bigSize, int smallSize, int circleSize) {
@@ -304,6 +320,18 @@ public class PictureServiceImpl implements PictureService {
 
     public ElasticsearchPictureDto Picture2Elasticsearch(Picture picture){
         return dozerBeanMapper.map(picture, ElasticsearchPictureDto.class);
+    }
+
+    public PictureDto picture2Dto(Picture picture){
+        return dozerBeanMapper.map(picture, PictureDto.class);
+    }
+
+    public List<PictureDto> pictures2Dto(List<Picture> pictures){
+        List<PictureDto> pictureDtos = new ArrayList<>(pictures.size());
+        for(Picture picture : pictures){
+            pictureDtos.add(picture2Dto(picture));
+        }
+        return pictureDtos;
     }
 
     public List<Picture> getPictureListByTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {

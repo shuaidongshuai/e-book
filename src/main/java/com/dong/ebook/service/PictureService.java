@@ -9,5 +9,10 @@ public interface PictureService {
     ResponsePictureDto getPicture(long id);
     ResponseCommonDto delPicture(Long id);
 
+    /**
+     * 为主页定制的List
+     * @return
+     */
     ResponseMainPagePictureListDto getMainPagePictureList();
+    ResponseMobileMainPagePictureListDto getMobileMainPagePictureList();
 }

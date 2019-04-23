@@ -124,30 +124,49 @@ public class VideoServiceImpl implements VideoService {
     public ResponseMainPageVideoListDto getMainPageVideoList() {
         //视频个数
         int size = 5;
+        List<Video> videos = getVideoListByPreference(size);
+        return assembleResponseMainPageVideoListDto(videos);
+    }
+
+    @Override
+    public ResponseMobileMainPageVideoListDto getMobileMainPageVideoList() {
+        //视频个数
+        int size = 4;
+        List<Video> videos = getVideoListByPreference(size);
+        ResponseMainPageVideoListDto responseMainPageVideoListDto = assembleResponseMainPageVideoListDto(videos);
+        ResponseMobileMainPageVideoListDto responseMobileMainPageVideoListDto = new ResponseMobileMainPageVideoListDto();
+        responseMobileMainPageVideoListDto.setVideos(responseMainPageVideoListDto.getVideoDtos());
+        responseMobileMainPageVideoListDto.setSuccess(true);
+        return responseMobileMainPageVideoListDto;
+    }
+
+    private List<Video> getVideoListByPreference(int size){
+        List<Video> videos;
         User user = authUserService.getCurUser();
         if(user == null){
-            return getVideoList(1, size, true);
-        }
-        //用户登录以后需要根据兴趣推荐
-        List<Long> typeIdList = preferenceService.getPreferenceTypeId(user.getId(), PreferenceTypeName.VIDEO);
-        //根据兴趣爱好找
-        List<Video> videos = getVideoListByTypeId(1, size, true, typeIdList);
-        if(videos.size() < size){
-            //数量不够就找别的
-            videos.addAll(getVideoListByNotTypeId(1, size - videos.size(), true, typeIdList));
+            videos = getVideoList(1, size, true);
+        }else{
+            //用户登录以后需要根据兴趣推荐
+            List<Long> typeIdList = preferenceService.getPreferenceTypeId(user.getId(), PreferenceTypeName.VIDEO);
+            //根据兴趣爱好找
+            videos = getVideoListByTypeId(1, size, true, typeIdList);
+            if(videos.size() < size){
+                //数量不够就找别的
+                videos.addAll(getVideoListByNotTypeId(1, size - videos.size(), true, typeIdList));
+            }
         }
         if(videos.size() > size){
             logger.info("getMainPageVideoList videos.size()=" + videos.size() + " > size=" + size);
             videos = videos.subList(0, size);
         }
-        return assembleResponseMainPageVideoListDto(videos);
+        return videos;
     }
 
-    public ResponseMainPageVideoListDto getVideoList(int pageNum, int pageSize, boolean desc) {
+    public List<Video> getVideoList(int pageNum, int pageSize, boolean desc) {
         Page<Video> page = PageHelper.startPage(pageNum, pageSize);
         VideoExample videoExample = assembleVideoExampleByDesc(desc);
         videoDao.selectByExample(videoExample);
-        return assembleResponseMainPageVideoListDto(page.getResult());
+        return page.getResult();
     }
 
     public Video getVideoByFileUrl(String fileUrl){
