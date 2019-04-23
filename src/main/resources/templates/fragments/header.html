@@ -11,15 +11,17 @@
 <body>
 <nav class="navbar navbar-inverse bg-inverse navbar-toggleable-md" id="headerNav" data-th-fragment="header">
     <div class="container">
+        <a class="navbar-brand" href="/">じ☆帥東☆じ</a>
+
+        <button class="navbar-toggler float-right" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <a class="navbar-brand" href="/">じ☆帥東☆じ</a>
-        </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav mr-auto col-6">
-                <div class="form-inline navbar-left mx-4 w-75" id="search">
+        <div class="navbar-collapse collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav mr-auto col-md-6">
+                <div class="form-inline navbar-left w-75" id="search">
                     <input type="text" class="form-control border-0 w-75" data-th-value="${query} == null ? '' : ${query}" placeholder="搜索" name="query">
                     <button type="submit" class="btn btn-link btn-sm">
                         <img src="/images/search.png" class="thumbnail" width="22">
@@ -35,13 +37,13 @@
                 <!--</div>-->
                 <!--<button class="btn btn-outline-success my-2 my-sm-0 ml-1" type="submit">登录</button>-->
             <!--</form>-->
-            <a href="/login" sec:authorize="isAnonymous()"><button class="btn btn-outline-success my-2 my-sm-0 ml-1" type="submit">登录დ注册</button></a>
+            <a href="/login" sec:authorize="isAnonymous()"><button class="btn btn-outline-success" type="submit">登录დ注册</button></a>
             <!--<a th:href="@{/register}" sec:authorize="isAnonymous()">-->
                 <!--<button type="button" class="btn btn-outline-info my-2 my-sm-0 ml-1">注册</button>-->
             <!--</a>-->
 
             <!-- 已登录的用户 -->
-            <div class="dropdown" sec:authorize="isAuthenticated()">
+            <div class="dropdown mr-1" sec:authorize="isAuthenticated()">
                 <button class="btn btn-outline-success dropdown-toggle" data-toggle="dropdown">
                     <span sec:authentication="name"></span>
                 </button>
@@ -55,11 +57,11 @@
             </div>
 
             <a th:href="@{/user/blogCreate}" sec:authorize="isAuthenticated()">
-                <button class="btn btn-outline-info my-2 my-sm-0 ml-1">写博客</button>
+                <button class="btn btn-outline-info my-2 my-sm-0 mr-1">写博客</button>
             </a>
             <!-- 管理员 -->
             <a th:href="@{/admin/manager}" sec:authorize="hasAnyRole('ADMIN', 'SUPERADMIN')">
-                <button type="button" class="btn btn-outline-warning my-2 my-sm-0 ml-1">系统管理</button>
+                <button type="button" class="btn btn-outline-warning">系统管理</button>
             </a>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->

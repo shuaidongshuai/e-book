@@ -119,24 +119,40 @@ public class BookServiceImpl implements BookService {
     public ResponseMainPageBookListDto getMainPageBookList() {
         int bigSize = 1, smallSize = 12;
         int totalSize = bigSize + smallSize;
+        List<Book> books = getBookListByPrefences(totalSize);
+        return assembleResponseMainPageBookListDto(books, bigSize, smallSize);
+    }
+
+    @Override
+    public ResponseMobileMainPageBookListDto getMobileMainPageBookList() {
+        int size = 8;
+        List<Book> books = getBookListByPrefences(size);
+        List<BookDto> bookDtos = books2Dto(books);
+        ResponseMobileMainPageBookListDto responseMobileMainPageBookListDto = new ResponseMobileMainPageBookListDto();
+        responseMobileMainPageBookListDto.setBooks(bookDtos);
+        responseMobileMainPageBookListDto.setSuccess(true);
+        return responseMobileMainPageBookListDto;
+    }
+
+    public List<Book> getBookListByPrefences(int size){
         List<Book> books;
         User user = authUserService.getCurUser();
         if(user == null){
-            books = getBookList(1, totalSize, true);
+            books = getBookList(1, size, true);
         }else{
             //根据兴趣爱好找
             List<Long> typeIdList = preferenceService.getPreferenceTypeId(user.getId(), PreferenceTypeName.BOOK);
-            books = getBookListByTypeId(1, totalSize, true, typeIdList);
-            if(books.size() < totalSize){
+            books = getBookListByTypeId(1, size, true, typeIdList);
+            if(books.size() < size){
                 //数量不够就找别的
-                books.addAll(getBookListByNotTypeId(1, totalSize - books.size(), true, typeIdList));
+                books.addAll(getBookListByNotTypeId(1, size - books.size(), true, typeIdList));
             }
         }
-        if(books.size() > totalSize){
-            logger.info("getMainPageVideoList books.size()=" + books.size() + " > size=" + totalSize);
-            books = books.subList(0, totalSize);
+        if(books.size() > size){
+            logger.info("getMainPageVideoList books.size()=" + books.size() + " > size=" + size);
+            books = books.subList(0, size);
         }
-        return assembleResponseMainPageBookListDto(books, bigSize, smallSize);
+        return books;
     }
 
     public List<Book> getBookList(int pageNum, int pageSize, boolean desc) {
@@ -164,14 +180,14 @@ public class BookServiceImpl implements BookService {
         bookWithBLOBs.setCreateTime(date);
         bookWithBLOBs.setModifyTime(date);
         bookDao.insert(bookWithBLOBs);
-        elasticsearchService.addBook(BookWithBLOBs2Elasticsearch(bookWithBLOBs));
+        elasticsearchService.addBook(bookWithBLOBs2Elasticsearch(bookWithBLOBs));
     }
 
     public void updateBookWithBLOBsById(BookWithBLOBs bookWithBLOBs) {
         bookWithBLOBs.setModifyUserId(authUserService.getCurUser().getId());
         bookWithBLOBs.setModifyTime(new Date());
         bookDao.updateByPrimaryKeySelective(bookWithBLOBs);
-        elasticsearchService.updateBook(BookWithBLOBs2Elasticsearch(bookWithBLOBs));
+        elasticsearchService.updateBook(bookWithBLOBs2Elasticsearch(bookWithBLOBs));
     }
 
     public BookWithBLOBs RequestBook2doWithBLOBs(RequestBookDto requestBookDto) {
@@ -243,8 +259,20 @@ public class BookServiceImpl implements BookService {
         return bookExample;
     }
 
-    public ElasticsearchBookDto BookWithBLOBs2Elasticsearch(BookWithBLOBs bookWithBLOBs){
+    public ElasticsearchBookDto bookWithBLOBs2Elasticsearch(BookWithBLOBs bookWithBLOBs){
         return dozerBeanMapper.map(bookWithBLOBs, ElasticsearchBookDto.class);
+    }
+
+    public BookDto book2Dto(Book book){
+        return dozerBeanMapper.map(book, BookDto.class);
+    }
+
+    public List<BookDto> books2Dto(List<Book> books){
+        List<BookDto> bookDtos = new ArrayList<>(books.size());
+        for(Book book : books){
+            bookDtos.add(book2Dto(book));
+        }
+        return bookDtos;
     }
 
     public List<Book> getBookListByTypeId(int pageNum, int pageSize, boolean desc, List<Long> typeIds) {

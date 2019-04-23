@@ -10,8 +10,9 @@ public interface VideoService {
     ResponseVideoDto getVideo(long id);
 
     /**
-     * 根据用户兴趣获取列表
+     * 为主页定制的List
      * @return
      */
     ResponseMainPageVideoListDto getMainPageVideoList();
+    ResponseMobileMainPageVideoListDto getMobileMainPageVideoList();
 }

@@ -15,7 +15,7 @@
         <!-- 数据库的相关配置 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://localhost:3306/dongblog?useUnicode=true&amp;characterEncoding=UTF-8"
-                        userId="root" password="dong"/>
+                        userId="root" password="Dong1996.."/>
 
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false"/>
@@ -83,6 +83,12 @@
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
         <table tableName="preference" mapperName="PreferenceDao">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="page_view" mapperName="PageViewDao">
+            <generatedKey column="id" sqlStatement="MySql" identity="true"/>
+        </table>
+        <table tableName="hot_words" mapperName="HotWordsDao">
             <generatedKey column="id" sqlStatement="MySql" identity="true"/>
         </table>
     </context>
