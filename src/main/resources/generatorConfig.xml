@@ -15,7 +15,7 @@
         <!-- 数据库的相关配置 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://localhost:3306/dongblog?useUnicode=true&amp;characterEncoding=UTF-8"
-                        userId="root" password="Dong1996.."/>
+                        userId="root" password="${spring.datasource.password}"/>
 
         <javaTypeResolver>
             <property name="forceBigDecimals" value="false"/>
