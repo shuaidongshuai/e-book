@@ -14,5 +14,4 @@ public interface BookService {
      * @return
      */
     ResponseMainPageBookListDto getMainPageBookList();
-    ResponseMobileMainPageBookListDto getMobileMainPageBookList();
 }

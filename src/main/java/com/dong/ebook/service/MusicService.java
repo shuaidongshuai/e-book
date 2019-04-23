@@ -9,10 +9,5 @@ public interface MusicService {
     ResponseManagerMusicListDto getManagerMusicList(int pageNum, int pageSize, boolean desc, String query);
     ResponseMusicDto getMusic(long id);
 
-    /**
-     * 为主页定制的List
-     * @return
-     */
     ResponseMainPageMusicListDto getMainPageMusicList();
-    ResponseMobileMainPageMusicListDto getMobileMainPageMusicList();
 }

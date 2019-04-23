@@ -54,7 +54,7 @@ public class MusicServiceImpl implements MusicService {
             return responseCommonDto;
         }
 
-        Music music = requestMusic2do(requestMusicDto);
+        Music music = RequestMusic2do(requestMusicDto);
         if(requestMusicDto.getId() == null || requestMusicDto.getId() < 1){
             if(getMusicByFileUrl(requestMusicDto.getFileUrl()) != null){
                 responseCommonDto.setErrorMsg("此音乐已经创建");
@@ -133,10 +133,7 @@ public class MusicServiceImpl implements MusicService {
     public ResponseMainPageMusicListDto getMainPageMusicList() {
         //主页的音乐分两部分 1.个性推荐 2.流行、英文、抖音
         //1
-        int pageSize = 10, pageNum = 3;
-        int totalSize = pageSize * pageNum;
-        List<Music> musics = getMusicListByPreference(totalSize);
-        ResponseMainPageMusicListDto mainPageMusicListDto = assembleResponseMainPageMusicListDto(musics, pageSize);
+        ResponseMainPageMusicListDto mainPageMusicListDto = getMainPagePersonal();
         //2
         int popularMusicTypeId = 2, englishMusicTypeId = 9, douyinMusicTypeId = 11;
         List<MusicDto> popularMusic = getSimpleMusicByTypeId(1, 9, true, popularMusicTypeId);
@@ -148,36 +145,27 @@ public class MusicServiceImpl implements MusicService {
         return mainPageMusicListDto;
     }
 
-    @Override
-    public ResponseMobileMainPageMusicListDto getMobileMainPageMusicList() {
-        int size = 8;
-        List<Music> musics = getMusicListByPreference(size);
-        List<MusicDto> musicDtos = musics2dto(musics);
-        ResponseMobileMainPageMusicListDto responseMobileMainPageMusicListDto = new ResponseMobileMainPageMusicListDto();
-        responseMobileMainPageMusicListDto.setMusics(musicDtos);
-        responseMobileMainPageMusicListDto.setSuccess(true);
-        return responseMobileMainPageMusicListDto;
-    }
-
-    private List<Music> getMusicListByPreference(int size){
+    private ResponseMainPageMusicListDto getMainPagePersonal(){
+        int pageSize = 10, pageNum = 3;
+        int totalSize = pageSize * pageNum;
         List<Music> musics;
         User user = authUserService.getCurUser();
         if(user == null){
-            musics = getMusicList(1, size, true);
+            musics = getMusicList(1, totalSize, true);
         }else{
             //根据兴趣爱好找
             List<Long> typeIdList = preferenceService.getPreferenceTypeId(user.getId(), PreferenceTypeName.BOOK);
-            musics = getMusicListByTypeId(1, size, true, typeIdList);
-            if(musics.size() < size){
+            musics = getMusicListByTypeId(1, totalSize, true, typeIdList);
+            if(musics.size() < totalSize){
                 //数量不够就找别的
-                musics.addAll(getMusicListByNotTypeId(1, size - musics.size(), true, typeIdList));
+                musics.addAll(getMusicListByNotTypeId(1, totalSize - musics.size(), true, typeIdList));
             }
         }
-        if(musics.size() > size){
-            logger.info("getMainPageMusicList musics.size()=" + musics.size() + " > size=" + size);
-            musics = musics.subList(0, size);
+        if(musics.size() > totalSize){
+            logger.info("getMainPageMusicList musics.size()=" + musics.size() + " > size=" + totalSize);
+            musics = musics.subList(0, totalSize);
         }
-        return musics;
+        return assembleResponseMainPageMusicListDto(musics, pageSize);
     }
 
     private List<MusicDto> getSimpleMusicByTypeId(int pageNum, int pageSize, boolean desc, long typeId){
@@ -259,20 +247,8 @@ public class MusicServiceImpl implements MusicService {
         return null;
     }
 
-    public Music requestMusic2do(RequestMusicDto requestMusicDto){
+    public Music RequestMusic2do(RequestMusicDto requestMusicDto){
         return dozerBeanMapper.map(requestMusicDto, Music.class);
-    }
-
-    public MusicDto music2dto(Music music){
-        return dozerBeanMapper.map(music, MusicDto.class);
-    }
-
-    public List<MusicDto> musics2dto(List<Music> musics){
-        List<MusicDto> musicDtos = new ArrayList<>(musics.size());
-        for(Music music : musics){
-            musicDtos.add(music2dto(music));
-        }
-        return musicDtos;
     }
 
     private void insertMusic(Music music) {

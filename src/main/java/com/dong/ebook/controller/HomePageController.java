@@ -37,12 +37,7 @@ public class HomePageController {
     BlogService blogService;
 
     @RequestMapping("/")
-    public String index() {
-        return "index";
-    }
-
-    @RequestMapping("/pcHome")
-    public String pcHome(Model model) {
+    public String index(Model model) {
         //用户
         User curUser = authUserService.getCurUser();
         //图书
@@ -70,31 +65,7 @@ public class HomePageController {
         model.addAttribute("smallPicture", responseMainPagePictureListDto.getSmallPictureDtos());
         model.addAttribute("circlePicture", responseMainPagePictureListDto.getCirclePictureDtos());
         model.addAttribute("blogList", mainPagePictureList.getPageInfo().getList());
-        return "pcHome";
-    }
-
-    @RequestMapping("/mobileHome")
-    public String mobileHome(Model model) {
-        //用户
-        User curUser = authUserService.getCurUser();
-        //图书
-        ResponseMobileMainPageBookListDto responseMobileMainPageBookListDto= bookService.getMobileMainPageBookList();
-        //视频
-        ResponseMobileMainPageVideoListDto responseMobileMainPageVideoListDto = videoService.getMobileMainPageVideoList();
-        //音乐
-        ResponseMobileMainPageMusicListDto responseMobileMainPageMusicListDto = musicService.getMobileMainPageMusicList();
-        //图片
-        ResponseMobileMainPagePictureListDto responseMobileMainPagePictureListDto = pictureService.getMobileMainPagePictureList();
-        //博客
-        ResponseBlogListDto mainPagePictureList = blogService.getMainPageBlogList();
-
-        model.addAttribute("user", curUser);
-        model.addAttribute("books", responseMobileMainPageBookListDto.getBooks());
-        model.addAttribute("videos", responseMobileMainPageVideoListDto.getVideos());
-        model.addAttribute("musics", responseMobileMainPageMusicListDto.getMusics());
-        model.addAttribute("pictures", responseMobileMainPagePictureListDto.getPictures());
-        model.addAttribute("blogList", mainPagePictureList.getPageInfo().getList());
-        return "mobileHome";
+        return "index";
     }
 
     @GetMapping("/register")
